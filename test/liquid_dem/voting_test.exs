@@ -179,4 +179,61 @@ defmodule LiquidDem.VotingTest do
       assert %Ecto.Changeset{} = Voting.change_vote(vote)
     end
   end
+
+  describe "delegations" do
+    alias LiquidDem.Voting.Delegation
+
+    @valid_attrs %{}
+    @update_attrs %{}
+    @invalid_attrs %{}
+
+    def delegation_fixture(attrs \\ %{}) do
+      {:ok, delegation} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Voting.create_delegation()
+
+      delegation
+    end
+
+    test "list_delegations/0 returns all delegations" do
+      delegation = delegation_fixture()
+      assert Voting.list_delegations() == [delegation]
+    end
+
+    test "get_delegation!/1 returns the delegation with given id" do
+      delegation = delegation_fixture()
+      assert Voting.get_delegation!(delegation.id) == delegation
+    end
+
+    test "create_delegation/1 with valid data creates a delegation" do
+      assert {:ok, %Delegation{} = delegation} = Voting.create_delegation(@valid_attrs)
+    end
+
+    test "create_delegation/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Voting.create_delegation(@invalid_attrs)
+    end
+
+    test "update_delegation/2 with valid data updates the delegation" do
+      delegation = delegation_fixture()
+      assert {:ok, %Delegation{} = delegation} = Voting.update_delegation(delegation, @update_attrs)
+    end
+
+    test "update_delegation/2 with invalid data returns error changeset" do
+      delegation = delegation_fixture()
+      assert {:error, %Ecto.Changeset{}} = Voting.update_delegation(delegation, @invalid_attrs)
+      assert delegation == Voting.get_delegation!(delegation.id)
+    end
+
+    test "delete_delegation/1 deletes the delegation" do
+      delegation = delegation_fixture()
+      assert {:ok, %Delegation{}} = Voting.delete_delegation(delegation)
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_delegation!(delegation.id) end
+    end
+
+    test "change_delegation/1 returns a delegation changeset" do
+      delegation = delegation_fixture()
+      assert %Ecto.Changeset{} = Voting.change_delegation(delegation)
+    end
+  end
 end
