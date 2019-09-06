@@ -5,6 +5,8 @@ defmodule LiquidDem.Voting.Proposal do
   schema "proposals" do
     field :url, :string
 
+    has_many :votes, LiquidDem.Voting.Vote
+
     timestamps()
   end
 
