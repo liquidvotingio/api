@@ -120,4 +120,63 @@ defmodule LiquidDem.VotingTest do
       assert %Ecto.Changeset{} = Voting.change_participant(participant)
     end
   end
+
+  describe "votes" do
+    alias LiquidDem.Voting.Vote
+
+    @valid_attrs %{yes_or_no: true}
+    @update_attrs %{yes_or_no: false}
+    @invalid_attrs %{yes_or_no: nil}
+
+    def vote_fixture(attrs \\ %{}) do
+      {:ok, vote} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Voting.create_vote()
+
+      vote
+    end
+
+    test "list_votes/0 returns all votes" do
+      vote = vote_fixture()
+      assert Voting.list_votes() == [vote]
+    end
+
+    test "get_vote!/1 returns the vote with given id" do
+      vote = vote_fixture()
+      assert Voting.get_vote!(vote.id) == vote
+    end
+
+    test "create_vote/1 with valid data creates a vote" do
+      assert {:ok, %Vote{} = vote} = Voting.create_vote(@valid_attrs)
+      assert vote.yes_or_no == true
+    end
+
+    test "create_vote/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(@invalid_attrs)
+    end
+
+    test "update_vote/2 with valid data updates the vote" do
+      vote = vote_fixture()
+      assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, @update_attrs)
+      assert vote.yes_or_no == false
+    end
+
+    test "update_vote/2 with invalid data returns error changeset" do
+      vote = vote_fixture()
+      assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, @invalid_attrs)
+      assert vote == Voting.get_vote!(vote.id)
+    end
+
+    test "delete_vote/1 deletes the vote" do
+      vote = vote_fixture()
+      assert {:ok, %Vote{}} = Voting.delete_vote(vote)
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id) end
+    end
+
+    test "change_vote/1 returns a vote changeset" do
+      vote = vote_fixture()
+      assert %Ecto.Changeset{} = Voting.change_vote(vote)
+    end
+  end
 end
