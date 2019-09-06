@@ -1,22 +1,13 @@
 alias LiquidDem.Repo
-alias LiquidDem.Voting.{Proposal,Participant,Vote}
+alias LiquidDem.Voting
 
-proposal =
-  %Proposal{
-    url: "some.proposal.on.github.com"
-  }
-  |> Repo.insert!
+proposal = Voting.create_proposal!(%{url: "some.proposal.on.github.com"})
 
-participant =
-  %Participant{
-    name: "Lucia Coelho"
-  }
-  |> Repo.insert!
+participant = Voting.create_participant!(%{name: "Lucia Coelho"})
 
 vote =
-  %Vote{
+  Voting.create_vote!(%{
     yes_or_no: true,
-    proposal: proposal,
-    participant: participant
-  }
-  |> Repo.insert!
+    proposal_id: proposal.id,
+    participant_id: participant.id
+  })

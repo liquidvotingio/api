@@ -55,6 +55,12 @@ defmodule LiquidDem.Voting do
     |> Repo.insert()
   end
 
+  def create_proposal!(attrs \\ %{}) do
+    %Proposal{}
+    |> Proposal.changeset(attrs)
+    |> Repo.insert!
+  end
+
   @doc """
   Updates a proposal.
 
@@ -151,6 +157,12 @@ defmodule LiquidDem.Voting do
     |> Repo.insert()
   end
 
+  def create_participant!(attrs \\ %{}) do
+    %Participant{}
+    |> Participant.changeset(attrs)
+    |> Repo.insert!
+  end
+
   @doc """
   Updates a participant.
 
@@ -245,6 +257,12 @@ defmodule LiquidDem.Voting do
     %Vote{}
     |> Vote.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_vote!(attrs \\ %{}) do
+    %Vote{}
+    |> Vote.changeset(attrs)
+    |> Repo.insert!
   end
 
   @doc """
