@@ -1,11 +1,22 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     LiquidDem.Repo.insert!(%LiquidDem.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+alias LiquidDem.Repo
+alias LiquidDem.Voting.{Proposal,Participant,Vote}
+
+proposal =
+  %Proposal{
+    url: "some.proposal.on.github.com"
+  }
+  |> Repo.insert!
+
+participant =
+  %Participant{
+    name: "Lucia Coelho"
+  }
+  |> Repo.insert!
+
+vote =
+  %Vote{
+    yes_or_no: true,
+    proposal: proposal,
+    participant: participant
+  }
+  |> Repo.insert!
