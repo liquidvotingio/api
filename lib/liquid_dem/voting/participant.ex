@@ -5,6 +5,8 @@ defmodule LiquidDem.Voting.Participant do
   schema "participants" do
     field :name, :string
 
+    has_many :votes, LiquidDem.Voting.Vote
+
     timestamps()
   end
 

@@ -13,10 +13,12 @@ defmodule LiquidDem.Voting.Vote do
 
   @doc false
   def changeset(vote, attrs) do
-    required_fields = [:yes_or_no, :proposal_id, :participant_id]
-    
+    required_fields = [:yes_or_no, :participant_id, :proposal_id]
+
     vote
     |> cast(attrs, required_fields)
+    |> assoc_constraint(:participant)
+    |> assoc_constraint(:proposal)
     |> validate_required(required_fields)
   end
 end
