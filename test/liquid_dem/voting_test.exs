@@ -236,4 +236,65 @@ defmodule LiquidDem.VotingTest do
       assert %Ecto.Changeset{} = Voting.change_delegation(delegation)
     end
   end
+
+  describe "results" do
+    alias LiquidDem.Voting.Result
+
+    @valid_attrs %{no: 42, yes: 42}
+    @update_attrs %{no: 43, yes: 43}
+    @invalid_attrs %{no: nil, yes: nil}
+
+    def result_fixture(attrs \\ %{}) do
+      {:ok, result} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Voting.create_result()
+
+      result
+    end
+
+    test "list_results/0 returns all results" do
+      result = result_fixture()
+      assert Voting.list_results() == [result]
+    end
+
+    test "get_result!/1 returns the result with given id" do
+      result = result_fixture()
+      assert Voting.get_result!(result.id) == result
+    end
+
+    test "create_result/1 with valid data creates a result" do
+      assert {:ok, %Result{} = result} = Voting.create_result(@valid_attrs)
+      assert result.no == 42
+      assert result.yes == 42
+    end
+
+    test "create_result/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Voting.create_result(@invalid_attrs)
+    end
+
+    test "update_result/2 with valid data updates the result" do
+      result = result_fixture()
+      assert {:ok, %Result{} = result} = Voting.update_result(result, @update_attrs)
+      assert result.no == 43
+      assert result.yes == 43
+    end
+
+    test "update_result/2 with invalid data returns error changeset" do
+      result = result_fixture()
+      assert {:error, %Ecto.Changeset{}} = Voting.update_result(result, @invalid_attrs)
+      assert result == Voting.get_result!(result.id)
+    end
+
+    test "delete_result/1 deletes the result" do
+      result = result_fixture()
+      assert {:ok, %Result{}} = Voting.delete_result(result)
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_result!(result.id) end
+    end
+
+    test "change_result/1 returns a result changeset" do
+      result = result_fixture()
+      assert %Ecto.Changeset{} = Voting.change_result(result)
+    end
+  end
 end
