@@ -1,19 +1,23 @@
-# LiquidDem
+# Liquid Voting as a Service (POC)
 
-To start your Phoenix server:
+This project is part fun itch scratcher, part resume-driven development.
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Start Phoenix endpoint with `mix phx.server`
+The itch is to implement a lightweight liquid voting service that can be easily plugged into proposal-making platforms of different kinds.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+The RDD is to have a showcase for work with Elixir, Graphql, micro-services arch, Docker and Kubernetes. And reliability engineering stuff: CI/CD, monitoring, logging, perf tests.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+As of now this a proof of concept, just started in the last few days. Just a Phoenix app skeleton with a Voting context, and Participant, Proposal, Vote and Delegation models. Very simplistic logic. No API yet. Auth and tests will be left for later, for speed of prototyping.
 
-## Learn more
+TODO:
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+* VotingResult model
+* Graphql API for voting, delegating and subscribing to voting results
+* dockerization
+* kuberization
+* tests
+* logging
+* monitoring
+* perf tests
+* CI/CD
+* JS widget
+* Auth
