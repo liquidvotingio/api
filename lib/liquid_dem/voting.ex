@@ -463,6 +463,12 @@ defmodule LiquidDem.Voting do
     |> Repo.insert()
   end
 
+  def create_result!(attrs \\ %{}) do
+    %Result{}
+    |> Result.changeset(attrs)
+    |> Repo.insert!
+  end
+
   @doc """
   Updates a result.
 
