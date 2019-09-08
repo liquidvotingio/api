@@ -238,7 +238,7 @@ defmodule LiquidDem.VotingTest do
   end
 
   describe "results" do
-    alias LiquidDem.Voting.Result
+    alias LiquidDem.VotingResults.Result
 
     @valid_attrs %{no: 42, yes: 42}
     @update_attrs %{no: 43, yes: 43}

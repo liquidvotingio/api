@@ -6,7 +6,7 @@ defmodule LiquidDem.Voting.Proposal do
     field :url, :string
 
     has_many :votes, LiquidDem.Voting.Vote
-    has_one :voting_result, LiquidDem.Voting.Result
+    has_one :voting_result, LiquidDem.VotingResults.Result
 
     timestamps()
   end
