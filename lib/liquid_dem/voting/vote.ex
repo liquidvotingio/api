@@ -4,6 +4,7 @@ defmodule LiquidDem.Voting.Vote do
 
   schema "votes" do
     field :yes, :boolean, default: false
+    field :weight, :integer, default: 1
 
     belongs_to :participant, LiquidDem.Voting.Participant
     belongs_to :proposal, LiquidDem.Voting.Proposal
@@ -13,7 +14,7 @@ defmodule LiquidDem.Voting.Vote do
 
   @doc false
   def changeset(vote, attrs) do
-    required_fields = [:yes, :participant_id, :proposal_id]
+    required_fields = [:yes, :weight, :participant_id, :proposal_id]
 
     vote
     |> cast(attrs, required_fields)

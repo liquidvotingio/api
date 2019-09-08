@@ -79,6 +79,12 @@ defmodule LiquidDem.VotingResults do
     |> Repo.update()
   end
 
+  def update_result!(%Result{} = result, attrs) do
+    result
+    |> Result.changeset(attrs)
+    |> Repo.update!
+  end
+
   @doc """
   Deletes a Result.
 

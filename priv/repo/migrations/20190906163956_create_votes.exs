@@ -4,6 +4,7 @@ defmodule LiquidDem.Repo.Migrations.CreateVotes do
   def change do
     create table(:votes) do
       add :yes, :boolean, default: false, null: false
+      add :weight, :integer, default: 1
       add :participant_id, references(:participants, on_delete: :nothing)
       add :proposal_id, references(:proposals, on_delete: :delete_all)
 
