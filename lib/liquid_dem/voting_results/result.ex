@@ -3,8 +3,8 @@ defmodule LiquidDem.VotingResults.Result do
   import Ecto.Changeset
 
   schema "results" do
-    field :no, :integer
-    field :yes, :integer
+    field :no, :integer, default: 0
+    field :yes, :integer, default: 0
 
     belongs_to :proposal, LiquidDem.Voting.Proposal
 
