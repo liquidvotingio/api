@@ -1,4 +1,4 @@
-defmodule LiquidDem.Voting.Result do
+defmodule LiquidDem.VotingResults.Result do
   use Ecto.Schema
   import Ecto.Changeset
 
