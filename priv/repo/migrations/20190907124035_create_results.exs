@@ -3,8 +3,8 @@ defmodule LiquidDem.Repo.Migrations.CreateResults do
 
   def change do
     create table(:results) do
-      add :yes, :integer
-      add :no, :integer
+      add :yes, :integer, default: 0
+      add :no, :integer, default: 0
       add :proposal_id, references(:proposals, on_delete: :nothing)
 
       timestamps()
