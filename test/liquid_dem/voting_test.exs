@@ -124,9 +124,9 @@ defmodule LiquidDem.VotingTest do
   describe "votes" do
     alias LiquidDem.Voting.Vote
 
-    @valid_attrs %{yes_or_no: true}
-    @update_attrs %{yes_or_no: false}
-    @invalid_attrs %{yes_or_no: nil}
+    @valid_attrs %{yes: true}
+    @update_attrs %{yes: false}
+    @invalid_attrs %{yes: nil}
 
     def vote_fixture(attrs \\ %{}) do
       {:ok, vote} =
@@ -149,7 +149,7 @@ defmodule LiquidDem.VotingTest do
 
     test "create_vote/1 with valid data creates a vote" do
       assert {:ok, %Vote{} = vote} = Voting.create_vote(@valid_attrs)
-      assert vote.yes_or_no == true
+      assert vote.yes == true
     end
 
     test "create_vote/1 with invalid data returns error changeset" do
@@ -159,7 +159,7 @@ defmodule LiquidDem.VotingTest do
     test "update_vote/2 with valid data updates the vote" do
       vote = vote_fixture()
       assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, @update_attrs)
-      assert vote.yes_or_no == false
+      assert vote.yes == false
     end
 
     test "update_vote/2 with invalid data returns error changeset" do

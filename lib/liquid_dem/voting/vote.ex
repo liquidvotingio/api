@@ -3,7 +3,7 @@ defmodule LiquidDem.Voting.Vote do
   import Ecto.Changeset
 
   schema "votes" do
-    field :yes_or_no, :boolean, default: false
+    field :yes, :boolean, default: false
 
     belongs_to :participant, LiquidDem.Voting.Participant
     belongs_to :proposal, LiquidDem.Voting.Proposal
@@ -13,7 +13,7 @@ defmodule LiquidDem.Voting.Vote do
 
   @doc false
   def changeset(vote, attrs) do
-    required_fields = [:yes_or_no, :participant_id, :proposal_id]
+    required_fields = [:yes, :participant_id, :proposal_id]
 
     vote
     |> cast(attrs, required_fields)
