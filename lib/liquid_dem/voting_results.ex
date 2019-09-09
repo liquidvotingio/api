@@ -5,7 +5,7 @@ defmodule LiquidDem.VotingResults do
 
   import Ecto.Query, warn: false
   alias LiquidDem.Repo
-
+  alias LiquidDem.Voting
   alias LiquidDem.VotingResults.Result
 
   @doc """
@@ -29,6 +29,8 @@ defmodule LiquidDem.VotingResults do
 
     attrs =
       Enum.reduce proposal.votes, attrs, fn (vote, attrs) ->
+        {:ok, vote} = Voting.update_vote_weight(vote)
+
         if vote.yes do
           Map.update!(attrs, :yes, &(&1 + vote.weight))
         else

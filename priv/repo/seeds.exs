@@ -19,14 +19,12 @@ Voting.create_delegation!(%{
 })
 
 participant = Repo.preload(participant, :delegations_received)
-weight = length(participant.delegations_received) + 1
 
 vote =
   Voting.create_vote!(%{
     yes: true,
     proposal_id: proposal.id,
-    participant_id: participant.id,
-    weight: weight
+    participant_id: participant.id
   })
 
 participant2 = Voting.create_participant!(%{name: "Francine Dunlop"})
@@ -35,8 +33,7 @@ vote =
   Voting.create_vote!(%{
     yes: false,
     proposal_id: proposal.id,
-    participant_id: participant.id,
-    weight: 1
+    participant_id: participant2.id
   })
 
 VotingResults.calculate_result(proposal)
