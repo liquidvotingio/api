@@ -6,7 +6,6 @@ Part fun itch scratcher, part résumé-driven development.
 
 TODO:
 
-* VotingResult model
 * Graphql API for voting, delegating and subscribing to voting results
 * dockerization
 * kuberization
