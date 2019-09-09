@@ -5,10 +5,16 @@ alias LiquidDem.VotingResults
 proposal = Voting.create_proposal!(%{url: "some.proposal.on.github.com"})
 
 participant = Voting.create_participant!(%{name: "Lucia Coelho"})
-another_participant = Voting.create_participant!(%{name: "Zubin Kurozawa"})
+delegator = Voting.create_participant!(%{name: "Zubin Kurozawa"})
+delegator2 = Voting.create_participant!(%{name: "Louie Louie"})
 
 Voting.create_delegation!(%{
-  delegator_id: another_participant.id,
+  delegator_id: delegator.id,
+  delegate_id: participant.id
+})
+
+Voting.create_delegation!(%{
+  delegator_id: delegator2.id,
   delegate_id: participant.id
 })
 
@@ -23,12 +29,16 @@ vote =
     weight: weight
   })
 
+participant2 = Voting.create_participant!(%{name: "Francine Dunlop"})
 
-result = 
-  VotingResults.create_result!(%{
+vote =
+  Voting.create_vote!(%{
+    yes: false,
     proposal_id: proposal.id,
-    yes: vote.weight
+    participant_id: participant.id,
+    weight: 1
   })
 
-IO.inspect(result)
+VotingResults.calculate_result(proposal)
+|> IO.inspect
 
