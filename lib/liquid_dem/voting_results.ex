@@ -9,6 +9,39 @@ defmodule LiquidDem.VotingResults do
   alias LiquidDem.VotingResults.Result
 
   @doc """
+  Creates or updates voting result based on votes
+  given to a proposal
+
+  ## Examples
+
+      iex> calculate_result!(proposal)
+      %Result{}
+
+  """
+  def calculate_result(proposal) do
+    proposal = Repo.preload(proposal, :votes)
+
+    attrs = %{
+      yes: 0,
+      no: 0,
+      proposal_id: proposal.id
+    }
+
+    attrs =
+      Enum.reduce proposal.votes, attrs, fn (vote, attrs) ->
+        if vote.yes do
+          Map.update!(attrs, :yes, &(&1 + vote.weight))
+        else
+          Map.update!(attrs, :no, &(&1 + vote.weight))
+        end
+      end
+
+    %Result{}
+    |> Result.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
   Returns the list of results.
 
   ## Examples
@@ -59,58 +92,5 @@ defmodule LiquidDem.VotingResults do
     %Result{}
     |> Result.changeset(attrs)
     |> Repo.insert!
-  end
-
-  @doc """
-  Updates a result.
-
-  ## Examples
-
-      iex> update_result(result, %{field: new_value})
-      {:ok, %Result{}}
-
-      iex> update_result(result, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_result(%Result{} = result, attrs) do
-    result
-    |> Result.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def update_result!(%Result{} = result, attrs) do
-    result
-    |> Result.changeset(attrs)
-    |> Repo.update!
-  end
-
-  @doc """
-  Deletes a Result.
-
-  ## Examples
-
-      iex> delete_result(result)
-      {:ok, %Result{}}
-
-      iex> delete_result(result)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_result(%Result{} = result) do
-    Repo.delete(result)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking result changes.
-
-  ## Examples
-
-      iex> change_result(result)
-      %Ecto.Changeset{source: %Result{}}
-
-  """
-  def change_result(%Result{} = result) do
-    Result.changeset(result, %{})
   end
 end
