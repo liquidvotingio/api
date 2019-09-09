@@ -5,7 +5,14 @@ defmodule LiquidDemWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", LiquidDemWeb do
+  scope "/" do
     pipe_through :api
+
+    forward "/api", Absinthe.Plug,
+      schema: LiquidDemWeb.Schema.Schema
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: LiquidDemWeb.Schema.Schema,
+      interface: :simple
   end
 end
