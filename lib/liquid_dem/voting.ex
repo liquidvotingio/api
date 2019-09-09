@@ -284,6 +284,26 @@ defmodule LiquidDem.Voting do
   end
 
   @doc """
+  Updates vote weight based on delegations given to voter
+
+  ## Examples
+
+      iex> update_vote_weight(vote)
+      {:ok, %Vote{}}
+
+      iex> update_vote_weight(vote)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_vote_weight(vote) do
+    vote = Repo.preload(vote, [participant: :delegations_received])
+
+    weight = length(vote.participant.delegations_received) + 1
+
+    update_vote(vote, %{weight: weight})
+  end
+
+  @doc """
   Deletes a Vote.
 
   ## Examples
