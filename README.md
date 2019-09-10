@@ -43,6 +43,34 @@ query {
     url
   }
 }
+
+query {
+  votes {
+    id
+    participant {
+      id
+      name
+    }
+    proposal {
+      id
+      url
+    }
+  }
+}
+
+query {
+  vote(id: 1) {
+    id
+    participant {
+      id
+      name
+    }
+    proposal {
+      id
+      url
+    }
+  }
+}
 ```
 
 TODO:
