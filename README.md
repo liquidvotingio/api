@@ -13,7 +13,7 @@ mix phx.server
 open http://localhost:4000/graphiql
 ```
 
-Just got the first queries working:
+Working queries:
 
 ```
 query {
@@ -27,6 +27,20 @@ query {
   participant(id: 1) {
     id
     name
+  }
+}
+
+query {
+  proposals {
+    id
+    url
+  }
+}
+
+query {
+  proposal(id: 1) {
+    id
+    url
   }
 }
 ```
