@@ -16,4 +16,12 @@ defmodule LiquidDemWeb.Resolvers.Voting do
   def proposal(_, %{id: id}, _) do
     {:ok, Voting.get_proposal!(id)}
   end
+
+  def votes(_, _, _) do
+    {:ok, Voting.list_votes()}
+  end
+
+  def vote(_, %{id: id}, _) do
+    {:ok, Voting.get_vote!(id)}
+  end
 end
