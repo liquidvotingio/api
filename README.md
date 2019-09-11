@@ -75,6 +75,34 @@ query {
     }
   }
 }
+
+query {
+  delegations {
+    id
+    delegator {
+      id
+      name
+    }
+    delegate {
+      id
+      name
+    }
+  }
+}
+
+query {
+  delegation(id: 1) {
+    id
+    delegator {
+      id
+      name
+    }
+    delegate {
+      id
+      name
+    }
+  }
+}
 ```
 
 TODO:

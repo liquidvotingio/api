@@ -24,4 +24,12 @@ defmodule LiquidDemWeb.Resolvers.Voting do
   def vote(_, %{id: id}, _) do
     {:ok, Voting.get_vote!(id)}
   end
+
+  def delegations(_, _, _) do
+    {:ok, Voting.list_delegations()}
+  end
+
+  def delegation(_, %{id: id}, _) do
+    {:ok, Voting.get_delegation!(id)}
+  end
 end
