@@ -25,6 +25,19 @@ defmodule LiquidDemWeb.Resolvers.Voting do
     {:ok, Voting.get_vote!(id)}
   end
 
+  def create_vote(_, args, _) do
+    case Voting.create_vote(args) do
+      {:error, changeset} ->
+        {:error,
+         message: "Could not create vote",
+         details: ChangesetErrors.error_details(changeset)
+        }
+
+      {:ok, vote} ->
+        {:ok, vote}
+    end
+  end
+
   def delegations(_, _, _) do
     {:ok, Voting.list_delegations()}
   end
