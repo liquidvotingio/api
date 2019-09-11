@@ -20,6 +20,17 @@ query {
   participants {
     id
     name
+    delegations_received {
+      id
+      delegator {
+        id
+        name
+      }
+      delegate {
+        id
+        name
+      }
+    }
   }
 }
 
@@ -27,6 +38,17 @@ query {
   participant(id: 1) {
     id
     name
+    delegations_received {
+      id
+      delegator {
+        id
+        name
+      }
+      delegate {
+        id
+        name
+      }
+    }
   }
 }
 
@@ -107,7 +129,7 @@ query {
 
 TODO:
 
-* Graphql schemas resolvers for querying/mutating votes and delegations, and for subscribing to voting results
+* Graphql schemas resolvers for mutating votes and delegations, and for subscribing to voting results
 * get some test coverage
 * dockerize
 * kuberize
