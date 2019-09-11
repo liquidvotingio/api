@@ -1,6 +1,6 @@
 defmodule LiquidDemWeb.Schema.Schema do
   use Absinthe.Schema
-  alias LiquidDem.{Voting}
+  alias LiquidDem.Voting
 
   import_types Absinthe.Type.Custom
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
