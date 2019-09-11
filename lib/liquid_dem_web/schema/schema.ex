@@ -61,6 +61,14 @@ defmodule LiquidDemWeb.Schema.Schema do
       arg :yes, non_null(:boolean)
       resolve &Resolvers.Voting.create_vote/3
     end
+
+    @desc "Create a delegation for a proposal"
+    field :create_delegation, :delegation do
+      arg :proposal_id, non_null(:id)
+      arg :delegator_id, non_null(:id)
+      arg :delegate_id, non_null(:id)
+      resolve &Resolvers.Voting.create_delegation/3
+    end
   end
 
   object :participant do

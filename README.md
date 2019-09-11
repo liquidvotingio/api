@@ -131,18 +131,33 @@ Working mutations:
 
 ```
 mutation {
-  createVote(participantId: 1, proposalId: 1, yes: true) {
+  createVote(proposalId: 1, participantId: 1, yes: true) {
     participant {
       name
     }
     yes
   }
 }
+
+mutation {
+  createDelegation(proposalId: 1, delegatorId: 1, delegateId: 2) {
+    delegator {
+      name
+    }
+    delegate {
+      name
+    }
+  }
+}
 ```
+
+Notes:
+
+* No auth and no tests yet, to keep prototyping as fast as possible
 
 TODO:
 
-* Graphql schemas resolvers for mutating votes and delegations, and for subscribing to voting results
+* Graphql schema resolver for subscribing to voting results
 * get some test coverage
 * dockerize
 * kuberize
