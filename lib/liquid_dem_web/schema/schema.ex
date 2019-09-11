@@ -30,7 +30,7 @@ defmodule LiquidDemWeb.Schema.Schema do
       resolve &Resolvers.Voting.proposal/3
     end
 
-    @desc "Get a list of votess"
+    @desc "Get a list of votes"
     field :votes, list_of(:vote) do
       resolve &Resolvers.Voting.votes/3
     end
@@ -39,6 +39,17 @@ defmodule LiquidDemWeb.Schema.Schema do
     field :vote, :vote do
       arg :id, non_null(:id)
       resolve &Resolvers.Voting.vote/3
+    end
+
+    @desc "Get a list of delegations"
+    field :delegations, list_of(:delegation) do
+      resolve &Resolvers.Voting.delegations/3
+    end
+
+    @desc "Get a delegation by its id"
+    field :delegation, :delegation do
+      arg :id, non_null(:id)
+      resolve &Resolvers.Voting.delegation/3
     end
   end
 
@@ -58,6 +69,12 @@ defmodule LiquidDemWeb.Schema.Schema do
     field :weight, non_null(:integer)
     field :proposal, non_null(:proposal), resolve: dataloader(Voting)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
+  end
+
+  object :delegation do
+    field :id, non_null(:id)
+    field :delegator, non_null(:participant), resolve: dataloader(Voting)
+    field :delegate, non_null(:participant), resolve: dataloader(Voting)
   end
 
   def context(ctx) do
