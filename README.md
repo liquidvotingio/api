@@ -153,15 +153,16 @@ mutation {
 
 Notes:
 
-* No auth and no tests yet, to keep prototyping as fast as possible
+* No auth, validations or tests yet, to keep prototyping as fast as possible
 
 TODO:
 
 * Graphql schema resolver for subscribing to voting results
-* get some test coverage
 * dockerize
 * kuberize
 * CI/CD
+* validations
+* some tests
 * logging
 * monitoring
 * perf tests
