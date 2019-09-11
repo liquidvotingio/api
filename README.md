@@ -127,6 +127,19 @@ query {
 }
 ```
 
+Working mutations:
+
+```
+mutation {
+  createVote(participantId: 1, proposalId: 1, yes: true) {
+    participant {
+      name
+    }
+    yes
+  }
+}
+```
+
 TODO:
 
 * Graphql schemas resolvers for mutating votes and delegations, and for subscribing to voting results

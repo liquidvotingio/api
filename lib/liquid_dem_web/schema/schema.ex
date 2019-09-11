@@ -53,6 +53,16 @@ defmodule LiquidDemWeb.Schema.Schema do
     end
   end
 
+  mutation do
+    @desc "Create a vote for a proposal"
+    field :create_vote, :vote do
+      arg :proposal_id, non_null(:id)
+      arg :participant_id, non_null(:id)
+      arg :yes, non_null(:boolean)
+      resolve &Resolvers.Voting.create_vote/3
+    end
+  end
+
   object :participant do
     field :id, non_null(:id)
     field :name, non_null(:string)
