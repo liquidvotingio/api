@@ -47,6 +47,8 @@ query {
 query {
   votes {
     id
+    yes
+    weight
     participant {
       id
       name
@@ -61,6 +63,8 @@ query {
 query {
   vote(id: 1) {
     id
+    yes
+    weight
     participant {
       id
       name

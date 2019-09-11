@@ -55,6 +55,7 @@ defmodule LiquidDemWeb.Schema.Schema do
   object :vote do
     field :id, non_null(:id)
     field :yes, non_null(:boolean)
+    field :weight, non_null(:integer)
     field :proposal, non_null(:proposal), resolve: dataloader(Voting)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
   end
