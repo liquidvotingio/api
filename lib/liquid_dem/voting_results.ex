@@ -18,7 +18,7 @@ defmodule LiquidDem.VotingResults do
       %Result{}
 
   """
-  def calculate_result(proposal) do
+  def calculate_result!(proposal) do
     proposal = Repo.preload(proposal, :votes)
 
     attrs = %{
@@ -40,7 +40,20 @@ defmodule LiquidDem.VotingResults do
 
     %Result{}
     |> Result.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert!
+  end
+
+  def publish_voting_result_change(proposal_id) do
+    result =
+      proposal_id
+      |> Voting.get_proposal!
+      |> calculate_result!
+
+    Absinthe.Subscription.publish(
+      LiquidDemWeb.Endpoint,
+      result,
+      voting_result_change: proposal_id
+    )
   end
 
   @doc """

@@ -71,6 +71,16 @@ defmodule LiquidDemWeb.Schema.Schema do
     end
   end
 
+  subscription do
+    @desc "Subscribe to voting results changes for a proposal"
+    field :voting_result_change, :result do
+      arg :proposal_id, non_null(:id)
+      config fn args, _res ->
+        {:ok, topic: args.proposal_id}
+      end
+    end
+  end
+
   object :participant do
     field :id, non_null(:id)
     field :name, non_null(:string)
@@ -95,6 +105,13 @@ defmodule LiquidDemWeb.Schema.Schema do
     field :id, non_null(:id)
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
+  end
+
+  object :result do
+    field :id, non_null(:id)
+    field :yes, non_null(:integer)
+    field :no, non_null(:integer)
+    field :proposal, non_null(:proposal), resolve: dataloader(Voting)
   end
 
   def context(ctx) do

@@ -6,10 +6,12 @@ defmodule LiquidDem.Application do
   use Application
 
   def start(_type, _args) do
+    import Supervisor.Spec
+
     # List all child processes to be supervised
     children = [
       LiquidDem.Repo,
-      LiquidDemWeb.Endpoint
+      LiquidDemWeb.Endpoint,
       supervisor(Absinthe.Subscription, [LiquidDemWeb.Endpoint])
     ]
 
