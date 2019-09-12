@@ -1,9 +1,9 @@
-defmodule LiquidDem.MixProject do
+defmodule LiquidVoting.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :liquid_dem,
+      app: :liquid_voting,
       version: "0.1.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -19,7 +19,7 @@ defmodule LiquidDem.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {LiquidDem.Application, []},
+      mod: {LiquidVoting.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

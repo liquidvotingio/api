@@ -1,4 +1,4 @@
-defmodule LiquidDem.Repo.Migrations.CreateResults do
+defmodule LiquidVoting.Repo.Migrations.CreateResults do
   use Ecto.Migration
 
   def change do

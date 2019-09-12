@@ -1,12 +1,12 @@
-defmodule LiquidDem.VotingResults do
+defmodule LiquidVoting.VotingResults do
   @moduledoc """
   The VotingResults context.
   """
 
   import Ecto.Query, warn: false
-  alias LiquidDem.Repo
-  alias LiquidDem.Voting
-  alias LiquidDem.VotingResults.Result
+  alias LiquidVoting.Repo
+  alias LiquidVoting.Voting
+  alias LiquidVoting.VotingResults.Result
 
   @doc """
   Creates or updates voting result based on votes
@@ -50,7 +50,7 @@ defmodule LiquidDem.VotingResults do
       |> calculate_result!
 
     Absinthe.Subscription.publish(
-      LiquidDemWeb.Endpoint,
+      LiquidVotingWeb.Endpoint,
       result,
       voting_result_change: proposal_id
     )

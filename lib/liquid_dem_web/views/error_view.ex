@@ -1,5 +1,5 @@
-defmodule LiquidDemWeb.ErrorView do
-  use LiquidDemWeb, :view
+defmodule LiquidVotingWeb.ErrorView do
+  use LiquidVotingWeb, :view
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.

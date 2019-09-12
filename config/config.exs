@@ -7,15 +7,15 @@
 # General application configuration
 use Mix.Config
 
-config :liquid_dem,
-  ecto_repos: [LiquidDem.Repo]
+config :liquid_voting,
+  ecto_repos: [LiquidVoting.Repo]
 
 # Configures the endpoint
-config :liquid_dem, LiquidDemWeb.Endpoint,
+config :liquid_voting, LiquidVotingWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "JnwIS2wvbN45zqsUjKCgZ1kq8ifWd4lsP08y89uFS5w3uHoFJ9UmdcgiFI3GcKBl",
-  render_errors: [view: LiquidDemWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: LiquidDem.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: LiquidVotingWeb.ErrorView, accepts: ~w(json)],
+  pubsub: [name: LiquidVoting.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,

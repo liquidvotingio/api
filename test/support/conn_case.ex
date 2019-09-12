@@ -1,4 +1,4 @@
-defmodule LiquidDemWeb.ConnCase do
+defmodule LiquidVotingWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,18 +19,18 @@ defmodule LiquidDemWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      alias LiquidDemWeb.Router.Helpers, as: Routes
+      alias LiquidVotingWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint LiquidDemWeb.Endpoint
+      @endpoint LiquidVotingWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(LiquidDem.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(LiquidVoting.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(LiquidDem.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(LiquidVoting.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

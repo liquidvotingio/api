@@ -1,12 +1,12 @@
-defmodule LiquidDem.Voting.Proposal do
+defmodule LiquidVoting.Voting.Proposal do
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "proposals" do
     field :url, :string
 
-    has_many :votes, LiquidDem.Voting.Vote
-    has_one :voting_result, LiquidDem.VotingResults.Result
+    has_many :votes, LiquidVoting.Voting.Vote
+    has_one :voting_result, LiquidVoting.VotingResults.Result
 
     timestamps()
   end

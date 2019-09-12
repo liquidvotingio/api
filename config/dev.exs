@@ -1,10 +1,10 @@
 use Mix.Config
 
 # Configure your database
-config :liquid_dem, LiquidDem.Repo,
+config :liquid_voting, LiquidVoting.Repo,
   username: "postgres",
   password: "postgres",
-  database: "liquid_dem_dev",
+  database: "liquid_voting_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -15,7 +15,7 @@ config :liquid_dem, LiquidDem.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :liquid_dem, LiquidDemWeb.Endpoint,
+config :liquid_voting, LiquidVotingWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,

@@ -1,6 +1,6 @@
-defmodule LiquidDemWeb.Resolvers.Voting do
-  alias LiquidDem.{Voting,VotingResults}
-  alias LiquidDemWeb.Schema.ChangesetErrors
+defmodule LiquidVotingWeb.Resolvers.Voting do
+  alias LiquidVoting.{Voting,VotingResults}
+  alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def participants(_, _, _) do
     {:ok, Voting.list_participants()}

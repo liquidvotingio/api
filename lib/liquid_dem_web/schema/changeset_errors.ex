@@ -1,4 +1,4 @@
-defmodule LiquidDemWeb.Schema.ChangesetErrors do
+defmodule LiquidVotingWeb.Schema.ChangesetErrors do
   @doc """
   Traverses the changeset errors and returns a map of 
   error messages. For example:

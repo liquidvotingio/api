@@ -1,6 +1,6 @@
-alias LiquidDem.Repo
-alias LiquidDem.Voting
-alias LiquidDem.VotingResults
+alias LiquidVoting.Repo
+alias LiquidVoting.Voting
+alias LiquidVoting.VotingResults
 
 proposal = Voting.create_proposal!(%{url: "some.proposal.on.github.com"})
 

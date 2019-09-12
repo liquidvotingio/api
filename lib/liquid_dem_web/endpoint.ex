@@ -1,8 +1,8 @@
-defmodule LiquidDemWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :liquid_dem
+defmodule LiquidVotingWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :liquid_voting
   use Absinthe.Phoenix.Endpoint
 
-  socket "/socket", LiquidDemWeb.UserSocket,
+  socket "/socket", LiquidVotingWeb.UserSocket,
     websocket: true,
     longpoll: false
 
@@ -12,7 +12,7 @@ defmodule LiquidDemWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :liquid_dem,
+    from: :liquid_voting,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
@@ -38,8 +38,8 @@ defmodule LiquidDemWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session,
     store: :cookie,
-    key: "_liquid_dem_key",
+    key: "_liquid_voting_key",
     signing_salt: "NW9CQJMd"
 
-  plug LiquidDemWeb.Router
+  plug LiquidVotingWeb.Router
 end

@@ -1,4 +1,4 @@
-defmodule LiquidDem.Voting.Vote do
+defmodule LiquidVoting.Voting.Vote do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,8 +6,8 @@ defmodule LiquidDem.Voting.Vote do
     field :yes, :boolean, default: false
     field :weight, :integer, default: 1
 
-    belongs_to :participant, LiquidDem.Voting.Participant
-    belongs_to :proposal, LiquidDem.Voting.Proposal
+    belongs_to :participant, LiquidVoting.Voting.Participant
+    belongs_to :proposal, LiquidVoting.Voting.Proposal
 
     timestamps()
   end

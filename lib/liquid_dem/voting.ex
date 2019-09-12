@@ -1,12 +1,12 @@
-defmodule LiquidDem.Voting do
+defmodule LiquidVoting.Voting do
   @moduledoc """
   The Voting context.
   """
 
   import Ecto.Query, warn: false
-  alias LiquidDem.Repo
+  alias LiquidVoting.Repo
 
-  alias LiquidDem.Voting.Proposal
+  alias LiquidVoting.Voting.Proposal
 
   @doc """
   Returns the list of proposals.
@@ -108,7 +108,7 @@ defmodule LiquidDem.Voting do
     Proposal.changeset(proposal, %{})
   end
 
-  alias LiquidDem.Voting.Participant
+  alias LiquidVoting.Voting.Participant
 
   @doc """
   Returns the list of participants.
@@ -210,7 +210,7 @@ defmodule LiquidDem.Voting do
     Participant.changeset(participant, %{})
   end
 
-  alias LiquidDem.Voting.Vote
+  alias LiquidVoting.Voting.Vote
 
   @doc """
   Returns the list of votes.
@@ -332,7 +332,7 @@ defmodule LiquidDem.Voting do
     Vote.changeset(vote, %{})
   end
 
-  alias LiquidDem.Voting.Delegation
+  alias LiquidVoting.Voting.Delegation
 
   @doc """
   Returns the list of delegations.

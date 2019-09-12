@@ -1,5 +1,5 @@
-defmodule LiquidDem.Repo do
+defmodule LiquidVoting.Repo do
   use Ecto.Repo,
-    otp_app: :liquid_dem,
+    otp_app: :liquid_voting,
     adapter: Ecto.Adapters.Postgres
 end

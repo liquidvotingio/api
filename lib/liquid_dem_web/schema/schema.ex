@@ -1,11 +1,11 @@
-defmodule LiquidDemWeb.Schema.Schema do
+defmodule LiquidVotingWeb.Schema.Schema do
   use Absinthe.Schema
-  alias LiquidDem.Voting
+  alias LiquidVoting.Voting
 
   import_types Absinthe.Type.Custom
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
-  alias LiquidDemWeb.Resolvers
+  alias LiquidVotingWeb.Resolvers
 
   query do
     @desc "Get a list of participants"
@@ -115,7 +115,7 @@ defmodule LiquidDemWeb.Schema.Schema do
   end
 
   def context(ctx) do
-    source = Dataloader.Ecto.new(LiquidDem.Repo)
+    source = Dataloader.Ecto.new(LiquidVoting.Repo)
 
     loader =
       Dataloader.new
