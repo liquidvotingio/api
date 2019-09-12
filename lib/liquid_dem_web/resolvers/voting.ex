@@ -1,5 +1,5 @@
 defmodule LiquidDemWeb.Resolvers.Voting do
-  alias LiquidDem.Voting
+  alias LiquidDem.{Voting,VotingResults}
   alias LiquidDemWeb.Schema.ChangesetErrors
 
   def participants(_, _, _) do
@@ -35,6 +35,7 @@ defmodule LiquidDemWeb.Resolvers.Voting do
         }
 
       {:ok, vote} ->
+        VotingResults.publish_voting_result_change(vote.proposal_id)
         {:ok, vote}
     end
   end

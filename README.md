@@ -151,13 +151,27 @@ mutation {
 }
 ```
 
+Subscription to voting results:
+
+```
+subscription {
+  votingResultChange(proposalId:1) {
+    id
+    yes
+    no
+    proposal {
+      url
+    }
+  }
+}
+```
+
 Notes:
 
 * No auth, validations or tests yet, to keep prototyping as fast as possible
 
 TODO:
 
-* Graphql schema resolver for subscribing to voting results
 * dockerize
 * kuberize
 * CI/CD

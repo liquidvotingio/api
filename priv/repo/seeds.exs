@@ -36,6 +36,6 @@ vote =
     participant_id: participant2.id
   })
 
-VotingResults.calculate_result(proposal)
+VotingResults.calculate_result!(proposal)
 |> IO.inspect
 
