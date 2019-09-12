@@ -151,7 +151,7 @@ mutation {
 }
 ```
 
-Subscription to voting results:
+Subscription to voting results (which will react to voting creation):
 
 ```
 subscription {
@@ -165,6 +165,8 @@ subscription {
   }
 }
 ```
+
+To see this working, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through.
 
 Notes:
 
