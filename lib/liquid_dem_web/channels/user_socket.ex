@@ -1,5 +1,6 @@
 defmodule LiquidDemWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: LiquidDemWeb.Schema.Schema
 
   ## Channels
   # channel "room:*", LiquidDemWeb.RoomChannel

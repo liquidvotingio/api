@@ -13,6 +13,7 @@ defmodule LiquidDemWeb.Router do
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: LiquidDemWeb.Schema.Schema,
+      socket: LiquidDemWeb.UserSocket,
       interface: :simple
   end
 end

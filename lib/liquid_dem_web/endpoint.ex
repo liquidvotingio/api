@@ -1,5 +1,6 @@
 defmodule LiquidDemWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :liquid_dem
+  use Absinthe.Phoenix.Endpoint
 
   socket "/socket", LiquidDemWeb.UserSocket,
     websocket: true,

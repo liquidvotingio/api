@@ -8,12 +8,9 @@ defmodule LiquidDem.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      # Start the Ecto repository
       LiquidDem.Repo,
-      # Start the endpoint when the application starts
       LiquidDemWeb.Endpoint
-      # Starts a worker by calling: LiquidDem.Worker.start_link(arg)
-      # {LiquidDem.Worker, arg},
+      supervisor(Absinthe.Subscription, [LiquidDemWeb.Endpoint])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
