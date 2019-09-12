@@ -1,12 +1,12 @@
-defmodule LiquidDemWeb do
+defmodule LiquidVotingWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use LiquidDemWeb, :controller
-      use LiquidDemWeb, :view
+      use LiquidVotingWeb, :controller
+      use LiquidVotingWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,26 +19,26 @@ defmodule LiquidDemWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: LiquidDemWeb
+      use Phoenix.Controller, namespace: LiquidVotingWeb
 
       import Plug.Conn
-      import LiquidDemWeb.Gettext
-      alias LiquidDemWeb.Router.Helpers, as: Routes
+      import LiquidVotingWeb.Gettext
+      alias LiquidVotingWeb.Router.Helpers, as: Routes
     end
   end
 
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/liquid_dem_web/templates",
-        namespace: LiquidDemWeb
+        root: "lib/liquid_voting_web/templates",
+        namespace: LiquidVotingWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
 
-      import LiquidDemWeb.ErrorHelpers
-      import LiquidDemWeb.Gettext
-      alias LiquidDemWeb.Router.Helpers, as: Routes
+      import LiquidVotingWeb.ErrorHelpers
+      import LiquidVotingWeb.Gettext
+      alias LiquidVotingWeb.Router.Helpers, as: Routes
     end
   end
 
@@ -53,7 +53,7 @@ defmodule LiquidDemWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import LiquidDemWeb.Gettext
+      import LiquidVotingWeb.Gettext
     end
   end
 

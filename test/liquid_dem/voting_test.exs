@@ -1,10 +1,10 @@
-defmodule LiquidDem.VotingTest do
-  use LiquidDem.DataCase
+defmodule LiquidVoting.VotingTest do
+  use LiquidVoting.DataCase
 
-  alias LiquidDem.Voting
+  alias LiquidVoting.Voting
 
   describe "proposals" do
-    alias LiquidDem.Voting.Proposal
+    alias LiquidVoting.Voting.Proposal
 
     @valid_attrs %{url: "some url"}
     @update_attrs %{url: "some updated url"}
@@ -63,7 +63,7 @@ defmodule LiquidDem.VotingTest do
   end
 
   describe "participants" do
-    alias LiquidDem.Voting.Participant
+    alias LiquidVoting.Voting.Participant
 
     @valid_attrs %{name: "some name"}
     @update_attrs %{name: "some updated name"}
@@ -122,7 +122,7 @@ defmodule LiquidDem.VotingTest do
   end
 
   describe "votes" do
-    alias LiquidDem.Voting.Vote
+    alias LiquidVoting.Voting.Vote
 
     @valid_attrs %{yes: true}
     @update_attrs %{yes: false}
@@ -181,7 +181,7 @@ defmodule LiquidDem.VotingTest do
   end
 
   describe "delegations" do
-    alias LiquidDem.Voting.Delegation
+    alias LiquidVoting.Voting.Delegation
 
     @valid_attrs %{}
     @update_attrs %{}
@@ -238,7 +238,7 @@ defmodule LiquidDem.VotingTest do
   end
 
   describe "results" do
-    alias LiquidDem.VotingResults.Result
+    alias LiquidVoting.VotingResults.Result
 
     @valid_attrs %{no: 42, yes: 42}
     @update_attrs %{no: 43, yes: 43}

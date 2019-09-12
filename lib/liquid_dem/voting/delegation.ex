@@ -1,8 +1,8 @@
-defmodule LiquidDem.Voting.Delegation do
+defmodule LiquidVoting.Voting.Delegation do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias LiquidDem.Voting.Participant
+  alias LiquidVoting.Voting.Participant
 
   schema "delegations" do
     belongs_to :delegator, Participant

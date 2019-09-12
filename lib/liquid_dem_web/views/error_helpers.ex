@@ -1,4 +1,4 @@
-defmodule LiquidDemWeb.ErrorHelpers do
+defmodule LiquidVotingWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -25,9 +25,9 @@ defmodule LiquidDemWeb.ErrorHelpers do
     # should be written to the errors.po file. The :count option is
     # set by Ecto and indicates we should also apply plural rules.
     if count = opts[:count] do
-      Gettext.dngettext(LiquidDemWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(LiquidVotingWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(LiquidDemWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(LiquidVotingWeb.Gettext, "errors", msg, opts)
     end
   end
 end

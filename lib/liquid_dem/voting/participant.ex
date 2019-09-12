@@ -1,8 +1,8 @@
-defmodule LiquidDem.Voting.Participant do
+defmodule LiquidVoting.Voting.Participant do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias LiquidDem.Voting.{Vote, Delegation}
+  alias LiquidVoting.Voting.{Vote, Delegation}
 
   schema "participants" do
     field :name, :string

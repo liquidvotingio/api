@@ -1,5 +1,5 @@
-defmodule LiquidDemWeb.Router do
-  use LiquidDemWeb, :router
+defmodule LiquidVotingWeb.Router do
+  use LiquidVotingWeb, :router
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -9,11 +9,11 @@ defmodule LiquidDemWeb.Router do
     pipe_through :api
 
     forward "/api", Absinthe.Plug,
-      schema: LiquidDemWeb.Schema.Schema
+      schema: LiquidVotingWeb.Schema.Schema
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,
-      schema: LiquidDemWeb.Schema.Schema,
-      socket: LiquidDemWeb.UserSocket,
+      schema: LiquidVotingWeb.Schema.Schema,
+      socket: LiquidVotingWeb.UserSocket,
       interface: :simple
   end
 end
