@@ -10,8 +10,7 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :liquid_voting, LiquidVotingWeb.Endpoint,
-  url: [host: "localhost", port: 4000],
-  cache_static_manifest: "priv/static/cache_manifest.json",
+  url: [host: "localhost", port: String.to_integer(System.get_env("PORT") || "4000")],
   server: true
 
 # Do not print debug messages in production
