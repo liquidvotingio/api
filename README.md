@@ -13,7 +13,14 @@ mix phx.server
 open http://localhost:4000/graphiql
 ```
 
-Working queries:
+A dockerized version using Elixir 1.9 releases is in the works. Currently the container builds, but it's not integrated with the database yet. If you're curious:
+
+```
+docker build -t liquid_voting:latest
+docker run -e SECRET_KEY_BASE=$(mix phx.gen.secret) -e liquid_voting:latest
+```
+
+Working queries (when running without docker):
 
 ```
 query {
@@ -174,7 +181,6 @@ Notes:
 
 TODO:
 
-* dockerize
 * kuberize
 * CI/CD
 * validations
