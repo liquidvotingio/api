@@ -4,32 +4,49 @@ Proof of concept for a liquid voting service that can be easily plugged into pro
 
 Part fun itch scratcher, part résumé-driven development.
 
+It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
+
+## Modeling
+
+Participants are simply names with emails, Proposals are links to external content (say a blog post, or a pull request), Votes are booleans and references to a voter (a Participant) and a Proposal, and Delegations are references to a delegator (a Participant) and a delegate (another Participant).
+
+A participant can vote for or against a proposal, or delegate to another participant so they can vote for them. Once each vote is cast, delegates' votes will have a different weight based on how many delegations they've received.
+
+A VotingResult is calculated taking the votes and their different weights into account. This is a resource the API exposes as a possible `subscription`, for real-time updates over Phoenix Channels.
+
+The syntax for this, and for all other queries and mutations, can be seen below the setup.
+
+## Setup
+
+### Building from the repo
+
+You'll need Elixir 1.9, Phoenix 1.4.10 and Postgres 10 installed.
+
 Clone the repo and:
 
 ```
 mix deps.get
 mix ecto.setup
 mix phx.server
-open http://localhost:4000/graphiql
 ```
 
-Or, you can run a dockerized version that is in the works using Elixir 1.9 releases.
-
-To run it locally, connecting to your local database (after having it setup with `mix ecto.setup`):
+### Running the dockerized version
 
 ```
-docker build -t liquid_voting:latest .
 docker run -it --rm \
 -e SECRET_KEY_BASE=$(mix phx.gen.secret) \
 -e APP_PORT=4000 \
 -e DATABASE_URL='ecto://postgres:postgres@host.docker.internal/liquid_voting_dev' \
 -e DB_POOL_SIZE=10 \
 -p 4000:4000 \
-liquid_voting:latest
-open http://localhost:4000/graphiql
+oliverbarnes/liquid-voting-service:latest
 ```
 
-Once you're up and running, you can run these sample queries on Graphiql:
+## Using the API
+
+Once you're up and running, you can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
+
+Available queries:
 
 ```
 query {
@@ -182,13 +199,13 @@ subscription {
 }
 ```
 
-To see this in action, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through.
+To see this in action, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through on the first one.
 
-Notes:
+## Notes:
 
 * No auth, validations or tests yet, to keep prototyping as fast as possible
 
-TODO:
+## TODO
 
 * kuberize
 * CI/CD
