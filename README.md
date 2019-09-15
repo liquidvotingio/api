@@ -1,4 +1,4 @@
-# Liquid Voting as a Service (POC)
+# Liquid Voting as a Service (PoC)
 
 Proof of concept for a liquid voting service that can be easily plugged into proposal-making platforms of different kinds.
 
@@ -40,6 +40,16 @@ docker run -it --rm \
 -e DB_POOL_SIZE=10 \
 -p 4000:4000 \
 oliverbarnes/liquid-voting-service:latest
+```
+
+(assuming you already have the database up and running)
+
+You can run migrations by passing an `eval` command to the containerized app, like this:
+
+```
+docker run -it --rm \
+<options>
+oliverbarnes/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 ```
 
 ## Using the API

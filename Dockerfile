@@ -27,5 +27,7 @@ RUN chown -R default: ./
 
 USER default
 
+ENTRYPOINT ["./_build/prod/rel/liquid_voting/bin/liquid_voting"]
+
 # docker run -e SECRET_KEY_BASE=$(mix phx.gen.secret) -e liquid_voting:latest
-CMD ["./_build/prod/rel/liquid_voting/bin/liquid_voting", "start"]
+CMD ["start"]
