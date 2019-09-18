@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: liquid-voting-deployment
+  labels:
+    app: liquid-voting
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: liquid-voting
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 34%
+      maxUnavailable: 34%
+  template:
+    metadata:
+      name: liquid-voting
+      labels:
+        app: liquid-voting
+    spec:
+      containers:
+      - name: liquid-voting
+        image: liquid-voting:latest
+        imagePullPolicy: Never
+        env:
+          - name: APP_HOST
+            value: localhost
+          - name: DB_URL
+            value: ecto://postgres:postgres@db/liquid_voting_prod
+          - name: HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: PORT
+            value: "4000"
+          - name: RELEASE_COOKIE
+            value: liquid-voting-secret-cookie
+          - name: SECRET_KEY_BASE
+            value: super-secret-key-base
+          - name: SERVICE_NAME
+            value: liquid-voting.default.svc.cluster.local
+        resources: {}
+        securityContext:
+          privileged: false
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
