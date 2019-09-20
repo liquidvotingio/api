@@ -52,6 +52,17 @@ docker run -it --rm \
 oliverbarnes/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 ```
 
+### Running it locally in a Kubernetes cluster on Docker for Mac
+
+Install `ingress-nginx`:
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
+```
+
+(More later, k8s setup is currently WIP)
+
 ## Using the API
 
 Once you're up and running, you can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).

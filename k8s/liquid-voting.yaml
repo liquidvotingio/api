@@ -22,18 +22,20 @@ spec:
     spec:
       containers:
       - name: liquid-voting
-        image: liquid-voting:latest
-        imagePullPolicy: Never
+        image: oliverbarnes/liquid-voting-service:latest
+        imagePullPolicy: IfNotPresent
         env:
           - name: APP_HOST
             value: localhost
-          - name: DB_URL
+          - name: DATABASE_URL
             value: ecto://postgres:postgres@db/liquid_voting_prod
+          - name: DB_POOL_SIZE
+            value: "10"
           - name: HOSTNAME
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-          - name: PORT
+          - name: APP_PORT
             value: "4000"
           - name: RELEASE_COOKIE
             value: liquid-voting-secret-cookie
