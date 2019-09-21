@@ -228,7 +228,7 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
-* kuberize
+* kuberize (WIP)
 * CI/CD
 * validations
 * some tests

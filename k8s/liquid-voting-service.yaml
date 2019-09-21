@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: liquid-voting
 spec:
-  clusterIP: None
+  type: LoadBalancer
   selector:
     app: liquid-voting
   ports:
