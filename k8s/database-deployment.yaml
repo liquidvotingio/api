@@ -15,8 +15,13 @@ spec:
       containers:
       - env:
         - name: POSTGRES_DB
-          value: liquid_voting_prod
+          value: liquid_voting_dev
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
         image: postgres:10.4
+        imagePullPolicy: "IfNotPresent"
         name: db
         ports:
         - containerPort: 5432

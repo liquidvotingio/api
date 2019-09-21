@@ -28,7 +28,7 @@ spec:
           - name: APP_HOST
             value: localhost
           - name: DATABASE_URL
-            value: ecto://postgres:postgres@db/liquid_voting_prod
+            value: ecto://postgres:postgres@db/liquid_voting_dev
           - name: DB_POOL_SIZE
             value: "10"
           - name: HOSTNAME
