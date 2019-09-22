@@ -1,13 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: liquid-voting
+  name: liquid-voting-service
+  labels:
+    app: liquid-voting
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: liquid-voting
   ports:
   - name: http
     port: 4000
-  - name: epmd
-    port: 4369
+    targetPort: 4000
+    protocol: TCP
