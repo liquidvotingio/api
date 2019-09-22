@@ -14,7 +14,7 @@ A participant can vote for or against a proposal, or delegate to another partici
 
 A VotingResult is calculated taking the votes and their different weights into account. This is a resource the API exposes as a possible `subscription`, for real-time updates over Phoenix Channels.
 
-The syntax for this, and for all other queries and mutations, can be seen below the setup.
+The syntax for this, and for all other queries and mutations, can be seen following the setup.
 
 ## Local setup
 
@@ -61,12 +61,6 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/mast
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
 ```
 
-Create a `dev` namespace:
-
-```
-kubectl create namespace dev
-```
-
 Then apply the app's manifest files:
 
 ```
@@ -79,7 +73,17 @@ kubectl apply -f k8s/liquid-voting-service.yaml
 kubectl apply -f k8s/liquid-voting-deployment.yaml
 ```
 
-(More later, k8s setup is currently WIP)
+And run the migrations from within the app deployment:
+
+```
+kubectl get pods
+kubectl exec -ti liquid-voting-deployment-pod \
+--container liquid-voting \
+-- /opt/app/_build/prod/rel/liquid_voting/bin/liquid_voting \
+eval "LiquidVoting.Release.migrate"
+```
+
+Simpler setup and build scheme coming soon.
 
 ## Using the API
 
@@ -246,7 +250,6 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
-* kuberize (WIP)
 * CI/CD
 * validations
 * some tests
