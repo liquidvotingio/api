@@ -8,9 +8,10 @@ metadata:
     ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - http:
+  - host: localhost
+    http:
       paths:
         - path: /
           backend:
-            serviceName: liquid-voting
-            servicePort: 80
+            serviceName: liquid-voting-service
+            servicePort: 4000

@@ -2,9 +2,9 @@
 
 Proof of concept for a liquid voting service that can be easily plugged into proposal-making platforms of different kinds.
 
-Part fun itch scratcher, part résumé-driven development.
-
 It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
+
+There's a dockerized version and a rudimentary local Kubernetes deployment for it.
 
 ## Modeling
 
@@ -16,7 +16,7 @@ A VotingResult is calculated taking the votes and their different weights into a
 
 The syntax for this, and for all other queries and mutations, can be seen below the setup.
 
-## Setup
+## Local setup
 
 ### Building from the repo
 
@@ -54,11 +54,29 @@ oliverbarnes/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 
 ### Running it locally in a Kubernetes cluster on Docker for Mac
 
-Install `ingress-nginx`:
+Install the [ingress-nginx controller](https://github.com/kubernetes/ingress-nginx):
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
+```
+
+Create a `dev` namespace:
+
+```
+kubectl create namespace dev
+```
+
+Then apply the app's manifest files:
+
+```
+kubectl apply -f k8s/nginx-ingress-load-balancer.yaml
+kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/database-persistent-volume-claim.yaml
+kubectl apply -f k8s/database-service.yaml
+kubectl apply -f k8s/database-deployment.yaml
+kubectl apply -f k8s/liquid-voting-service.yaml
+kubectl apply -f k8s/liquid-voting-deployment.yaml
 ```
 
 (More later, k8s setup is currently WIP)
