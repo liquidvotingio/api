@@ -61,7 +61,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/mast
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
 ```
 
-Then apply the app's manifest files:
+Then apply the app's manifest files (if you use [Tilt](https://tilt.dev/) you can do `tilt up` instead):
 
 ```
 kubectl apply -f k8s/nginx-ingress-load-balancer.yaml
@@ -83,7 +83,7 @@ kubectl exec -ti liquid-voting-deployment-pod \
 eval "LiquidVoting.Release.migrate"
 ```
 
-Simpler setup and build scheme coming soon.
+
 
 ## Using the API
 
