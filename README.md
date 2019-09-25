@@ -34,12 +34,12 @@ mix phx.server
 
 ```
 docker run -it --rm \
--e SECRET_KEY_BASE=$(mix phx.gen.secret) \
--e APP_PORT=4000 \
--e DATABASE_URL='ecto://postgres:postgres@host.docker.internal/liquid_voting_dev' \
--e DB_POOL_SIZE=10 \
--p 4000:4000 \
-oliverbarnes/liquid-voting-service:latest
+  -e SECRET_KEY_BASE=$(mix phx.gen.secret) \
+  -e APP_PORT=4000 \
+  -e DATABASE_URL='ecto://postgres:postgres@host.docker.internal/liquid_voting_dev' \
+  -e DB_POOL_SIZE=10 \
+  -p 4000:4000 \
+  oliverbarnes/liquid-voting-service:latest
 ```
 
 (assuming you already have the database up and running)
@@ -48,8 +48,8 @@ You can run migrations by passing an `eval` command to the containerized app, li
 
 ```
 docker run -it --rm \
-<options>
-oliverbarnes/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
+  <same options>
+  oliverbarnes/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 ```
 
 ### Running it locally in a Kubernetes cluster on Docker for Mac
@@ -78,12 +78,52 @@ And run the migrations from within the app deployment:
 ```
 kubectl get pods
 kubectl exec -ti liquid-voting-deployment-pod \
---container liquid-voting \
--- /opt/app/_build/prod/rel/liquid_voting/bin/liquid_voting \
-eval "LiquidVoting.Release.migrate"
+  --container liquid-voting \
+  -- /opt/app/_build/prod/rel/liquid_voting/bin/liquid_voting \
+  eval "LiquidVoting.Release.migrate"
 ```
 
+#### If you want to also install monitoring (Prometheus and Grafana)
 
+You'll need [Helm](https://helm.sh/docs/using_helm/#initialize-helm-and-install-tiller) for these steps. You can also check out [this tutorial](https://medium.com/@chris_linguine/how-to-monitor-your-kubernetes-cluster-with-prometheus-and-grafana-fe2fccaedb90) from where these steps were taken.
+
+Install [Prometheus](https://prometheus.io):
+
+```
+helm install stable/prometheus \
+  --namespace monitoring \
+  --name prometheus
+```
+
+Apply [Grafana](https://grafana.com) config and install it (in this order):
+
+```
+kubectl apply -f monitoring/grafana/config.yml
+helm install stable/grafana \
+  -f monitoring/grafana/values.yml \
+  --namespace monitoring \
+  --name grafana
+```
+
+Grafana comes configured with a login, to get the password run:
+
+```
+kubectl get secret \
+    --namespace monitoring \
+    grafana \
+    -o jsonpath="{.data.admin-password}" \
+    | base64 --decode ; echo
+```
+
+(login is `admin`)
+
+Expose and open the Grafana dashboard:
+
+```
+export POD_NAME=$(kubectl get pods --namespace monitoring -l "app=grafana,release=grafana" -o jsonpath="{.items[0].metadata.name}")
+kubectl --namespace monitoring port-forward $POD_NAME 3000
+open http://localhost:3000 
+```
 
 ## Using the API
 
