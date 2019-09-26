@@ -19,6 +19,7 @@ defmodule LiquidVoting.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
+      applications: [:prometheus_ex, :prometheus_phoenix, :prometheus_ecto, :prometheus_plugs],
       mod: {LiquidVoting.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
@@ -45,7 +46,11 @@ defmodule LiquidVoting.MixProject do
       {:absinthe_plug, "~> 1.5.0-alpha.0"},
       {:absinthe_phoenix, "~> 1.5.0-alpha.0"},
       {:dataloader, "~> 1.0.6"},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      {:telemetry, "~> 0.4.0"},
+      {:prometheus_phoenix, "~> 1.3.0"},
+      {:prometheus_ecto, "~> 1.4.1"},
+      {:prometheus_plugs, "~> 1.1.1"},
     ]
   end
 
