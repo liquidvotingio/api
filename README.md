@@ -290,11 +290,11 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
+* monitoring (WIP)
 * CI/CD
 * validations
 * some tests
 * logging
-* monitoring
 * perf tests
 * JS widget
 * next services: authentication, notifications
