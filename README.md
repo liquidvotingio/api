@@ -98,9 +98,9 @@ helm install stable/prometheus \
 Apply [Grafana](https://grafana.com) config and install it (in this order):
 
 ```
-kubectl apply -f monitoring/grafana/config.yml
+kubectl apply -f k8s/monitoring/grafana/config.yaml
 helm install stable/grafana \
-  -f monitoring/grafana/values.yml \
+  -f k8s/monitoring/grafana/values.yaml \
   --namespace monitoring \
   --name grafana
 ```
