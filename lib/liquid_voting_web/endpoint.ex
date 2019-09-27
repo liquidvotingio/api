@@ -41,5 +41,8 @@ defmodule LiquidVotingWeb.Endpoint do
     key: "_liquid_voting_key",
     signing_salt: "NW9CQJMd"
 
+  plug LiquidVoting.Metrics.PrometheusExporter
+  plug LiquidVoting.Metrics.PipelineInstrumenter
+
   plug LiquidVotingWeb.Router
 end
