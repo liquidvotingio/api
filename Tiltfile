@@ -1,3 +1,6 @@
+k8s_yaml(local('curl -s https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml'))
+k8s_yaml(local('curl -s https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml'))
+
 k8s_yaml([
   'k8s/nginx-ingress-load-balancer.yaml',
   'k8s/ingress.yaml',
