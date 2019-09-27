@@ -5,7 +5,7 @@ defmodule LiquidVoting.Metrics do
     LiquidVoting.Metrics.RepoInstrumenter.setup()
     LiquidVoting.Metrics.PrometheusExporter.setup()
 
-    Prometheus.Registry.register_collector(:prometheus_process_collector)
+    # Prometheus.Registry.register_collector(:prometheus_process_collector)
 
     :telemetry.attach(
       "prometheus-ecto",

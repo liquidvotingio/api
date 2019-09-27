@@ -11,6 +11,6 @@ data:
     datasources:
     - name: Prometheus
       type: prometheus
-      access: proxy
+      access: direct
       orgId: 1
       url: http://prometheus-server.monitoring.svc.cluster.local
