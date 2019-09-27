@@ -3,3 +3,14 @@ _build/
 deps/
 test/
 k8s/
+/.env
+/_build/
+/cover/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+liquid_voting-*.tar
+/priv/static/
+.iex.exs
+.DS_Store
