@@ -85,45 +85,33 @@ kubectl exec -ti liquid-voting-deployment-pod \
 
 #### If you want to also install monitoring (Prometheus and Grafana)
 
-You'll need [Helm](https://helm.sh/docs/using_helm/#initialize-helm-and-install-tiller) for these steps. You can also check out [this tutorial](https://medium.com/@chris_linguine/how-to-monitor-your-kubernetes-cluster-with-prometheus-and-grafana-fe2fccaedb90) from where these steps were taken.
+You'll need [Helm](https://helm.sh/docs/using_helm/#initialize-helm-and-install-tiller) for these steps. 
 
-Install [Prometheus](https://prometheus.io):
-
-```
-helm install stable/prometheus \
-  --namespace monitoring \
-  --name prometheus
-```
-
-Apply [Grafana](https://grafana.com) config and install it (in this order):
+Install [prometheus-operator](https://github.com/helm/charts/blob/master/stable/prometheus-operator/README.md), which will get you going with both [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com):
 
 ```
-kubectl apply -f k8s/monitoring/grafana/config.yaml
-helm install stable/grafana \
-  -f k8s/monitoring/grafana/values.yaml \
-  --namespace monitoring \
-  --name grafana
+helm install --name my-release stable/prometheus-operator
 ```
 
-Grafana comes configured with a login, to get the password run:
+Expose the Grafana dashboard:
 
 ```
-kubectl get secret \
-    --namespace monitoring \
-    grafana \
-    -o jsonpath="{.data.admin-password}" \
-    | base64 --decode ; echo
+export POD_NAME=$(kubectl get pods -l "app=grafana" -o jsonpath="{.items[0].metadata.name}")
+kubectl port-forward $POD_NAME 3000
 ```
 
-(login is `admin`)
+Open [http://localhost:3000](http://localhost:3000) and you'll see a login page.
 
-Expose and open the Grafana dashboard:
+The password secret was generated during the install, to get it run:
 
 ```
-export POD_NAME=$(kubectl get pods --namespace monitoring -l "app=grafana,release=grafana" -o jsonpath="{.items[0].metadata.name}")
-kubectl --namespace monitoring port-forward $POD_NAME 3000
-open http://localhost:3000 
+kubectl get secret my-release \
+  -o jsonpath="{.data.admin-password}" \
+  | base64 --decode ; echo
 ```
+
+The login user is `admin`.
+
 
 ## Using the API
 
