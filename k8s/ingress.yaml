@@ -3,7 +3,6 @@ kind: Ingress
 metadata:
   name: liquid-voting-ingress
   annotations:
-    # use the shared ingress-nginx
     kubernetes.io/ingress.class: "nginx"
     ingress.kubernetes.io/rewrite-target: /
 spec:
