@@ -54,11 +54,16 @@ docker run -it --rm \
 
 ### Running it locally in a Kubernetes cluster on Docker for Mac
 
+You'll need [Helm](https://helm.sh/docs/using_helm/#initialize-helm-and-install-tiller) for some of these steps. 
+
 Install the [ingress-nginx controller](https://github.com/kubernetes/ingress-nginx):
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/cloud-generic.yaml
+helm install stable/nginx-ingress \
+  --set controller.metrics.enabled=true \
+  --set controller.metrics.serviceMonitor.enabled=true \
+  --set controller.stats.enabled=true \
+  --set controller.containerPort.http=4000
 ```
 
 Then apply the app's manifest files (if you use [Tilt](https://tilt.dev/) you can do `tilt up` instead):
@@ -85,12 +90,10 @@ kubectl exec -ti liquid-voting-deployment-pod \
 
 #### If you want to also install monitoring (Prometheus and Grafana)
 
-You'll need [Helm](https://helm.sh/docs/using_helm/#initialize-helm-and-install-tiller) for these steps. 
-
 Install [prometheus-operator](https://github.com/helm/charts/blob/master/stable/prometheus-operator/README.md), which will get you going with both [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com):
 
 ```
-helm install --name my-release stable/prometheus-operator
+helm install stable/prometheus-operator
 ```
 
 Expose the Grafana dashboard:
