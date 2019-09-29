@@ -60,11 +60,10 @@ Install the [ingress-nginx controller](https://github.com/kubernetes/ingress-ngi
 
 ```
 helm install stable/nginx-ingress \
-  --set controller.metrics.enabled=true \
-  --set controller.metrics.serviceMonitor.enabled=true \
-  --set controller.stats.enabled=true \
-  --set controller.containerPort.http=4000
+  --set controller.metrics.enabled=true,controller.metrics.serviceMonitor.enabled=true,controller.stats.enabled=true
 ```
+
+NOTE: Right now the ingress will run on port 80, not 4000. Still figuring out the right install config to get 4000 going.
 
 Then apply the app's manifest files (if you use [Tilt](https://tilt.dev/) you can do `tilt up` instead):
 

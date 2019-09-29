@@ -1,5 +1,4 @@
 k8s_yaml([
-  'k8s/nginx-ingress-load-balancer.yaml',
   'k8s/ingress.yaml',
   'k8s/database-persistent-volume-claim.yaml',
   'k8s/database-service.yaml',
