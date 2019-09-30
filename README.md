@@ -68,7 +68,6 @@ NOTE: Right now the ingress will run on port 80, not 4000. Still figuring out th
 Then apply the app's manifest files (if you use [Tilt](https://tilt.dev/) you can do `tilt up` instead):
 
 ```
-kubectl apply -f k8s/nginx-ingress-load-balancer.yaml
 kubectl apply -f k8s/ingress.yaml
 kubectl apply -f k8s/database-persistent-volume-claim.yaml
 kubectl apply -f k8s/database-service.yaml
@@ -95,6 +94,21 @@ Install [prometheus-operator](https://github.com/helm/charts/blob/master/stable/
 helm install stable/prometheus-operator
 ```
 
+The `ingress-nginx` metrics won't be scraped right away. In order to get Prometheus to see them, [you'll need to make the ingress' servicemonitor release label match the one Prometheus expects](https://github.com/coreos/prometheus-operator/issues/2119#issuecomment-439620190). Very hacky and manual, but no way around it as far as I know and after extensive googling:
+
+First take a look at your Prometheus instance's `matchLabel.release` config:
+
+```
+kubectl get prometheus prometheus-instance -o yaml
+```
+
+Then open your ingress servicemonitor and edit its `metadata.labels.release` to match it:
+
+```
+kubectl get servicemonitors
+KUBE_EDITOR=your-favorite-editor kubectl edit servicemonitor ingress-controller
+```
+
 Expose the Grafana dashboard:
 
 ```
@@ -107,7 +121,7 @@ Open [http://localhost:3000](http://localhost:3000) and you'll see a login page.
 The password secret was generated during the install, to get it run:
 
 ```
-kubectl get secret my-release \
+kubectl get secret my-release-grafana \
   -o jsonpath="{.data.admin-password}" \
   | base64 --decode ; echo
 ```
@@ -280,11 +294,12 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
-* monitoring (WIP)
-* CI/CD
-* validations
-* some tests
-* logging
+* add more mutations so user can create participants and proposals without relying on seeding
 * perf tests
+* some programmatic tests
+* some validations
+* deploy to one of the cloud k8s services
+* CI/CD
+* logging
 * JS widget
 * next services: authentication, notifications
