@@ -294,7 +294,7 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
-* programmatic tests
+* more programmatic tests
 * validations
 * perf tests
 * deploy to one of the cloud k8s services
