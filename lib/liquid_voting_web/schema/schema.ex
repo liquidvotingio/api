@@ -54,6 +54,18 @@ defmodule LiquidVotingWeb.Schema.Schema do
   end
 
   mutation do
+    @desc "Create a participant"
+    field :create_participant, :participant do
+      arg :name, non_null(:string)
+      resolve &Resolvers.Voting.create_participant/3
+    end
+
+    @desc "Create a proposal"
+    field :create_proposal, :proposal do
+      arg :url, non_null(:string)
+      resolve &Resolvers.Voting.create_proposal/3
+    end
+
     @desc "Create a vote for a proposal"
     field :create_vote, :vote do
       arg :proposal_id, non_null(:id)
