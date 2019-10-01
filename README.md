@@ -294,10 +294,9 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
-* add more mutations so user can create participants and proposals without relying on seeding
+* programmatic tests
+* validations
 * perf tests
-* some programmatic tests
-* some validations
 * deploy to one of the cloud k8s services
 * CI/CD
 * logging

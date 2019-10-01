@@ -10,12 +10,38 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     {:ok, Voting.get_participant!(id)}
   end
 
+  def create_participant(_, args, _) do
+    case Voting.create_participant(args) do
+      {:error, changeset} ->
+        {:error,
+         message: "Could not create participant",
+         details: ChangesetErrors.error_details(changeset)
+        }
+
+      {:ok, participant} ->
+        {:ok, participant}
+    end
+  end
+
   def proposals(_, _, _) do
     {:ok, Voting.list_proposals()}
   end
 
   def proposal(_, %{id: id}, _) do
     {:ok, Voting.get_proposal!(id)}
+  end
+
+  def create_proposal(_, args, _) do
+    case Voting.create_proposal(args) do
+      {:error, changeset} ->
+        {:error,
+         message: "Could not create proposal",
+         details: ChangesetErrors.error_details(changeset)
+        }
+
+      {:ok, proposal} ->
+        {:ok, proposal}
+    end
   end
 
   def votes(_, _, _) do
