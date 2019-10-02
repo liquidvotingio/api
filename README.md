@@ -135,7 +135,49 @@ The login user is `admin`.
 
 Once you're up and running, you can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
 
-Available queries:
+Start by creating some participants, a proposal, a vote and a delegation using [GraphQL mutations](https://graphql.org/learn/queries/#mutations)
+
+```
+mutation {
+  createParticipant(name: "Zygmunt Bauman") {
+    name
+  }
+}
+
+mutation {
+  createParticipant(name: "Jane Doe") {
+    name
+  }
+}
+
+mutation {
+  createProposal(url: "https://www.medium.com/a-proposal") {
+    name
+  }
+}
+
+mutation {
+  createVote(participantId: 1, proposalId: 1, yes: true) {
+    participant {
+      name
+    }
+    yes
+  }
+}
+
+mutation {
+  createDelegation(proposalId: 1, delegatorId: 2, delegateId: 1) {
+    delegator {
+      name
+    }
+    delegate {
+      name
+    }
+  }
+}
+```
+
+Then run some [queries](https://graphql.org/learn/queries/#fields):
 
 ```
 query {
@@ -249,31 +291,7 @@ query {
 }
 ```
 
-Mutations:
-
-```
-mutation {
-  createVote(proposalId: 1, participantId: 1, yes: true) {
-    participant {
-      name
-    }
-    yes
-  }
-}
-
-mutation {
-  createDelegation(proposalId: 1, delegatorId: 1, delegateId: 2) {
-    delegator {
-      name
-    }
-    delegate {
-      name
-    }
-  }
-}
-```
-
-Subscription to voting results (which will react to voting creation):
+And [subscribe](https://github.com/absinthe-graphql/absinthe/blob/master/guides/subscriptions.md) to voting results (which will react to voting creation):
 
 ```
 subscription {
@@ -292,7 +310,7 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## Notes:
 
-* No auth, validations or tests yet, to keep prototyping as fast as possible
+* No auth nor validations, ~~or tests~~ and just a few tests for now, to keep prototyping fast
 
 ## TODO
 
