@@ -6,7 +6,7 @@ Proof of concept for a liquid voting service that can be easily plugged into pro
 
 It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-There's a dockerized version and a rudimentary local Kubernetes deployment for it.
+There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) and a rudimentary local Kubernetes deployment for it.
 
 ## Modeling
 
