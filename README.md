@@ -319,6 +319,6 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 * perf tests
 * deploy to one of the cloud k8s services
 * continuous deployment
-* logging
+* logging with ELK stack
 * JS widget
 * next services: authentication, notifications
