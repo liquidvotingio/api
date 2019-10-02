@@ -1,4 +1,4 @@
-name: Elixir CI
+name: Continuous Integration
 
 on:
   push:

@@ -1,5 +1,7 @@
 # Liquid Voting as a Service (PoC)
 
+[![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/Continuous+Integration/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions)
+
 Proof of concept for a liquid voting service that can be easily plugged into proposal-making platforms of different kinds.
 
 It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
@@ -298,7 +300,7 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 * validations
 * perf tests
 * deploy to one of the cloud k8s services
-* CI/CD
+* continuous deployment
 * logging
 * JS widget
 * next services: authentication, notifications
