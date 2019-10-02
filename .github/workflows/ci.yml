@@ -18,11 +18,13 @@ jobs:
     
     services:
       postgres:
-        image: postgres
+        image: postgres:10.4
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: liquid_voting_test
         ports:
-          - 5432/tcp
+          - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
@@ -36,8 +38,5 @@ jobs:
     - name: Run Tests
       run: mix test
       env:
-        PG_HOST: postgres
-        PG_USER: postgres
-        PG_DATABASE: postgres
-        PG_PASSWORD: postgres
-        PG_PORT: ${{ job.services.postgres.ports['5432'] }}
+        MIX_ENV: test
+        POSTGRES_HOST: postgres
