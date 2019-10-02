@@ -47,10 +47,10 @@ defmodule LiquidVoting.MixProject do
       {:dataloader, "~> 1.0.6"},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:telemetry, "~> 0.4.0"},
-      {:prometheus_ex, "~> 3.0.5", only: [:dev, :prod]},
-      {:prometheus_ecto, "~> 1.4.3", only: [:dev, :prod]},
-      {:prometheus_phoenix, "~> 1.3.0", only: [:dev, :prod]},
-      {:prometheus_plugs, "~> 1.1.5", only: [:dev, :prod]},
+      {:prometheus_ex, "~> 3.0.5"},
+      {:prometheus_ecto, "~> 1.4.3"},
+      {:prometheus_phoenix, "~> 1.3.0"},
+      {:prometheus_plugs, "~> 1.1.5"},
       {:ex_machina, "~> 2.3", only: :test}
     ]
   end
