@@ -39,4 +39,5 @@ jobs:
       run: mix test
       env:
         MIX_ENV: test
+        # refers to the service name, since we're running on containers
         POSTGRES_HOST: postgres
