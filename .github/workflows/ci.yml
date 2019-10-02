@@ -15,15 +15,19 @@ jobs:
 
     container:
       image: elixir:1.9.1-slim
+    
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432/tcp
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - uses: actions/checkout@v1
-    - uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '10.4'
-        postgresql db: liquid_voting_test
-        postgresql user: postgres
-        postgresql password: postgres
     - name: Install Dependencies
       run: |
         mix local.rebar --force
@@ -31,3 +35,9 @@ jobs:
         mix deps.get
     - name: Run Tests
       run: mix test
+      env:
+        PG_HOST: postgres
+        PG_USER: postgres
+        PG_DATABASE: postgres
+        PG_PASSWORD: postgres
+        PG_PORT: ${{ job.services.postgres.ports['5432'] }}
