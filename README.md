@@ -322,3 +322,4 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 * logging with ELK stack
 * JS widget
 * next services: authentication, notifications
+* blockchain integration: Blockstack, possibly others later
