@@ -1,6 +1,6 @@
 # Liquid Voting as a Service
 
-[![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/Continuous%20Integration/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?workflow=Continuous+Integration)
+[![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/CI/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?workflow=CI)
 
 Proof of concept for a liquid voting service that can be easily plugged into proposal-making platforms of different kinds.
 
