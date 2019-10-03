@@ -222,7 +222,7 @@ defmodule LiquidVoting.Voting do
 
   """
   def list_votes do
-    Repo.all(Vote)
+    Repo.all(Vote) |> Repo.preload([:participant,:proposal])
   end
 
   @doc """
@@ -239,7 +239,9 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_vote!(id), do: Repo.get!(Vote, id)
+  def get_vote!(id) do
+    Repo.get!(Vote, id) |> Repo.preload([:participant,:proposal])
+  end
 
   @doc """
   Creates a vote.
@@ -344,7 +346,7 @@ defmodule LiquidVoting.Voting do
 
   """
   def list_delegations do
-    Repo.all(Delegation)
+    Repo.all(Delegation) |> Repo.preload([:delegator,:delegate])
   end
 
   @doc """
@@ -361,7 +363,9 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(id), do: Repo.get!(Delegation, id)
+  def get_delegation!(id) do
+    Repo.get!(Delegation, id) |> Repo.preload([:delegator,:delegate])
+  end
 
   @doc """
   Creates a delegation.
