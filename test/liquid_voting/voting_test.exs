@@ -141,6 +141,11 @@ defmodule LiquidVoting.VotingTest do
       assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:invalid_attrs])
     end
 
+    test "create_vote/1 with duplicate data returns error changeset", context do
+      Voting.create_vote(context[:valid_attrs])
+      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:valid_attrs])
+    end
+
     test "update_vote/2 with valid data updates the vote", context do
       vote = insert(:vote)
       assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, context[:update_attrs])
