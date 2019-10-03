@@ -10,6 +10,6 @@ defmodule LiquidVoting.Repo.Migrations.CreateResults do
       timestamps()
     end
 
-    create index(:results, [:proposal_id])
+    create unique_index(:results, [:proposal_id])
   end
 end

@@ -2,10 +2,32 @@ defmodule LiquidVoting.VotingResultsTest do
   use LiquidVoting.DataCase
   import LiquidVoting.Factory
 
+  alias LiquidVoting.Repo
   alias LiquidVoting.VotingResults
   alias LiquidVoting.VotingResults.Result
 
-  describe "results" do
+  describe "calculate_result!/1" do
+    setup do
+      vote = insert(:vote, yes: true) |> Repo.preload(:proposal)
+      [proposal: vote.proposal]
+    end
+
+    test "returns a result with the number of yes and no votes", context do
+      assert %Result{no: no, yes: yes} = VotingResults.calculate_result!(context[:proposal])
+      assert no == 0
+      assert yes == 1
+    end
+
+    test "returns the same result struct for a given proposal", context do
+      %Result{id: id} = VotingResults.calculate_result!(context[:proposal])
+      insert(:vote, proposal: context[:proposal])
+      %Result{id: new_id} = VotingResults.calculate_result!(context[:proposal])
+      assert id == new_id
+    end
+
+  end
+
+  describe "create, get and list results" do
     setup do
       proposal = insert(:proposal)
       [

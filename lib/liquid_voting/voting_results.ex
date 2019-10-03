@@ -14,7 +14,7 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> calculate_result!(proposal)
+      iex> calculate_result!(%Proposal{})
       %Result{}
 
   """
@@ -40,7 +40,10 @@ defmodule LiquidVoting.VotingResults do
 
     %Result{}
     |> Result.changeset(attrs)
-    |> Repo.insert!
+    |> Repo.insert!(
+      on_conflict: :replace_all_except_primary_key,
+      conflict_target: [:proposal_id]
+      )
   end
 
   def publish_voting_result_change(proposal_id) do

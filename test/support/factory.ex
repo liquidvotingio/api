@@ -13,25 +13,21 @@ defmodule LiquidVoting.Factory do
   end
 
   def vote_factory do
-    participant = insert(:participant)
-    proposal = insert(:proposal)
     %Vote{
       yes: true,
-      participant_id: participant.id,
-      proposal_id: proposal.id
+      participant: build(:participant),
+      proposal: build(:proposal)
     }
   end
 
   def delegation_factory do
-    delegator = insert(:participant)
-    delegate = insert(:participant)
     %Delegation{
-      delegator_id: delegator.id,
-      delegate_id: delegate.id,
+      delegator: build(:participant),
+      delegate: build(:participant),
     }
   end
 
   def voting_result_factory do
-    %Result{no: 42, yes: 42}
+    %Result{no: 0, yes: 0}
   end
 end
