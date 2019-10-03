@@ -122,13 +122,13 @@ defmodule LiquidVoting.VotingTest do
       ]
     end
 
-    test "list_votes/0 returns all votes", context do
-      vote = insert(:vote, context[:valid_attrs])
+    test "list_votes/0 returns all votes" do
+      vote = insert(:vote)
       assert Voting.list_votes() == [vote]
     end
 
-    test "get_vote!/1 returns the vote with given id", context do
-      vote = insert(:vote, context[:valid_attrs])
+    test "get_vote!/1 returns the vote with given id" do
+      vote = insert(:vote)
       assert Voting.get_vote!(vote.id) == vote
     end
 
@@ -142,25 +142,25 @@ defmodule LiquidVoting.VotingTest do
     end
 
     test "update_vote/2 with valid data updates the vote", context do
-      vote = insert(:vote, context[:valid_attrs])
+      vote = insert(:vote)
       assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, context[:update_attrs])
       assert vote.yes == false
     end
 
     test "update_vote/2 with invalid data returns error changeset", context do
-      vote = insert(:vote, context[:valid_attrs])
+      vote = insert(:vote)
       assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, context[:invalid_attrs])
       assert vote == Voting.get_vote!(vote.id)
     end
 
-    test "delete_vote/1 deletes the vote", context do
-      vote = insert(:vote, context[:valid_attrs])
+    test "delete_vote/1 deletes the vote" do
+      vote = insert(:vote)
       assert {:ok, %Vote{}} = Voting.delete_vote(vote)
       assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id) end
     end
 
-    test "change_vote/1 returns a vote changeset", context do
-      vote = insert(:vote, context[:valid_attrs])
+    test "change_vote/1 returns a vote changeset" do
+      vote = insert(:vote)
       assert %Ecto.Changeset{} = Voting.change_vote(vote)
     end
   end
@@ -205,12 +205,6 @@ defmodule LiquidVoting.VotingTest do
     test "update_delegation/2 with valid data updates the delegation", context do
       delegation = insert(:delegation)
       assert {:ok, %Delegation{} = delegation} = Voting.update_delegation(delegation, context[:update_attrs])
-    end
-
-    test "update_delegation/2 with invalid data returns error changeset", context do
-      delegation = insert(:delegation)
-      assert {:error, %Ecto.Changeset{}} = Voting.update_delegation(delegation, context[:invalid_attrs])
-      assert delegation == Voting.get_delegation!(delegation.id)
     end
 
     test "delete_delegation/1 deletes the delegation" do
