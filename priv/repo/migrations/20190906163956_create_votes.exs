@@ -13,5 +13,6 @@ defmodule LiquidVoting.Repo.Migrations.CreateVotes do
 
     create index(:votes, [:participant_id])
     create index(:votes, [:proposal_id])
+    create unique_index(:votes, [:participant_id, :proposal_id], name: :unique_index_vote_participant_proposal)
   end
 end

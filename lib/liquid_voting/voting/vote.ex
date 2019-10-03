@@ -21,5 +21,6 @@ defmodule LiquidVoting.Voting.Vote do
     |> assoc_constraint(:participant)
     |> assoc_constraint(:proposal)
     |> validate_required(required_fields)
+    |> unique_constraint(:participant_id, name: :unique_index_vote_participant_proposal)
   end
 end
