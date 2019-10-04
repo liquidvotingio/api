@@ -21,23 +21,28 @@ defmodule LiquidVoting.VotingWeight do
 
   """
   def update_vote_weight(vote) do
-    vote = Repo.preload(vote, [
-      {:participant, [
-        {:delegations_received, [
-          {:delegator, :delegations_received}
-        ]}
-      ]}
-    ])
-    delegations = vote.participant.delegations_received
-
-    weight = Enum.reduce delegations, 1, fn (delegation, weight) ->
-      weight + delegator_vote_weight(delegation.delegator)
-    end
+    vote = Repo.preload(vote, participant: :delegations_received)    
+    voter = vote.participant
+    
+    weight = 1 + delegation_weight(voter.delegations_received)
 
     Voting.update_vote(vote, %{weight: weight})
   end
 
-  defp delegator_vote_weight(delegator) do
-    length(delegator.delegations_received) + 1
+  defp delegation_weight(delegations, weight \\ 0)
+
+  defp delegation_weight(delegations = [_|_], weight) do
+    Enum.reduce delegations, weight, fn (delegation, weight) ->
+      delegation = Repo.preload(delegation, [delegator: :delegations_received])
+      delegator = delegation.delegator
+
+      weight = weight + 1
+
+      delegation_weight(delegator.delegations_received, weight)
+    end
+  end
+
+  defp delegation_weight(_ = [], weight) do
+    weight
   end
 end
