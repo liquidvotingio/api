@@ -32,6 +32,14 @@ defmodule LiquidVoting.VotingWeight do
   defp delegation_weight(delegations, weight \\ 0)
 
   defp delegation_weight(delegations = [_|_], weight) do
+    # TODO: Do this in SQL
+    #
+    #   Not sure yet which tree/hierarchy handling pattern would fit here, 
+    #   given there's two tables involved instead a single one nested onto itself as
+    #   in most threaded Comments or Org Chart examples.
+    #
+    #   Recursive Query might be worth a try, check back with Bill Karwin's SQL Antipatterns book
+    #
     Enum.reduce delegations, weight, fn (delegation, weight) ->
       delegation = Repo.preload(delegation, [delegator: :delegations_received])
       delegator = delegation.delegator
