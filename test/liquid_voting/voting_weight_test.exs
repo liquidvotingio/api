@@ -37,10 +37,9 @@ defmodule LiquidVoting.VotingWeightTest do
       assert vote.weight == 3
 
       delegator_to_the_delegator_of_the_delegator = insert(:participant)
-      another_delegator_to_the_delegator_of_the_delegator = insert(:participant)
 
       insert(:delegation, delegate: delegator, delegator: delegator_to_the_delegator)
-      insert(:delegation, delegate: delegator, delegator: another_delegator_to_the_delegator_of_the_delegator)
+      insert(:delegation, delegate: delegator, delegator: delegator_to_the_delegator_of_the_delegator)
 
       {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
