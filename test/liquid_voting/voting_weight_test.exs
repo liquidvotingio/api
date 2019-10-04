@@ -3,7 +3,6 @@ defmodule LiquidVoting.VotingWeightTest do
   import LiquidVoting.Factory
   alias LiquidVoting.Repo
 
-  alias LiquidVoting.Voting
   alias LiquidVoting.VotingWeight
 
   describe "update_vote_weight/1 simplest scenario" do
@@ -22,19 +21,45 @@ defmodule LiquidVoting.VotingWeightTest do
     end
   end
 
-  describe "update_vote_weight/1 when delegators also had delegations given to them" do
-    test "multiplies delegation weight by number of delegations the delegator received" do
+  describe "update_vote_weight/1 when delegators also have delegations given to them" do
+    test "adds number of delegations the delegator received to the weight " do
       vote = insert(:vote)
       voter = vote.participant
 
       delegator = insert(:participant)
-      insert(:delegation, delegate: delegator)
-      insert(:delegation, delegate: delegator)
+      delegator_to_the_delegator = insert(:participant)
+
       insert(:delegation, delegate: voter, delegator: delegator)
+      insert(:delegation, delegate: delegator, delegator: delegator_to_the_delegator)
 
       {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
-      assert vote.weight == 4
+      assert vote.weight == 3
+
+      delegator_to_the_delegator_of_the_delegator = insert(:participant)
+      another_delegator_to_the_delegator_of_the_delegator = insert(:participant)
+
+      insert(:delegation, delegate: delegator, delegator: delegator_to_the_delegator)
+      insert(:delegation, delegate: delegator, delegator: another_delegator_to_the_delegator_of_the_delegator)
+
+      {:ok, vote} = VotingWeight.update_vote_weight(vote)
+
+      assert vote.weight == 5
+
+      insert(:delegation, delegate: delegator)
+      insert(:delegation, delegate: delegator)
+      insert(:delegation, delegate: delegator)
+
+      # But, for some reason delegating again to voter or delegator_to_the_delegator, 
+      # doesn't update the count :P investigate
+      #
+      # insert(:delegation, delegate: voter)
+      # insert(:delegation, delegate: voter)
+      # insert(:delegation, delegate: voter)
+
+      {:ok, vote} = VotingWeight.update_vote_weight(vote)
+
+      assert vote.weight == 8
     end
   end
 end
