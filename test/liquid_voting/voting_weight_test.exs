@@ -45,16 +45,9 @@ defmodule LiquidVoting.VotingWeightTest do
 
       assert vote.weight == 5
 
+      insert(:delegation, delegate: voter)
       insert(:delegation, delegate: delegator)
-      insert(:delegation, delegate: delegator)
-      insert(:delegation, delegate: delegator)
-
-      # But, for some reason delegating again to voter or delegator_to_the_delegator, 
-      # doesn't update the count :P investigate
-      #
-      # insert(:delegation, delegate: voter)
-      # insert(:delegation, delegate: voter)
-      # insert(:delegation, delegate: voter)
+      insert(:delegation, delegate: delegator_to_the_delegator_of_the_delegator)
 
       {:ok, vote} = VotingWeight.update_vote_weight(vote)
 

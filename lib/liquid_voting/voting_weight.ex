@@ -21,6 +21,10 @@ defmodule LiquidVoting.VotingWeight do
 
   """
   def update_vote_weight(vote) do
+    # Reloading the vote as it sometimes would have stale
+    # associations. Quick hack while looking for a better way
+    vote = Repo.get(LiquidVoting.Voting.Vote, vote.id)
+
     vote = Repo.preload(vote, participant: :delegations_received)    
     voter = vote.participant
     
