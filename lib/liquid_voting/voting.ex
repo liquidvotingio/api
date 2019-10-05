@@ -6,7 +6,7 @@ defmodule LiquidVoting.Voting do
   import Ecto.Query, warn: false
   alias LiquidVoting.Repo
 
-  alias LiquidVoting.Voting.Proposal
+  alias LiquidVoting.Voting.{Proposal,Delegation}
 
   @doc """
   Returns the list of proposals.
@@ -244,7 +244,8 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Creates a vote.
+  Creates a vote, and deletes a voter's previous
+  delegation if present
 
   ## Examples
 
@@ -256,11 +257,25 @@ defmodule LiquidVoting.Voting do
 
   """
   def create_vote(attrs \\ %{}) do
-    %Vote{}
-    |> Vote.changeset(attrs)
-    |> Repo.insert()
+    Repo.transaction(
+      fn ->
+        case %Vote{} |> Vote.changeset(attrs) |> Repo.insert() do
+          {:ok, vote} ->
+            if delegation = Repo.get_by(Delegation, delegator_id: attrs[:participant_id]) do
+              case delete_delegation(delegation) do
+                {:ok, delegation} -> vote
+                {:error, changeset} -> Repo.rollback(changeset)
+              end
+            else
+              vote
+            end
+          {:error, changeset} -> Repo.rollback(changeset)
+        end
+      end
+    )
   end
 
+  # Just for seeding
   def create_vote!(attrs \\ %{}) do
     %Vote{}
     |> Vote.changeset(attrs)
