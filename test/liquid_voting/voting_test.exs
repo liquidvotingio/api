@@ -5,6 +5,86 @@ defmodule LiquidVoting.VotingTest do
   alias LiquidVoting.Voting
   alias LiquidVoting.Voting.{Proposal,Participant,Vote,Delegation}
 
+  describe "votes" do
+    setup do
+      participant = insert(:participant)
+      proposal = insert(:proposal)
+      another_proposal = insert(:proposal, url: "another.url")
+
+      [
+        valid_attrs: %{
+          yes: true,
+          participant_id: participant.id,
+          proposal_id: proposal.id
+        },
+        update_attrs: %{
+          yes: false,
+          participant_id: participant.id,
+          proposal_id: another_proposal.id
+        },
+        invalid_attrs: %{yes: nil}
+      ]
+    end
+
+    test "create_vote/1 deletes previous delegation by participant if present" do
+      participant = insert(:participant)
+      proposal = insert(:proposal)
+      delegation = insert(:delegation, delegator: participant)
+      assert {:ok, %Vote{}} = Voting.create_vote(%{
+          yes: false,
+          participant_id: participant.id,
+          proposal_id: proposal.id
+        })
+      assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
+    end
+
+    test "create_vote/1 with invalid data returns error changeset", context do
+      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:invalid_attrs])
+    end
+
+    test "create_vote/1 with duplicate data returns error changeset", context do
+      Voting.create_vote(context[:valid_attrs])
+      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:valid_attrs])
+    end
+
+    test "list_votes/0 returns all votes" do
+      vote = insert(:vote)
+      assert Voting.list_votes() == [vote]
+    end
+
+    test "get_vote!/1 returns the vote with given id" do
+      vote = insert(:vote)
+      assert Voting.get_vote!(vote.id) == vote
+    end
+
+    test "create_vote/1 with valid data creates a vote", context do
+      assert {:ok, %Vote{} = vote} = Voting.create_vote(context[:valid_attrs])
+      assert vote.yes == true
+    end
+    test "update_vote/2 with valid data updates the vote", context do
+      vote = insert(:vote)
+      assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, context[:update_attrs])
+      assert vote.yes == false
+    end
+
+    test "update_vote/2 with invalid data returns error changeset", context do
+      vote = insert(:vote)
+      assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, context[:invalid_attrs])
+      assert vote == Voting.get_vote!(vote.id)
+    end
+
+    test "delete_vote/1 deletes the vote" do
+      vote = insert(:vote)
+      assert {:ok, %Vote{}} = Voting.delete_vote(vote)
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id) end
+    end
+
+    test "change_vote/1 returns a vote changeset" do
+      vote = insert(:vote)
+      assert %Ecto.Changeset{} = Voting.change_vote(vote)
+    end
+  end
+
   describe "proposals" do
     @valid_attrs %{url: "some url"}
     @update_attrs %{url: "some updated url"}
@@ -98,87 +178,6 @@ defmodule LiquidVoting.VotingTest do
     test "change_participant/1 returns a participant changeset" do
       participant = insert(:participant)
       assert %Ecto.Changeset{} = Voting.change_participant(participant)
-    end
-  end
-
-  describe "votes" do
-    setup do
-      participant = insert(:participant)
-      proposal = insert(:proposal)
-      another_proposal = insert(:proposal, url: "another.url")
-
-      [
-        valid_attrs: %{
-          yes: true,
-          participant_id: participant.id,
-          proposal_id: proposal.id
-        },
-        update_attrs: %{
-          yes: false,
-          participant_id: participant.id,
-          proposal_id: another_proposal.id
-        },
-        invalid_attrs: %{yes: nil}
-      ]
-    end
-
-    test "list_votes/0 returns all votes" do
-      vote = insert(:vote)
-      assert Voting.list_votes() == [vote]
-    end
-
-    test "get_vote!/1 returns the vote with given id" do
-      vote = insert(:vote)
-      assert Voting.get_vote!(vote.id) == vote
-    end
-
-    test "create_vote/1 with valid data creates a vote", context do
-      assert {:ok, %Vote{} = vote} = Voting.create_vote(context[:valid_attrs])
-      assert vote.yes == true
-    end
-
-    test "create_vote/1 deletes previous delegation by participant if present" do
-      participant = insert(:participant)
-      proposal = insert(:proposal)
-      delegation = insert(:delegation, delegator: participant)
-      assert {:ok, %Vote{}} = Voting.create_vote(%{
-          yes: false,
-          participant_id: participant.id,
-          proposal_id: proposal.id
-        })
-      assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
-    end
-
-    test "create_vote/1 with invalid data returns error changeset", context do
-      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:invalid_attrs])
-    end
-
-    test "create_vote/1 with duplicate data returns error changeset", context do
-      Voting.create_vote(context[:valid_attrs])
-      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:valid_attrs])
-    end
-
-    test "update_vote/2 with valid data updates the vote", context do
-      vote = insert(:vote)
-      assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, context[:update_attrs])
-      assert vote.yes == false
-    end
-
-    test "update_vote/2 with invalid data returns error changeset", context do
-      vote = insert(:vote)
-      assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, context[:invalid_attrs])
-      assert vote == Voting.get_vote!(vote.id)
-    end
-
-    test "delete_vote/1 deletes the vote" do
-      vote = insert(:vote)
-      assert {:ok, %Vote{}} = Voting.delete_vote(vote)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id) end
-    end
-
-    test "change_vote/1 returns a vote changeset" do
-      vote = insert(:vote)
-      assert %Ecto.Changeset{} = Voting.change_vote(vote)
     end
   end
 
