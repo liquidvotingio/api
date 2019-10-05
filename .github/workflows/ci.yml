@@ -40,9 +40,7 @@ jobs:
         mix local.hex --force
         mix deps.get
     - name: Run Tests
-      run: |
-        mix ecto.create
-        mix test
+      run: mix test
       env:
         MIX_ENV: test
         # refers to the service name, since we're running on containers
