@@ -310,7 +310,8 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## Notes:
 
-* No auth nor validations, ~~or tests~~ and just a few tests for now, to keep prototyping fast
+* No app auth, few validations, and less test coverage than ideal, to keep prototyping fast (for now). Same goes for K8s RBAC
+* Auth will be implemented as a separate micro-service
 
 ## TODO
 
