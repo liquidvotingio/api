@@ -137,6 +137,18 @@ defmodule LiquidVoting.VotingTest do
       assert vote.yes == true
     end
 
+    test "create_vote/1 deletes previous delegation by participant if present" do
+      participant = insert(:participant)
+      proposal = insert(:proposal)
+      delegation = insert(:delegation, delegator: participant)
+      assert {:ok, %Vote{}} = Voting.create_vote(%{
+          yes: false,
+          participant_id: participant.id,
+          proposal_id: proposal.id
+        })
+      assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
+    end
+
     test "create_vote/1 with invalid data returns error changeset", context do
       assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:invalid_attrs])
     end
