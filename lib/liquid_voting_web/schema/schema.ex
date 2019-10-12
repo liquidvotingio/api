@@ -57,6 +57,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     @desc "Create a participant"
     field :create_participant, :participant do
       arg :name, non_null(:string)
+      arg :email, non_null(:string)
       resolve &Resolvers.Voting.create_participant/3
     end
 
@@ -96,6 +97,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   object :participant do
     field :id, non_null(:id)
     field :name, non_null(:string)
+    field :email, non_null(:string)
     field :delegations_received, list_of(:delegation),
       resolve: dataloader(Voting, :delegations_received, args: %{scope: :participant, foreign_key: :delegate_id})
   end

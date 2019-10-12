@@ -6,6 +6,7 @@ defmodule LiquidVoting.Voting.Participant do
 
   schema "participants" do
     field :name, :string
+    field :email, :string
 
     has_many :votes, Vote
     has_many :delegations_received, Delegation, foreign_key: :delegate_id
@@ -16,7 +17,8 @@ defmodule LiquidVoting.Voting.Participant do
   @doc false
   def changeset(participant, attrs) do
     participant
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :email])
+    |> validate_required([:name, :email])
+    |> unique_constraint(:email)
   end
 end
