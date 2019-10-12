@@ -8,6 +8,8 @@ It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid 
 
 There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) and a rudimentary local Kubernetes deployment for it.
 
+Please note this is nowhere near ready for production use, it doesn't even have authentication. It's just getting beyond a proof of concept.
+
 ## Modeling
 
 Participants are simply names with emails, Proposals are links to external content (say a blog post, or a pull request), Votes are booleans and references to a voter (a Participant) and a Proposal, and Delegations are references to a delegator (a Participant) and a delegate (another Participant).
