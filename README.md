@@ -141,20 +141,22 @@ Start by creating some participants, a proposal, a vote and a delegation using [
 
 ```
 mutation {
-  createParticipant(name: "Zygmunt Bauman") {
+  createParticipant(name: "Zygmunt Bauman", email: "zyg@bauman.com") {
     name
+    email
   }
 }
 
 mutation {
-  createParticipant(name: "Jane Doe") {
+  createParticipant(name: "Jane Doe", email: "jane@doe.com") {
     name
+    email
   }
 }
 
 mutation {
   createProposal(url: "https://www.medium.com/a-proposal") {
-    name
+    url
   }
 }
 
@@ -162,6 +164,7 @@ mutation {
   createVote(participantId: 1, proposalId: 1, yes: true) {
     participant {
       name
+      email
     }
     yes
   }
@@ -171,9 +174,11 @@ mutation {
   createDelegation(proposalId: 1, delegatorId: 2, delegateId: 1) {
     delegator {
       name
+      email
     }
     delegate {
       name
+      email
     }
   }
 }
@@ -186,15 +191,18 @@ query {
   participants {
     id
     name
+    email
     delegations_received {
       id
       delegator {
         id
         name
+        email
       }
       delegate {
         id
         name
+        email
       }
     }
   }
@@ -204,15 +212,18 @@ query {
   participant(id: 1) {
     id
     name
+    email
     delegations_received {
       id
       delegator {
         id
         name
+        email
       }
       delegate {
         id
         name
+        email
       }
     }
   }
@@ -240,6 +251,7 @@ query {
     participant {
       id
       name
+      email
     }
     proposal {
       id
@@ -256,6 +268,7 @@ query {
     participant {
       id
       name
+      email
     }
     proposal {
       id
@@ -270,10 +283,12 @@ query {
     delegator {
       id
       name
+      email
     }
     delegate {
       id
       name
+      email
     }
   }
 }
@@ -284,10 +299,12 @@ query {
     delegator {
       id
       name
+      email
     }
     delegate {
       id
       name
+      email
     }
   }
 }
