@@ -29,6 +29,7 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: data
+          subPath: liquid-voting
       hostname: db
       restartPolicy: Always
       volumes:
