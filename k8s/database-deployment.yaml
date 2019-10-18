@@ -15,11 +15,20 @@ spec:
       containers:
       - env:
         - name: POSTGRES_DB
-          value: liquid_voting_dev
+          valueFrom:
+            secretKeyRef:
+              name: liquid-voting-postgres
+              key: postgres-dbname
         - name: POSTGRES_USER
-          value: postgres
+          valueFrom:
+            secretKeyRef:
+              name: liquid-voting-postgres
+              key: postgres-username
         - name: POSTGRES_PASSWORD
-          value: postgres
+          valueFrom:
+            secretKeyRef:
+              name: liquid-voting-postgres
+              key: postgres-password
         image: postgres:10.4
         imagePullPolicy: "IfNotPresent"
         name: db

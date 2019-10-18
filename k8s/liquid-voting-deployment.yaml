@@ -5,7 +5,7 @@ metadata:
   labels:
     app: liquid-voting
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: liquid-voting
@@ -27,10 +27,28 @@ spec:
         env:
           - name: APP_HOST
             value: localhost
-          - name: DATABASE_URL
-            value: ecto://postgres:postgres@db/liquid_voting_dev
+          - name: DB_HOST
+            value: db.default.svc.cluster.local
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: liquid-voting-postgres
+                key: postgres-dbname
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: liquid-voting-postgres
+                key: postgres-username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: liquid-voting-postgres
+                key: postgres-password
           - name: DB_POOL_SIZE
-            value: "10"
+            valueFrom:
+              secretKeyRef:
+                name: liquid-voting-postgres
+                key: postgres-pool-size
           - name: HOSTNAME
             valueFrom:
               fieldRef:
