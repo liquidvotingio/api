@@ -39,9 +39,10 @@ mix phx.server
 ```
 docker run -it --rm \
   -e SECRET_KEY_BASE=$(mix phx.gen.secret) \
-  -e APP_PORT=4000 \
-  -e DATABASE_URL='ecto://postgres:postgres@host.docker.internal/liquid_voting_dev' \
-  -e DB_POOL_SIZE=10 \
+  -e DB_USERNAME=postgres \
+  -e DB_PASSWORD=postgres \
+  -e DB_NAME=liquid_voting_dev \
+  -e DB_HOST=host.docker.internal \
   -p 4000:4000 \
   oliverbarnes/liquid-voting-service:latest
 ```
