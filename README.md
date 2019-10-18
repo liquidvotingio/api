@@ -6,7 +6,7 @@ Early stages of a liquid voting service that aims to be easily plugged into prop
 
 It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) and a rudimentary local Kubernetes deployment for it.
+There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) and manifests to get a rudimentary Kubernetes deployment going for it (a playground). I've been playing with the latter locally and on GKE, and you'll see instructions on how to get it up and running below.
 
 Please note this is nowhere near ready for production use, it doesn't even have authentication. It's just getting beyond a proof of concept.
 
@@ -69,6 +69,17 @@ helm install stable/nginx-ingress \
 ```
 
 NOTE: Right now the ingress will run on port 80, not 4000. Still figuring out the right install config to get 4000 going.
+
+Create secrets for the postgres database:
+
+```
+kubectl create secret generic liquid-voting-postgres \
+--from-literal=postgres-username=postgres \
+--from-literal=postgres-password=postgres \
+--from-literal=postgres-dbname=liquid_voting_dev \
+--from-literal=postgres-host=localhost \
+--from-literal=postgres-pool-size=10
+```
 
 Then apply the app's manifest files (if you use [Tilt](https://tilt.dev/) you can do `tilt up` instead):
 
