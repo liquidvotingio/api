@@ -9,8 +9,7 @@ metadata:
     prometheus.io/port: "10254"
 spec:
   rules:
-  - host: localhost
-    http:
+  - http:
       paths:
         - path: /
           backend:
