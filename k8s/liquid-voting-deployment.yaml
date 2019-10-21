@@ -5,7 +5,7 @@ metadata:
   labels:
     app: liquid-voting
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: liquid-voting
