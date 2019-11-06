@@ -1,19 +1,26 @@
+# Builder image
 FROM bitwalker/alpine-elixir-phoenix:latest AS phx-builder
 
-# Set exposed ports
 ENV MIX_ENV=prod
 
+WORKDIR /opt/app
+
 # Cache elixir deps
-ADD mix.exs mix.lock ./
+COPY mix.exs mix.lock ./
+COPY config config
 RUN mix deps.get
 RUN mix deps.compile
 
-# Copy everything over from repo that's not ignored in .dockerignore
-COPY . .
+# Compile project
+COPY priv priv
+COPY lib lib
+RUN mix compile
 
 # Build release
+COPY rel rel
 RUN mix release
 
+# Release image
 FROM bitwalker/alpine-elixir:latest
 
 EXPOSE 4000
