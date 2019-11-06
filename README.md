@@ -266,8 +266,7 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 * more programmatic tests
 * validations
 * perf tests
-* deploy to one of the cloud k8s services (WIP: #1)
-* continuous delivery (#4)
+* continuous delivery ([#4](https://github.com/oliverbarnes/liquid-voting-service/issues/4))
 * logging with ELK stack
 * JS widget
 * next services: authentication, notifications
