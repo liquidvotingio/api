@@ -5,11 +5,11 @@ defmodule LiquidVoting.Repo.Migrations.CreateResults do
     create table(:results) do
       add :yes, :integer, default: 0
       add :no, :integer, default: 0
-      add :proposal_id, references(:proposals, on_delete: :nothing)
+      add :proposal_url, :string, default: false, null: false
 
       timestamps()
     end
 
-    create unique_index(:results, [:proposal_id])
+    create unique_index(:results, [:proposal_url])
   end
 end

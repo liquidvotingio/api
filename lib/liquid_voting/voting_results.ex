@@ -15,21 +15,21 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> calculate_result!(%Proposal{})
+      iex> calculate_result!("https://www.medium/user/eloquent_proposal")
       %Result{}
 
   """
-  def calculate_result!(proposal) do
-    proposal = Repo.preload(proposal, :votes)
+  def calculate_result!(proposal_url) do
+    votes = Voting.list_votes(proposal_url)
 
     attrs = %{
       yes: 0,
       no: 0,
-      proposal_id: proposal.id
+      proposal_url: proposal_url
     }
 
     attrs =
-      Enum.reduce proposal.votes, attrs, fn (vote, attrs) ->
+      Enum.reduce votes, attrs, fn (vote, attrs) ->
         {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
         if vote.yes do
@@ -43,20 +43,17 @@ defmodule LiquidVoting.VotingResults do
     |> Result.changeset(attrs)
     |> Repo.insert!(
       on_conflict: :replace_all_except_primary_key,
-      conflict_target: [:proposal_id]
+      conflict_target: [:proposal_url]
       )
   end
 
-  def publish_voting_result_change(proposal_id) do
-    result =
-      proposal_id
-      |> Voting.get_proposal!
-      |> calculate_result!
+  def publish_voting_result_change(proposal_url) do
+    result = calculate_result!(proposal_url)
 
     Absinthe.Subscription.publish(
       LiquidVotingWeb.Endpoint,
       result,
-      voting_result_change: proposal_id
+      voting_result_change: proposal_url
     )
   end
 

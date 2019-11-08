@@ -3,24 +3,22 @@ defmodule LiquidVoting.VotingTest do
   import LiquidVoting.Factory
 
   alias LiquidVoting.Voting
-  alias LiquidVoting.Voting.{Proposal,Participant,Vote,Delegation}
+  alias LiquidVoting.Voting.{Participant,Vote,Delegation}
 
   describe "votes" do
     setup do
       participant = insert(:participant)
-      proposal = insert(:proposal)
-      another_proposal = insert(:proposal, url: "another.url")
 
       [
         valid_attrs: %{
           yes: true,
           participant_id: participant.id,
-          proposal_id: proposal.id
+          proposal_url: "http://proposals.com/1"
         },
         update_attrs: %{
           yes: false,
           participant_id: participant.id,
-          proposal_id: another_proposal.id
+          proposal_url: "http://proposals.com/2"
         },
         invalid_attrs: %{yes: nil}
       ]
@@ -28,12 +26,11 @@ defmodule LiquidVoting.VotingTest do
 
     test "create_vote/1 deletes previous delegation by participant if present" do
       participant = insert(:participant)
-      proposal = insert(:proposal)
       delegation = insert(:delegation, delegator: participant)
       assert {:ok, %Vote{}} = Voting.create_vote(%{
           yes: false,
           participant_id: participant.id,
-          proposal_id: proposal.id
+          proposal_url: "http://proposals.com/any"
         })
       assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
     end
@@ -85,54 +82,6 @@ defmodule LiquidVoting.VotingTest do
     end
   end
 
-  describe "proposals" do
-    @valid_attrs %{url: "some url"}
-    @update_attrs %{url: "some updated url"}
-    @invalid_attrs %{url: nil}
-
-    test "list_proposals/0 returns all proposals" do
-      proposal = insert(:proposal)
-      assert Voting.list_proposals() == [proposal]
-    end
-
-    test "get_proposal!/1 returns the proposal with given id" do
-      proposal = insert(:proposal)
-      assert Voting.get_proposal!(proposal.id) == proposal
-    end
-
-    test "create_proposal/1 with valid data creates a proposal" do
-      assert {:ok, %Proposal{} = proposal} = Voting.create_proposal(@valid_attrs)
-      assert proposal.url == "some url"
-    end
-
-    test "create_proposal/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Voting.create_proposal(@invalid_attrs)
-    end
-
-    test "update_proposal/2 with valid data updates the proposal" do
-      proposal = insert(:proposal)
-      assert {:ok, %Proposal{} = proposal} = Voting.update_proposal(proposal, @update_attrs)
-      assert proposal.url == "some updated url"
-    end
-
-    test "update_proposal/2 with invalid data returns error changeset" do
-      proposal = insert(:proposal)
-      assert {:error, %Ecto.Changeset{}} = Voting.update_proposal(proposal, @invalid_attrs)
-      assert proposal == Voting.get_proposal!(proposal.id)
-    end
-
-    test "delete_proposal/1 deletes the proposal" do
-      proposal = insert(:proposal)
-      assert {:ok, %Proposal{}} = Voting.delete_proposal(proposal)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_proposal!(proposal.id) end
-    end
-
-    test "change_proposal/1 returns a proposal changeset" do
-      proposal = insert(:proposal)
-      assert %Ecto.Changeset{} = Voting.change_proposal(proposal)
-    end
-  end
-
   describe "participants" do
     @valid_attrs %{name: "some name", email: "some.email.com"}
     @update_attrs %{name: "some updated name", email: "another.email.com"}
@@ -157,7 +106,7 @@ defmodule LiquidVoting.VotingTest do
       assert {:error, %Ecto.Changeset{}} = Voting.create_participant(@invalid_attrs)
     end
 
-    test "create_participant/1 with duplicate data returns error changeset", context do
+    test "create_participant/1 with duplicate data returns error changeset" do
       Voting.create_participant(@valid_attrs)
       assert {:error, %Ecto.Changeset{}} = Voting.create_participant(@valid_attrs)
     end

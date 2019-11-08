@@ -2,26 +2,25 @@ defmodule LiquidVoting.VotingResultsTest do
   use LiquidVoting.DataCase
   import LiquidVoting.Factory
 
-  alias LiquidVoting.Repo
   alias LiquidVoting.VotingResults
   alias LiquidVoting.VotingResults.Result
 
   describe "calculate_result!/1" do
     setup do
-      vote = insert(:vote, yes: true) |> Repo.preload(:proposal)
-      [proposal: vote.proposal]
+      vote = insert(:vote, yes: true)
+      [proposal_url: vote.proposal_url]
     end
 
     test "returns a result with the number of yes and no votes", context do
-      assert %Result{no: no, yes: yes} = VotingResults.calculate_result!(context[:proposal])
+      assert %Result{no: no, yes: yes} = VotingResults.calculate_result!(context[:proposal_url])
       assert no == 0
       assert yes == 1
     end
 
-    test "returns the same result struct for a given proposal", context do
-      %Result{id: id} = VotingResults.calculate_result!(context[:proposal])
-      insert(:vote, proposal: context[:proposal])
-      %Result{id: new_id} = VotingResults.calculate_result!(context[:proposal])
+    test "returns the same result struct for a given proposal_url", context do
+      %Result{id: id} = VotingResults.calculate_result!(context[:proposal_url])
+      insert(:vote, proposal_url: context[:proposal_url])
+      %Result{id: new_id} = VotingResults.calculate_result!(context[:proposal_url])
       assert id == new_id
     end
 
@@ -29,11 +28,10 @@ defmodule LiquidVoting.VotingResultsTest do
 
   describe "create, get and list results" do
     setup do
-      proposal = insert(:proposal)
       [
-        valid_attrs: %{no: 42, yes: 42, proposal_id: proposal.id},
-        update_attrs: %{no: 43, yes: 43, proposal_id: proposal.id},
-        invalid_attrs: %{no: 42, yes: 42, proposal_id: nil}
+        valid_attrs: %{no: 42, yes: 42, proposal_url: "https://proposals.com/1"},
+        update_attrs: %{no: 43, yes: 43, proposal_url: "https://proposals.com/1"},
+        invalid_attrs: %{no: 42, yes: 42, proposal_url: nil}
       ]
     end
 
