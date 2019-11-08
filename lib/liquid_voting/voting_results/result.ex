@@ -5,8 +5,7 @@ defmodule LiquidVoting.VotingResults.Result do
   schema "results" do
     field :no, :integer, default: 0
     field :yes, :integer, default: 0
-
-    belongs_to :proposal, LiquidVoting.Voting.Proposal
+    field :proposal_url, :string
 
     timestamps()
   end
@@ -14,8 +13,7 @@ defmodule LiquidVoting.VotingResults.Result do
   @doc false
   def changeset(result, attrs) do
     result
-    |> cast(attrs, [:yes, :no, :proposal_id])
-    |> assoc_constraint(:proposal)
-    |> validate_required([:proposal_id])
+    |> cast(attrs, [:yes, :no, :proposal_url])
+    |> validate_required([:proposal_url])
   end
 end

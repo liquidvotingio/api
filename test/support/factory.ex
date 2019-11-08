@@ -1,12 +1,8 @@
 defmodule LiquidVoting.Factory do
   use ExMachina.Ecto, repo: LiquidVoting.Repo
 
-  alias LiquidVoting.Voting.{Proposal,Participant,Vote,Delegation}
+  alias LiquidVoting.Voting.{Participant,Vote,Delegation}
   alias LiquidVoting.VotingResults.Result
-
-  def proposal_factory do
-    %Proposal{url: "some url"}
-  end
 
   def participant_factory do
     %Participant{name: sequence(:name, &"Jane Doe #{&1}")}
@@ -15,8 +11,8 @@ defmodule LiquidVoting.Factory do
   def vote_factory do
     %Vote{
       yes: true,
-      participant: build(:participant),
-      proposal: build(:proposal)
+      proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
+      participant: build(:participant)
     }
   end
 
@@ -28,6 +24,6 @@ defmodule LiquidVoting.Factory do
   end
 
   def voting_result_factory do
-    %Result{no: 0, yes: 0}
+    %Result{no: 0, yes: 0, proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}")}
   end
 end

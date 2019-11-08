@@ -23,25 +23,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def proposals(_, _, _) do
-    {:ok, Voting.list_proposals()}
-  end
-
-  def proposal(_, %{id: id}, _) do
-    {:ok, Voting.get_proposal!(id)}
-  end
-
-  def create_proposal(_, args, _) do
-    case Voting.create_proposal(args) do
-      {:error, changeset} ->
-        {:error,
-         message: "Could not create proposal",
-         details: ChangesetErrors.error_details(changeset)
-        }
-
-      {:ok, proposal} ->
-        {:ok, proposal}
-    end
+  def votes(_, %{proposal_url: proposal_url}, _) do
+    {:ok, Voting.list_votes(proposal_url)}
   end
 
   def votes(_, _, _) do
@@ -61,7 +44,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         }
 
       {:ok, vote} ->
-        VotingResults.publish_voting_result_change(vote.proposal_id)
+        VotingResults.publish_voting_result_change(vote.proposal_url)
         {:ok, vote}
     end
   end

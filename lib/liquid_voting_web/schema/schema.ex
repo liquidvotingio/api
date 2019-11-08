@@ -19,17 +19,6 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve &Resolvers.Voting.participant/3
     end
 
-    @desc "Get a list of proposals"
-    field :proposals, list_of(:proposal) do
-      resolve &Resolvers.Voting.proposals/3
-    end
-
-    @desc "Get a proposal by its id"
-    field :proposal, :proposal do
-      arg :id, non_null(:id)
-      resolve &Resolvers.Voting.proposal/3
-    end
-
     @desc "Get a list of votes"
     field :votes, list_of(:vote) do
       resolve &Resolvers.Voting.votes/3
@@ -61,15 +50,9 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve &Resolvers.Voting.create_participant/3
     end
 
-    @desc "Create a proposal"
-    field :create_proposal, :proposal do
-      arg :url, non_null(:string)
-      resolve &Resolvers.Voting.create_proposal/3
-    end
-
     @desc "Create a vote for a proposal"
     field :create_vote, :vote do
-      arg :proposal_id, non_null(:id)
+      arg :proposal_url, non_null(:string)
       arg :participant_id, non_null(:id)
       arg :yes, non_null(:boolean)
       resolve &Resolvers.Voting.create_vote/3
@@ -77,7 +60,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Create a delegation for a proposal"
     field :create_delegation, :delegation do
-      arg :proposal_id, non_null(:id)
+      arg :proposal_url, non_null(:string)
       arg :delegator_id, non_null(:id)
       arg :delegate_id, non_null(:id)
       resolve &Resolvers.Voting.create_delegation/3
@@ -87,9 +70,9 @@ defmodule LiquidVotingWeb.Schema.Schema do
   subscription do
     @desc "Subscribe to voting results changes for a proposal"
     field :voting_result_change, :result do
-      arg :proposal_id, non_null(:id)
+      arg :proposal_url, non_null(:string)
       config fn args, _res ->
-        {:ok, topic: args.proposal_id}
+        {:ok, topic: args.proposal_url}
       end
     end
   end
@@ -102,16 +85,11 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve: dataloader(Voting, :delegations_received, args: %{scope: :participant, foreign_key: :delegate_id})
   end
 
-  object :proposal do
-    field :id, non_null(:id)
-    field :url, non_null(:string)
-  end
-
   object :vote do
     field :id, non_null(:id)
     field :yes, non_null(:boolean)
     field :weight, non_null(:integer)
-    field :proposal, non_null(:proposal), resolve: dataloader(Voting)
+    field :proposal_url, non_null(:string)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
   end
 
@@ -125,7 +103,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :id, non_null(:id)
     field :yes, non_null(:integer)
     field :no, non_null(:integer)
-    field :proposal, non_null(:proposal), resolve: dataloader(Voting)
+    field :proposal_url, non_null(:string)
   end
 
   def context(ctx) do

@@ -10,15 +10,17 @@ There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voti
 
 Please note this is nowhere near ready for production use, it doesn't even have authentication. It's just getting beyond a proof of concept.
 
-## Modeling
+## Concepts and modeling
 
-Participants are simply names with emails, Proposals are links to external content (say a blog post, or a pull request), Votes are booleans and references to a voter (a Participant) and a Proposal, and Delegations are references to a delegator (a Participant) and a delegate (another Participant).
+Participants are users with a name and email, and they can vote on external content (say a blog post, or a pull request), identified as proposal urls, or delegate their votes to another Participant who can then vote for them, or delegate both votes to a third Participant, and so on.
 
-A participant can vote for or against a proposal, or delegate to another participant so they can vote for them. Once each vote is cast, delegates' votes will have a different weight based on how many delegations they've received.
+Votes are yes/no booleans and reference a voter (a Participant) and a proposal_url, and Delegations are references to a delegator (a Participant) and a delegate (another Participant).
+
+Once each vote is created, delegates' votes will have a different VotingWeight based on how many delegations they've received.
 
 A VotingResult is calculated taking the votes and their different weights into account. This is a resource the API exposes as a possible `subscription`, for real-time updates over Phoenix Channels.
 
-The syntax for this, and for all other queries and mutations, can be seen following the setup.
+The syntax for subscribing, and for all other queries and mutations, can be seen following the setup instructions below.
 
 ## Local setup
 
@@ -66,7 +68,7 @@ Moved these instructions to a [blog post](https://medium.com/@oliver_azevedo_bar
 
 Once you're up and running, you can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
 
-Start by creating some participants, a proposal, a vote and a delegation using [GraphQL mutations](https://graphql.org/learn/queries/#mutations)
+Start by creating some participants, a vote and a delegation using [GraphQL mutations](https://graphql.org/learn/queries/#mutations)
 
 ```
 mutation {
@@ -84,13 +86,7 @@ mutation {
 }
 
 mutation {
-  createProposal(url: "https://www.medium.com/a-proposal") {
-    url
-  }
-}
-
-mutation {
-  createVote(participantId: 1, proposalId: 1, yes: true) {
+  createVote(participantId: 1, proposalUrl:"https://github.com/user/repo/pulls/15", yes: true) {
     participant {
       name
       email
@@ -100,7 +96,7 @@ mutation {
 }
 
 mutation {
-  createDelegation(proposalId: 1, delegatorId: 2, delegateId: 1) {
+  createDelegation(proposalUrl:"https://github.com/user/repo/pulls/15", delegatorId: 2, delegateId: 1) {
     delegator {
       name
       email
@@ -159,32 +155,15 @@ query {
 }
 
 query {
-  proposals {
-    id
-    url
-  }
-}
-
-query {
-  proposal(id: 1) {
-    id
-    url
-  }
-}
-
-query {
   votes {
     id
     yes
     weight
+    proposal_url
     participant {
       id
       name
       email
-    }
-    proposal {
-      id
-      url
     }
   }
 }
@@ -194,14 +173,11 @@ query {
     id
     yes
     weight
+    proposal_url
     participant {
       id
       name
       email
-    }
-    proposal {
-      id
-      url
     }
   }
 }
@@ -243,13 +219,11 @@ And [subscribe](https://github.com/absinthe-graphql/absinthe/blob/master/guides/
 
 ```
 subscription {
-  votingResultChange(proposalId:1) {
+  votingResultChange(proposalUrl:"https://github.com/user/repo/pulls/15") {
     id
     yes
     no
-    proposal {
-      url
-    }
+    proposal_url
   }
 }
 ```
