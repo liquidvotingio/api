@@ -17,17 +17,17 @@ spec:
         - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
-              name: liquid-voting-postgres
+              name: liquid-voting-postgres-config
               key: postgres-dbname
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: liquid-voting-postgres
+              name: liquid-voting-postgres-config
               key: postgres-username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: liquid-voting-postgres
+              name: liquid-voting-postgres-config
               key: postgres-password
         image: postgres:10.4
         imagePullPolicy: "IfNotPresent"

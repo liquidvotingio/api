@@ -32,22 +32,22 @@ spec:
           - name: DB_NAME
             valueFrom:
               secretKeyRef:
-                name: liquid-voting-postgres
+                name: liquid-voting-postgres-config
                 key: postgres-dbname
           - name: DB_USERNAME
             valueFrom:
               secretKeyRef:
-                name: liquid-voting-postgres
+                name: liquid-voting-postgres-config
                 key: postgres-username
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: liquid-voting-postgres
+                name: liquid-voting-postgres-config
                 key: postgres-password
           - name: DB_POOL_SIZE
             valueFrom:
               secretKeyRef:
-                name: liquid-voting-postgres
+                name: liquid-voting-postgres-config
                 key: postgres-pool-size
           - name: HOSTNAME
             valueFrom:
