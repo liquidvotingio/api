@@ -2,13 +2,11 @@
 
 [![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/CI/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?workflow=CI)
 
-Early stages of a liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this Medium post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
+Proof of concept for a liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this Medium post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
 
 It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
 There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) and manifests to get a rudimentary Kubernetes deployment going for it (a playground). I've been playing with the latter locally and on GKE, and you'll see instructions on how to get it up and running below.
-
-Please note this is nowhere near ready for production use, it doesn't even have authentication. It's just getting beyond a proof of concept.
 
 ## Concepts and modeling
 
@@ -68,27 +66,12 @@ Moved these instructions to a [blog post](https://medium.com/@oliver_azevedo_bar
 
 Once you're up and running, you can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
 
-Start by creating some participants, a vote and a delegation using [GraphQL mutations](https://graphql.org/learn/queries/#mutations)
+Create votes and delegations using [GraphQL mutations](https://graphql.org/learn/queries/#mutations)
 
 ```
 mutation {
-  createParticipant(name: "Zygmunt Bauman", email: "zyg@bauman.com") {
-    name
-    email
-  }
-}
-
-mutation {
-  createParticipant(name: "Jane Doe", email: "jane@doe.com") {
-    name
-    email
-  }
-}
-
-mutation {
-  createVote(participantId: 1, proposalUrl:"https://github.com/user/repo/pulls/15", yes: true) {
+  createVote(participantEmail: "jane@somedomain.com", proposalUrl:"https://github.com/user/repo/pulls/15", yes: true) {
     participant {
-      name
       email
     }
     yes
@@ -96,17 +79,25 @@ mutation {
 }
 
 mutation {
-  createDelegation(proposalUrl:"https://github.com/user/repo/pulls/15", delegatorId: 2, delegateId: 1) {
+  createDelegation(proposalUrl: "https://github.com/user/repo/pulls/15", delegatorEmail: "nelson@somedomain.com", delegateEmail: "liz@somedomain.com") {
     delegator {
-      name
       email
     }
     delegate {
-      name
       email
     }
   }
 }
+
+mutation {
+  createVote(participantEmail: "liz@somedomain.com", proposalUrl:"https://github.com/user/repo/pulls/15", yes: false) {
+    participant {
+      email
+    }
+    yes
+  }
+}
+
 ```
 
 Then run some [queries](https://graphql.org/learn/queries/#fields):
@@ -114,19 +105,12 @@ Then run some [queries](https://graphql.org/learn/queries/#fields):
 ```
 query {
   participants {
-    id
-    name
     email
     delegations_received {
-      id
       delegator {
-        id
-        name
         email
       }
       delegate {
-        id
-        name
         email
       }
     }
@@ -135,19 +119,12 @@ query {
 
 query {
   participant(id: 1) {
-    id
-    name
     email
     delegations_received {
-      id
       delegator {
-        id
-        name
         email
       }
       delegate {
-        id
-        name
         email
       }
     }
@@ -156,13 +133,10 @@ query {
 
 query {
   votes {
-    id
     yes
     weight
     proposal_url
     participant {
-      id
-      name
       email
     }
   }
@@ -170,13 +144,10 @@ query {
 
 query {
   vote(id: 1) {
-    id
     yes
     weight
     proposal_url
     participant {
-      id
-      name
       email
     }
   }
@@ -184,15 +155,10 @@ query {
 
 query {
   delegations {
-    id
     delegator {
-      id
-      name
       email
     }
     delegate {
-      id
-      name
       email
     }
   }
@@ -200,15 +166,10 @@ query {
 
 query {
   delegation(id: 1) {
-    id
     delegator {
-      id
-      name
       email
     }
     delegate {
-      id
-      name
       email
     }
   }
@@ -220,7 +181,6 @@ And [subscribe](https://github.com/absinthe-graphql/absinthe/blob/master/guides/
 ```
 subscription {
   votingResultChange(proposalUrl:"https://github.com/user/repo/pulls/15") {
-    id
     yes
     no
     proposal_url
@@ -230,6 +190,8 @@ subscription {
 
 To see this in action, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through on the first one.
 
+With the examples above, the `yes` count should be `1`, and `no` should be `2` since `liz@somedomain.com` had a delegation from `nelson@somedomain.com`.
+
 ## Notes:
 
 * No app auth, few validations, and less test coverage than ideal, to keep prototyping fast (for now). Same goes for K8s RBAC
@@ -237,11 +199,11 @@ To see this in action, open a second graphiql window and run `createVote` mutati
 
 ## TODO
 
+* JS widget (in progress: oliverbarnes/liquid-voting-browser-ext/issues/3)
 * more programmatic tests
 * validations
 * perf tests
-* continuous delivery ([#4](https://github.com/oliverbarnes/liquid-voting-service/issues/4))
+* continuous delivery (oliverbarnes/liquid-voting-service/issues/4)
 * logging with ELK stack
-* JS widget
-* next services: authentication, notifications
+* next services: notifications (oliverbarnes/liquid-voting-service/issues/13), authentication
 * blockchain integration: Blockstack, possibly others later
