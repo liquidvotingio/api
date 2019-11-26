@@ -194,6 +194,15 @@ defmodule LiquidVoting.Voting do
     |> Repo.insert!()
   end
 
+  def upsert_participant(attrs \\ %{}) do
+    %Participant{}
+    |> Participant.changeset(attrs)
+    |> Repo.insert(
+      on_conflict: :replace_all_except_primary_key,
+      conflict_target: [:email]
+      )
+  end
+
   @doc """
   Updates a participant.
 

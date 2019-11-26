@@ -5,7 +5,10 @@ defmodule LiquidVoting.Factory do
   alias LiquidVoting.VotingResults.Result
 
   def participant_factory do
-    %Participant{name: sequence(:name, &"Jane Doe #{&1}")}
+    %Participant{
+      name: sequence(:name, &"Jane Doe #{&1}"),
+      email: sequence(:email, &"jane#{&1}@somedomain.com")
+    }
   end
 
   def vote_factory do
