@@ -35,7 +35,30 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     {:ok, Voting.get_vote!(id)}
   end
 
-  def create_vote(_, args, _) do
+  def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, _) do
+    case Voting.upsert_participant(%{email: email}) do
+      {:error, changeset} ->
+        {:error,
+         message: "Could not create vote with given email",
+         details: ChangesetErrors.error_details(changeset)
+        }
+
+      {:ok, participant} ->
+        args_with_participant_id = Map.put(args, :participant_id, participant.id)
+
+        create_vote_with_valid_arguments(args_with_participant_id)
+    end
+  end
+
+  def create_vote(_, %{participant_id: _, proposal_url: _, yes: _} = args, _) do
+    create_vote_with_valid_arguments(args)
+  end
+
+  def create_vote(_, %{proposal_url: _, yes: _}, _) do
+    {:error, message: "Could not create vote", details: "No participant identifier (id or email) submitted"}
+  end
+
+  defp create_vote_with_valid_arguments(args) do
     case Voting.create_vote(args) do
       {:error, changeset} ->
         {:error,
