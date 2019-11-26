@@ -194,16 +194,14 @@ With the examples above, the `yes` count should be `1`, and `no` should be `2` s
 
 ## Notes:
 
-* No app auth, few validations, and less test coverage than ideal, to keep prototyping fast (for now). Same goes for K8s RBAC
+* No app auth, few validations, and less test coverage than ideal, to keep prototyping fast (for now).
 * Auth will be implemented as a separate micro-service
 
 ## TODO
 
 * JS widget (in progress: oliverbarnes/liquid-voting-browser-ext/issues/3)
-* more programmatic tests
-* validations
-* perf tests
-* continuous delivery (oliverbarnes/liquid-voting-service/issues/4)
-* logging with ELK stack
 * next services: notifications (oliverbarnes/liquid-voting-service/issues/13), authentication
+* continuous delivery (oliverbarnes/liquid-voting-service/issues/4)
+* perf tests
+* logging with ELK stack
 * blockchain integration: Blockstack, possibly others later
