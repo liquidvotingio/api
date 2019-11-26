@@ -85,7 +85,7 @@ defmodule LiquidVoting.VotingTest do
   describe "participants" do
     @valid_attrs %{name: "some name", email: "some.email.com"}
     @update_attrs %{name: "some updated name", email: "another.email.com"}
-    @invalid_attrs %{name: nil}
+    @invalid_attrs %{email: nil}
 
     test "list_participants/0 returns all participants" do
       participant = insert(:participant)
@@ -99,7 +99,8 @@ defmodule LiquidVoting.VotingTest do
 
     test "create_participant/1 with valid data creates a participant" do
       assert {:ok, %Participant{} = participant} = Voting.create_participant(@valid_attrs)
-      assert participant.name == "some name"
+      assert participant.email == @valid_attrs[:email]
+      assert participant.name == @valid_attrs[:name]
     end
 
     test "create_participant/1 with invalid data returns error changeset" do
@@ -109,6 +110,19 @@ defmodule LiquidVoting.VotingTest do
     test "create_participant/1 with duplicate data returns error changeset" do
       Voting.create_participant(@valid_attrs)
       assert {:error, %Ecto.Changeset{}} = Voting.create_participant(@valid_attrs)
+    end
+
+    test "upsert_participant/2 with new valid data creates a participant" do
+      assert {:ok, %Participant{} = participant} = Voting.upsert_participant(@valid_attrs)
+      assert participant.email == @valid_attrs[:email]
+      assert participant.name == @valid_attrs[:name]
+    end
+
+    test "upsert_participant/2 with existing valid data fetches matching participant" do
+      insert(:participant, email: @valid_attrs[:email])
+      assert {:ok, %Participant{} = participant} = Voting.upsert_participant(@valid_attrs)
+      assert participant.email == @valid_attrs[:email]
+      assert participant.name == @valid_attrs[:name]
     end
 
     test "update_participant/2 with valid data updates the participant" do
