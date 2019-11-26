@@ -24,6 +24,11 @@ defmodule LiquidVoting.VotingTest do
       ]
     end
 
+    test "create_vote/1 with valid data creates a vote", context do
+      assert {:ok, %Vote{} = vote} = Voting.create_vote(context[:valid_attrs])
+      assert vote.yes == true
+    end
+
     test "create_vote/1 deletes previous delegation by participant if present" do
       participant = insert(:participant)
       delegation = insert(:delegation, delegator: participant)
@@ -54,10 +59,6 @@ defmodule LiquidVoting.VotingTest do
       assert Voting.get_vote!(vote.id) == vote
     end
 
-    test "create_vote/1 with valid data creates a vote", context do
-      assert {:ok, %Vote{} = vote} = Voting.create_vote(context[:valid_attrs])
-      assert vote.yes == true
-    end
     test "update_vote/2 with valid data updates the vote", context do
       vote = insert(:vote)
       assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, context[:update_attrs])
