@@ -53,7 +53,8 @@ defmodule LiquidVotingWeb.Schema.Schema do
     @desc "Create a vote for a proposal"
     field :create_vote, :vote do
       arg :proposal_url, non_null(:string)
-      arg :participant_id, non_null(:id)
+      arg :participant_id, :id
+      arg :participant_email, :string
       arg :yes, non_null(:boolean)
       resolve &Resolvers.Voting.create_vote/3
     end

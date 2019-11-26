@@ -18,7 +18,7 @@ defmodule LiquidVoting.Voting.Participant do
   def changeset(participant, attrs) do
     participant
     |> cast(attrs, [:name, :email])
-    |> validate_required([:name, :email])
+    |> validate_required(:email)
     |> unique_constraint(:email)
   end
 end
