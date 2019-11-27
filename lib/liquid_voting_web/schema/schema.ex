@@ -61,8 +61,10 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Create a delegation"
     field :create_delegation, :delegation do
-      arg :delegator_id, non_null(:id)
-      arg :delegate_id, non_null(:id)
+      arg :delegator_id, :id
+      arg :delegate_id, :id
+      arg :delegator_email, :string
+      arg :delegate_email, :string
       resolve &Resolvers.Voting.create_delegation/3
     end
   end
