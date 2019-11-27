@@ -4,7 +4,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
 
   alias LiquidVotingWeb.Schema.Schema
 
-  describe "voting" do
+  describe "create vote" do
     setup do
       participant = insert(:participant)
       [
