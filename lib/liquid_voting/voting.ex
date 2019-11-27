@@ -170,6 +170,8 @@ defmodule LiquidVoting.Voting do
   """
   def get_participant!(id), do: Repo.get!(Participant, id)
 
+  def get_participant_by_email(email), do: Repo.get_by(Participant, email: email)
+
   @doc """
   Creates a participant.
 

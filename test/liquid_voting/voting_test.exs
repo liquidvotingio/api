@@ -98,6 +98,11 @@ defmodule LiquidVoting.VotingTest do
       assert Voting.get_participant!(participant.id) == participant
     end
 
+    test "get_participant_by_email/1 returns the participant with given email" do
+      participant = insert(:participant)
+      assert Voting.get_participant_by_email(participant.email) == participant
+    end
+
     test "create_participant/1 with valid data creates a participant" do
       assert {:ok, %Participant{} = participant} = Voting.create_participant(@valid_attrs)
       assert participant.email == @valid_attrs[:email]
