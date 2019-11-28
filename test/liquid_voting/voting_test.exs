@@ -40,8 +40,13 @@ defmodule LiquidVoting.VotingTest do
       assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
     end
 
-    test "create_vote/1 with invalid data returns error changeset", context do
+    test "create_vote/1 with missing data returns error changeset", context do
       assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:invalid_attrs])
+    end
+
+    test "create_vote/1 with invalid proposal url returns error changeset", context do
+      args = Map.merge(context[:valid_attrs], %{proposal_url: "bad url"})
+      assert {:error, %Ecto.Changeset{}} = Voting.create_vote(args)
     end
 
     test "create_vote/1 with duplicate data returns error changeset", context do
