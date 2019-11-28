@@ -51,7 +51,8 @@ defmodule LiquidVoting.MixProject do
       {:prometheus_ecto, "~> 1.4.3"},
       {:prometheus_phoenix, "~> 1.3.0"},
       {:prometheus_plugs, "~> 1.1.5"},
-      {:ex_machina, "~> 2.3", only: :test}
+      {:ex_machina, "~> 2.3", only: :test},
+      {:ecto_fields, "~> 1.2.0"}
     ]
   end
 
