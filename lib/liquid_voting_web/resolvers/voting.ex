@@ -81,9 +81,28 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   end
 
   def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email}, _) do
-    delegator = Voting.get_participant_by_email(delegator_email)
-    delegate = Voting.get_participant_by_email(delegate_email)
-    create_delegation_with_valid_arguments(%{delegator_id: delegator.id, delegate_id: delegate.id})
+    case Voting.upsert_participant(%{email: delegator_email}) do
+      {:error, changeset} ->
+        {:error,
+         message: "Could not create delegation with given email",
+         details: ChangesetErrors.error_details(changeset)
+        }
+
+      {:ok, delegator} ->
+        args_with_delegator_id = %{delegator_id: delegator.id}
+
+        case Voting.upsert_participant(%{email: delegate_email}) do
+          {:error, changeset} ->
+            {:error,
+             message: "Could not create delegation with given email",
+             details: ChangesetErrors.error_details(changeset)
+            }
+
+          {:ok, delegate} ->
+            args_with_both_participant_ids = Map.put(args_with_delegator_id, :delegate_id, delegate.id)
+            create_delegation_with_valid_arguments(args_with_both_participant_ids)
+        end
+    end
   end
 
   def create_delegation(_, %{} = args, _) do
