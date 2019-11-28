@@ -5,7 +5,7 @@ defmodule LiquidVoting.Voting.Vote do
   schema "votes" do
     field :yes, :boolean, default: false
     field :weight, :integer, default: 1
-    field :proposal_url, :string
+    field :proposal_url, EctoFields.URL
 
     belongs_to :participant, LiquidVoting.Voting.Participant
 
