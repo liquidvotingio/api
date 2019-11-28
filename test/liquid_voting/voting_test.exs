@@ -84,8 +84,8 @@ defmodule LiquidVoting.VotingTest do
   end
 
   describe "participants" do
-    @valid_attrs %{name: "some name", email: "some.email.com"}
-    @update_attrs %{name: "some updated name", email: "another.email.com"}
+    @valid_attrs %{name: "some name", email: "some@email.com"}
+    @update_attrs %{name: "some updated name", email: "another@email.com"}
     @invalid_attrs %{email: nil}
 
     test "list_participants/0 returns all participants" do
@@ -109,8 +109,13 @@ defmodule LiquidVoting.VotingTest do
       assert participant.name == @valid_attrs[:name]
     end
 
-    test "create_participant/1 with invalid data returns error changeset" do
+    test "create_participant/1 with missing data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Voting.create_participant(@invalid_attrs)
+    end
+
+    test "create_participant/1 with invalid email returns error changeset" do
+      args = %{email: "invalid", name: "some name"}
+      assert {:error, %Ecto.Changeset{}} = Voting.create_participant(args)
     end
 
     test "create_participant/1 with duplicate data returns error changeset" do
