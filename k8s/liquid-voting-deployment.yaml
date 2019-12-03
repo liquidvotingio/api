@@ -23,7 +23,7 @@ spec:
       containers:
       - name: liquid-voting
         image: oliverbarnes/liquid-voting-service:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
           - name: APP_HOST
             value: localhost
