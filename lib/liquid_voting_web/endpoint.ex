@@ -44,5 +44,7 @@ defmodule LiquidVotingWeb.Endpoint do
   plug LiquidVoting.Metrics.PrometheusExporter
   plug LiquidVoting.Metrics.PipelineInstrumenter
 
+  plug Corsica, origins: "*", allow_headers: :all
+
   plug LiquidVotingWeb.Router
 end

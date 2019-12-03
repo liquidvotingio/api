@@ -41,6 +41,7 @@ defmodule LiquidVoting.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      {:corsica, "~> 1.0"},
       {:absinthe, "~> 1.5.0-beta.2"},
       {:absinthe_plug, "~> 1.5.0-alpha.0"},
       {:absinthe_phoenix, "~> 1.5.0-alpha.0"},
