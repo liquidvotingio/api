@@ -21,4 +21,4 @@ spec:
   tls:
     - hosts:
       - liquidvoting.io
-      secretName: liquid-voting-tls
+      secretName: ingress-cert
