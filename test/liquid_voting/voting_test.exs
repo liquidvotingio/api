@@ -29,6 +29,14 @@ defmodule LiquidVoting.VotingTest do
       assert vote.yes == true
     end
 
+    test "create_vote/1 with really long proposal urls still creates a vote", context do
+      proposal_url = """
+      https://www.bigassstring.com/search?ei=WdznXfzyIoeT1fAP79yWqAc&q=chrome+extension+popup+js+xhr+onload+document.body&oq=chrome+extension+popup+js+xhr+onload+document.body&gs_l=psy-ab.3...309222.313422..314027...0.0..1.201.1696.5j9j1....2..0....1..gws-wiz.2OvPoKSwZ_I&ved=0ahUKEwi8g5fQspzmAhWHSRUIHW-uBXUQ4dUDCAs&uact=5"
+      """
+      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
+      assert {:ok, %Vote{} = vote} = Voting.create_vote(args)
+    end
+
     test "create_vote/1 deletes previous delegation by participant if present" do
       participant = insert(:participant)
       delegation = insert(:delegation, delegator: participant)
