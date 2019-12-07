@@ -4,9 +4,11 @@
 
 Proof of concept for a liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this blog post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
 
-It consists of a Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations. There's a [browser extension in the works](https://github.com/oliverbarnes/liquid-voting-browser-ext) to interact with it from any open content that may need voting on.
+In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) and manifests to get a rudimentary Kubernetes deployment going for it (a playground). I've been playing with the latter locally and on GKE.
+A [browser extension](https://github.com/oliverbarnes/liquid-voting-browser-ext), on another repo, interacts with it from any content that could use voting on. It's completely open at this point, down the line there will be different gradations of voter verification available.
+
+There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) of the API microservice, and manifests to get a rudimentary Kubernetes deployment going. I've been playing with one on Google Kubernetes Engine. The intention here, besides my wanting to learn and gain experience with k8s, is to make the service easily deployable within a microservices context.
 
 ## Concepts and modeling
 
