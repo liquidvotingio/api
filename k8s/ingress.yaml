@@ -5,6 +5,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/limit-rpm: "2"
+    nginx.ingress.kubernetes.io/limit-connections: "1"
     cert-manager.io/acme-http01-edit-in-place: "true"
     cert-manager.io/cluster-issuer: letsencrypt-issuer
     prometheus.io/scrape: "true"
