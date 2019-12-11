@@ -8,6 +8,12 @@ defmodule LiquidVotingWeb.Schema.Schema do
   alias LiquidVotingWeb.Resolvers
 
   query do
+    @desc "Get a voting result by its proposal url"
+    field :voting_result, :result do
+      arg :proposal_url, non_null(:string)
+      resolve &Resolvers.VotingResults.result/3
+    end
+
     @desc "Get a list of participants"
     field :participants, list_of(:participant) do
       resolve &Resolvers.Voting.participants/3
