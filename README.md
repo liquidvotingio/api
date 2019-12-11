@@ -213,7 +213,6 @@ With the examples above, the `yes` count should be `1`, and `no` should be `2` s
 
 ## TODO
 
-* browser extension interacting with the API - [in progress](https://github.com/oliverbarnes/liquid-voting-browser-ext/issues/3)
 * next services: [authentication](https://github.com/oliverbarnes/liquid-voting-service/issues/15), [notifications](https://github.com/oliverbarnes/liquid-voting-service/issues/13)
 * [continuous delivery](https://github.com/oliverbarnes/liquid-voting-service/issues/4)
 * perf tests
