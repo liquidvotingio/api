@@ -52,6 +52,29 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       assert vote["yes"] == context[:yes]
     end
 
+    test "including voting results in the response", context do
+      query = """
+      mutation {
+        createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+          participant {
+            email
+          }
+          yes
+          proposalUrl
+          votingResult {
+            yes
+            no
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{})
+
+      assert vote["votingResult"]["yes"] == 1
+      assert vote["votingResult"]["no"] == 0
+    end
+
     test "with participant's id", context do
       query = """
       mutation {
