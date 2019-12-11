@@ -1,6 +1,6 @@
 defmodule LiquidVotingWeb.Schema.Schema do
   use Absinthe.Schema
-  alias LiquidVoting.Voting
+  alias LiquidVoting.{Voting, VotingResults}
 
   import_types Absinthe.Type.Custom
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
@@ -99,6 +99,11 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :weight, non_null(:integer)
     field :proposal_url, non_null(:string)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
+    field :voting_result, non_null(:result),
+      resolve: fn vote, _, _ ->
+        {:ok, VotingResults.get_result_by_proposal_url(vote.proposal_url)}
+      end
+
   end
 
   object :delegation do
