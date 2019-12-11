@@ -97,6 +97,10 @@ mutation {
       email
     }
     yes
+    votingResult {
+      yes
+      no
+    }
   }
 }
 
