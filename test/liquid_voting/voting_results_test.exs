@@ -45,6 +45,15 @@ defmodule LiquidVoting.VotingResultsTest do
       assert VotingResults.get_result!(result.id) == result
     end
 
+    test "get_result_by_proposal_url/1 returns the result with given proposal_url" do
+      result = insert(:voting_result)
+      assert VotingResults.get_result_by_proposal_url(result.proposal_url) == result
+    end
+
+    test "get_result_by_proposal_url/1 with invalid data returns error changeset" do
+      assert VotingResults.get_result_by_proposal_url("https://invalid.com") == nil
+    end
+
     test "create_result/1 with valid data creates a result", context do
       assert {:ok, %Result{} = result} = VotingResults.create_result(context[:valid_attrs])
       assert result.no == 42

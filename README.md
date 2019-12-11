@@ -137,7 +137,7 @@ query {
   votes {
     yes
     weight
-    proposal_url
+    proposalUrl
     participant {
       email
     }
@@ -148,7 +148,7 @@ query {
   vote(id: 1) {
     yes
     weight
-    proposal_url
+    proposalUrl
     participant {
       email
     }
@@ -174,6 +174,14 @@ query {
     delegate {
       email
     }
+  }
+}
+
+query {
+  votingResult(proposalUrl: "https://github.com/user/repo/pulls/15") {
+    yes
+    no
+    proposalUrl
   }
 }
 ```
