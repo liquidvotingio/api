@@ -100,7 +100,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :weight, non_null(:integer)
     field :proposal_url, non_null(:string)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
-    field :voting_result, non_null(:result),
+    field :voting_result, :result,
       resolve: fn vote, _, _ ->
         {:ok, VotingResults.get_result_by_proposal_url(vote.proposal_url)}
       end
@@ -112,6 +112,10 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
     field :proposal_url, :string
+    field :voting_result, :result,
+      resolve: fn delegation, _, _ ->
+        {:ok, VotingResults.get_result_by_proposal_url(delegation.proposal_url)}
+      end
   end
 
   object :result do
