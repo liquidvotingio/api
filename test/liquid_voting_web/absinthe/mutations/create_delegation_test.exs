@@ -48,6 +48,33 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       assert delegation["proposalUrl"] == @proposal_url
     end
+
+    test "including results in response, if present" do
+      insert(:voting_result, proposal_url: @proposal_url)
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{@new_delegate_email}", proposalUrl: "#{@proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+          proposalUrl
+          votingResult {
+            yes
+            no
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{})
+
+      assert delegation["votingResult"]["yes"] == 0
+      assert delegation["votingResult"]["no"] == 0
+    end
   end
 
   describe "create delegation with existing delegator and delegate" do

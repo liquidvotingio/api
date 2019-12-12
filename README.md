@@ -88,10 +88,6 @@ mutation {
     delegate {
       email
     }
-    votingResult {
-      yes
-      no
-    }
   }
 }
 
