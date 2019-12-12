@@ -114,7 +114,11 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :proposal_url, :string
     field :voting_result, :result,
       resolve: fn delegation, _, _ ->
-        {:ok, VotingResults.get_result_by_proposal_url(delegation.proposal_url)}
+        if delegation.proposal_url do
+          {:ok, VotingResults.get_result_by_proposal_url(delegation.proposal_url)}
+        else
+          {:ok, nil}
+        end
       end
   end
 
