@@ -80,7 +80,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     {:ok, Voting.get_delegation!(id)}
   end
 
-  def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email}, _) do
+  def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email} = args, _) do
     case Voting.upsert_participant(%{email: delegator_email}) do
       {:error, changeset} ->
         {:error,
@@ -89,7 +89,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         }
 
       {:ok, delegator} ->
-        args_with_delegator_id = %{delegator_id: delegator.id}
+        args_with_delegator_id = Map.put(args, :delegator_id, delegator.id)
 
         case Voting.upsert_participant(%{email: delegate_email}) do
           {:error, changeset} ->
