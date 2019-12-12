@@ -71,6 +71,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg :delegate_id, :id
       arg :delegator_email, :string
       arg :delegate_email, :string
+      arg :proposal_url, :string
       resolve &Resolvers.Voting.create_delegation/3
     end
   end
@@ -110,6 +111,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :id, non_null(:id)
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
+    field :proposal_url, :string
   end
 
   object :result do
