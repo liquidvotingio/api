@@ -21,20 +21,18 @@ COPY rel rel
 RUN mix release
 
 # Release image
-FROM bitwalker/alpine-elixir:latest
+FROM alpine:3.9
+
+RUN apk add --no-cache bash libstdc++ openssl
+
+WORKDIR /opt/app
+
+COPY --from=phx-builder /opt/app/_build/prod/rel/liquid_voting .
 
 EXPOSE 4000
 ENV PORT=4000 MIX_ENV=prod
 
-COPY --from=phx-builder /opt/app /opt/app
-
-WORKDIR /opt/app
-
-RUN chown -R default: ./
-
-USER default
-
-ENTRYPOINT ["./_build/prod/rel/liquid_voting/bin/liquid_voting"]
+ENTRYPOINT ["./bin/liquid_voting"]
 
 # docker run -e SECRET_KEY_BASE=$(mix phx.gen.secret) -e liquid_voting:latest
 CMD ["start"]
