@@ -9,3 +9,4 @@ liquid_voting-*.tar
 priv/static
 .iex.exs
 .DS_Store
+perftest
