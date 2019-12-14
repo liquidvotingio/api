@@ -5,21 +5,21 @@ on:
     branches:
     - master
     paths-ignore:
-    - 'README.md'
+    - README.md
+    - 'k8s/**'
+    - 'perftest/**'
+    - 'LICENSE'
+    - 'CODE_OF_CONDUCT.md'
   pull_request:
     branches:
     - master
     paths-ignore:
     - 'README.md'
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     container:
       image: elixir:1.9.1-slim
-    
     services:
       postgres:
         image: postgres:10.4
@@ -31,7 +31,6 @@ jobs:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
