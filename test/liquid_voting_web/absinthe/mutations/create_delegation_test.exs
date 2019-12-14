@@ -15,9 +15,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
         createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{@new_delegate_email}") {
           delegator {
             email
+            name
           }
           delegate {
             email
+            name
           }
         }
       }
@@ -26,7 +28,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       {:ok, %{data: %{"createDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{})
 
       assert delegation["delegator"]["email"] == @new_delegator_email
+      assert delegation["delegator"]["name"] == nil
       assert delegation["delegate"]["email"] == @new_delegate_email
+      assert delegation["delegate"]["name"] == nil
     end
 
     test "including a proposal url" do

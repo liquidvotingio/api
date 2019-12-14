@@ -88,7 +88,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
   object :participant do
     field :id, non_null(:id)
-    field :name, non_null(:string)
+    field :name, :string
     field :email, non_null(:string)
     field :delegations_received, list_of(:delegation),
       resolve: dataloader(Voting, :delegations_received, args: %{scope: :participant, foreign_key: :delegate_id})
