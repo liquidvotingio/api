@@ -52,12 +52,21 @@ jobs:
   build-publish:
     needs: [tests]
     runs-on: ubuntu-latest
+    env:
+      REPO: $GITHUB_REPOSITORY
+      IMAGE_NAME: $GITHUB_REPOSITORY
+      TAG: $GITHUB_SHA
     steps:
     - uses: actions/checkout@v1
-    - name: Build image
+    - name: Build Image
       run: |
-        docker build -t docker.pkg.github.com/oliverbarnes/$GITHUB_REPOSITORY/$GITHUB_REPOSITORY:$GITHUB_SHA .
-
-    - name: Publish image
+        docker build -t docker.pkg.github.com/oliverbarnes/$REPO/$IMAGE_NAME:$TAG .
+    - name: Login to Github Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: docker.pkg.github.com
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish Image
       run: |
-        docker push docker.pkg.github.com/oliverbarnes/$GITHUB_REPOSITORY/$GITHUB_REPOSITORY:$GITHUB_SHA
+        docker push docker.pkg.github.com/oliverbarnes/$REPO/$IMAGE_NAME:$TAG
