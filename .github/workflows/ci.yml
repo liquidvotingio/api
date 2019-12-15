@@ -20,7 +20,7 @@ on:
     - 'LICENSE'
     - 'CODE_OF_CONDUCT.md'
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
     container:
       image: elixir:1.9.1-slim
@@ -48,3 +48,16 @@ jobs:
         MIX_ENV: test
         # refers to the service name, since we're running on containers
         POSTGRES_HOST: postgres
+
+  build-publish:
+    needs: [tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build image
+      run: |
+        docker build -t docker.pkg.github.com/oliverbarnes/$GITHUB_REPOSITORY/$GITHUB_REPOSITORY:$GITHUB_SHA .
+
+    - name: Publish image
+      run: |
+        docker push docker.pkg.github.com/oliverbarnes/$GITHUB_REPOSITORY/$GITHUB_REPOSITORY:$GITHUB_SHA
