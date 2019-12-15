@@ -53,9 +53,9 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     env:
-      REPO: $GITHUB_REPOSITORY
-      IMAGE_NAME: $GITHUB_REPOSITORY
-      TAG: $GITHUB_SHA
+      REPO: ${{ github.repository }}
+      IMAGE_NAME: ${{ github.repository }}
+      TAG: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v1
     - name: Build Image
