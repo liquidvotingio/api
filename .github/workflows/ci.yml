@@ -53,14 +53,14 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     env:
-      IMAGE: docker.pkg.github.com/${{ github.repository }}/liquid-voting-service
+      IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/liquid-voting-service
       TAG: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v1
     - name: Build Image
       run: |
-        docker build -t $IMAGE:$TAG .
-        docker tag $IMAGE:$TAG $IMAGE:latest
+        docker build -t $IMAGE_NAME:$TAG .
+        docker tag $IMAGE_NAME:$TAG $IMAGE_NAME:latest
     - name: Login to Github Registry
       uses: azure/docker-login@v1
       with:
@@ -69,4 +69,4 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish Image
       run: |
-        docker push $IMAGE:$TAG
+        docker push $IMAGE_NAME
