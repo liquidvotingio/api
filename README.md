@@ -8,7 +8,7 @@ In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [
 
 A [browser extension](https://github.com/oliverbarnes/liquid-voting-browser-ext), on another repo, interacts with it from any content that could use voting on. It's completely open at this point, down the line there will be different gradations of voter verification available.
 
-There's [a dockerized version](https://hub.docker.com/r/oliverbarnes/liquid-voting-service) of the API microservice, and manifests to get a rudimentary Kubernetes deployment going. I've been playing with one on Google Kubernetes Engine. The intention here, besides my wanting to learn and gain experience with k8s, is to make the service easily deployable within a microservices context.
+There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API microservice, and manifests to get a rudimentary Kubernetes deployment going. I've been playing with one on Google Kubernetes Engine. The intention here, besides my wanting to learn and gain experience with k8s, is to make the service easily deployable within a microservices context.
 
 ## Concepts and modeling
 
@@ -46,7 +46,7 @@ docker run -it --rm \
   -e DB_NAME=liquid_voting_dev \
   -e DB_HOST=host.docker.internal \
   -p 4000:4000 \
-  oliverbarnes/liquid-voting-service:latest
+  docker.pkg.github.com/oliverbarnes/liquid-voting-service/image:latest
 ```
 
 (assuming you already have the database up and running)
@@ -56,7 +56,7 @@ You can run migrations by passing an `eval` command to the containerized app, li
 ```
 docker run -it --rm \
   <same options>
-  oliverbarnes/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
+  docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 ```
 
 ### Running it locally in a Kubernetes cluster on Docker for Mac
