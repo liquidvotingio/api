@@ -46,7 +46,7 @@ docker run -it --rm \
   -e DB_NAME=liquid_voting_dev \
   -e DB_HOST=host.docker.internal \
   -p 4000:4000 \
-  docker.pkg.github.com/oliverbarnes/liquid-voting-service/image:latest
+  docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest
 ```
 
 (assuming you already have the database up and running)

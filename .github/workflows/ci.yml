@@ -53,7 +53,7 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/image
+      IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/liquid-voting-service
       TAG: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v1
