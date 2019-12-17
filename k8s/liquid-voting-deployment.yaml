@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: liquid-voting
-        image: oliverbarnes/liquid-voting-service:latest
+        image: docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest
         imagePullPolicy: Always
         env:
           - name: APP_HOST

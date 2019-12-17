@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -21,6 +21,7 @@ on:
     - 'CODE_OF_CONDUCT.md'
 jobs:
   tests:
+    name: Tests
     runs-on: ubuntu-latest
     container:
       image: elixir:1.9.1-slim
@@ -50,6 +51,7 @@ jobs:
         POSTGRES_HOST: postgres
 
   build-publish:
+    name: Build & Publish Docker Image
     needs: [tests]
     runs-on: ubuntu-latest
     env:
@@ -70,3 +72,25 @@ jobs:
     - name: Publish Image
       run: |
         docker push $IMAGE_NAME
+
+  deploy:
+    name: Deploy to GKE
+    needs: [build-publish]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Login to gcloud
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GKE_EMAIL }}
+        service_account_key: ${{ secrets.GKE_KEY }}
+    # Deploy
+    - name: Deploy
+      env:
+        GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+        GKE_ZONE: ${{ secrets.GKE_ZONE }}
+        GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        kubectl rollout restart deployment/liquid-voting-deployment
