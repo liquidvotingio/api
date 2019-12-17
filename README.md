@@ -1,14 +1,16 @@
 # Liquid Voting as a Service
 
-[![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/CI/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?workflow=CI)
+[![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/CI/CD/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?query=workflow%3ACI%2FCD)
 
 Proof of concept for a liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this blog post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
 
 In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-A [browser extension](https://github.com/oliverbarnes/liquid-voting-browser-ext), on another repo, interacts with it from any content that could use voting on. It's completely open at this point, down the line there will be different gradations of voter verification available.
+You can play with the [live demo](https://liquidvoting.io/graphiql) using sample queries described below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api).
 
-There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API microservice, and manifests to get a rudimentary Kubernetes deployment going. I've been playing with one on Google Kubernetes Engine. The intention here, besides my wanting to learn and gain experience with k8s, is to make the service easily deployable within a microservices context.
+A [browser extension](https://github.com/oliverbarnes/liquid-voting-browser-ext), on another repo, interacts with it from any content that could use voting on. It's completely open (no login) at this point, but down the line there will be different gradations of voter verification available.
+
+There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API, and manifests to get a rudimentary Kubernetes deployment going. The demo is running on Google Kubernetes Engine. The intention here, aside from learning and gaining experience with K8s and GKE, is to make the service easily deployable within a microservices/cloud native context.
 
 ## Concepts and modeling
 
@@ -61,12 +63,15 @@ docker run -it --rm \
 
 ### Running it locally in a Kubernetes cluster on Docker for Mac
 
-Moved these instructions to a [blog post](https://medium.com/@oliver_azevedo_barnes/setting-up-a-small-local-k8s-cluster-for-development-cb1c99c6320d?sk=5ced4762aa9e22396cf717135377c5b6), as they were getting lengthy and aren't really central to the README.
+Moved these instructions to a [blog post](https://medium.com/@oliver_azevedo_barnes/setting-up-a-small-local-k8s-cluster-for-development-cb1c99c6320d?sk=5ced4762aa9e22396cf717135377c5b6), as they were getting lengthy and aren't really central to this README.
 
+I also haven't been running the cluster locally anymore, since deploying to GKE.
+
+### Once you're up and running
+
+You can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
 
 ## Using the API
-
-Once you're up and running, you can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
 
 Create votes and delegations using [GraphQL mutations](https://graphql.org/learn/queries/#mutations)
 
@@ -214,7 +219,5 @@ With the examples above, the `yes` count should be `1`, and `no` should be `2` s
 ## TODO
 
 * next services: [authentication](https://github.com/oliverbarnes/liquid-voting-service/issues/15), [notifications](https://github.com/oliverbarnes/liquid-voting-service/issues/13)
-* [continuous delivery](https://github.com/oliverbarnes/liquid-voting-service/issues/4)
-* perf tests
 * logging with ELK stack
 * blockchain integration: Blockstack, possibly others later
