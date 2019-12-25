@@ -4,7 +4,8 @@ metadata:
   name: liquid-voting-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    ingress.kubernetes.io/rewrite-target: /
+    # nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+    # nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
     nginx.ingress.kubernetes.io/limit-rpm: "2"
     nginx.ingress.kubernetes.io/limit-connections: "1"
     cert-manager.io/acme-http01-edit-in-place: "true"
@@ -16,7 +17,11 @@ spec:
   - host: liquidvoting.io
     http:
       paths:
-        - path: /
+        - path: /api
+          backend:
+            serviceName: liquid-voting-service
+            servicePort: 4000
+        - path: /graphiql
           backend:
             serviceName: liquid-voting-service
             servicePort: 4000
