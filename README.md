@@ -10,7 +10,7 @@ You can play with the [live demo](https://liquidvoting.io/graphiql) using sample
 
 A [browser extension](https://github.com/oliverbarnes/liquid-voting-browser-ext), on another repo, interacts with it from any content that could use voting on. It's completely open (no login) at this point, but down the line there will be different gradations of voter verification available.
 
-There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API, and manifests to get a rudimentary Kubernetes deployment going. The demo is running on Google Kubernetes Engine. The intention here, aside from learning and gaining experience with K8s and GKE, is to make the service easily deployable within a microservices/cloud native context.
+There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API, and manifests to get a rudimentary Kubernetes deployment going. The demo is running on Google Kubernetes Engine. The intention here is to make the service easily deployable within a microservices/cloud native context.
 
 ## Concepts and modeling
 
@@ -61,11 +61,9 @@ docker run -it --rm \
   docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 ```
 
-### Running it locally in a Kubernetes cluster on Docker for Mac
+### Running it on Kubernetes
 
-Moved these instructions to a [blog post](https://medium.com/@oliver_azevedo_barnes/setting-up-a-small-local-k8s-cluster-for-development-cb1c99c6320d?sk=5ced4762aa9e22396cf717135377c5b6), as they were getting lengthy and aren't really central to this README.
-
-I also haven't been running the cluster locally anymore, since deploying to GKE.
+liquidvoting.io is deployed to a k8s cluster on GKE. If you're curious or would like to deploy this service to your own cluster, the manifests are available on [this repo](https://github.com/oliverbarnes/liquid-voting-k8s).
 
 ### Once you're up and running
 
