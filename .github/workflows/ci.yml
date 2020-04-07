@@ -24,7 +24,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     container:
-      image: elixir:1.9.1-slim
+      image: elixir:1.10.2-slim
     services:
       postgres:
         image: postgres:10.4
