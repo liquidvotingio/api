@@ -6,7 +6,7 @@ Proof of concept for a liquid voting service that aims to be easily plugged into
 
 In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-There's a demo deployed on https://liquidvoting.io/api, which you can play with using [this query runner](https://liquidvoting.io/graphiql). See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api).
+There's a demo deployed on https://liquidvoting.io/api, which you can play with using [this query runner](https://liquidvoting.io/graphiql). See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api). Also, an incipient [admin view](https://admin.liquidvoting.io) is up to visualize votes, participants and delegations registered on the API.
 
 A [browser extension](https://github.com/oliverbarnes/liquid-voting-browser-ext), on another repo, interacts with it from any content that could use voting on. It's completely open (no login) at this point, but down the line there will be different gradations of voter verification available.
 
