@@ -30,7 +30,9 @@ defmodule LiquidVoting.VotingWeight do
     Voting.update_vote(vote, %{weight: weight})
   end
 
-  # If no weight is given, default to 0 and recurse
+  # If no weight is given, adds default of 0 for it, and recurses with
+  # delegation_weight/2. This is the starting point for traversing
+  # a voter's delegation tree and incrementing the voting weight
   defp delegation_weight(delegations, weight \\ 0)
 
   # Traverse up delegation tree and add up the accumulated weight.
