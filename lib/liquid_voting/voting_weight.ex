@@ -30,17 +30,25 @@ defmodule LiquidVoting.VotingWeight do
     Voting.update_vote(vote, %{weight: weight})
   end
 
+  # If no weight is given, default to 0 and recurse
   defp delegation_weight(delegations, weight \\ 0)
 
+  # Traverse up delegation tree and add up the accumulated weight.
+  # If you're wondering, [_|_] matches a non-empty array. Equivalent to 
+  # matching [head|tail] but ignoring both head and tail variables
   defp delegation_weight(delegations = [_|_], weight) do
     # TODO: Do this in SQL
     #
     #   Not sure yet which tree/hierarchy handling pattern would fit here, 
-    #   given there's two tables involved instead a single one nested onto itself as
+    #   given there's two tables involved instead of a single one nested onto itself as
     #   in most threaded Comments or Org Chart examples.
     #
     #   Recursive Query might be worth a try, check back with Bill Karwin's SQL Antipatterns book
     #
+    # END TODO
+    #
+    # Add-up 1 unit of weight for each delegation,
+    # then recurse on each delegators' own delegations
     Enum.reduce delegations, weight, fn (delegation, weight) ->
       delegation = Repo.preload(delegation, [delegator: :delegations_received])
       delegator = delegation.delegator
@@ -51,6 +59,9 @@ defmodule LiquidVoting.VotingWeight do
     end
   end
 
+  # Base case for the above recursion:
+  # 
+  # If no delegations left, just return the latest weight
   defp delegation_weight(_ = [], weight) do
     weight
   end
