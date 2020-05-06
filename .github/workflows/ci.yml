@@ -93,4 +93,4 @@ jobs:
         GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
-        kubectl rollout restart deployment/liquid-voting-deployment
+        kubectl rollout restart deployment/api-deployment
