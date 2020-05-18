@@ -182,13 +182,15 @@ defmodule LiquidVoting.VotingTest do
       [
         valid_attrs: %{
           delegator_id: delegator.id,
-          delegate_id: delegate.id
+          delegate_id: delegate.id,
+          organization_uuid: Ecto.UUID.generate
         },
         update_attrs: %{
           delegator_id: delegator.id,
-          delegate_id: another_delegate.id
+          delegate_id: another_delegate.id,
+          organization_uuid: Ecto.UUID.generate
         },
-        invalid_attrs: %{delegator_id: delegator.id, delegate_id: nil}
+        invalid_attrs: %{delegator_id: delegator.id, delegate_id: nil, organization_uuid: nil}
       ]
     end
 
