@@ -97,9 +97,9 @@ defmodule LiquidVoting.VotingTest do
   end
 
   describe "participants" do
-    @valid_attrs %{name: "some name", email: "some@email.com"}
-    @update_attrs %{name: "some updated name", email: "another@email.com"}
-    @invalid_attrs %{email: nil}
+    @valid_attrs %{name: "some name", email: "some@email.com", organization_uuid: Ecto.UUID.generate}
+    @update_attrs %{name: "some updated name", email: "another@email.com", organization_uuid: Ecto.UUID.generate}
+    @invalid_attrs %{email: nil, organization_uuid: nil}
 
     test "list_participants/0 returns all participants" do
       participant = insert(:participant)
