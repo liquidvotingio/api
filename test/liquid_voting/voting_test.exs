@@ -13,14 +13,21 @@ defmodule LiquidVoting.VotingTest do
         valid_attrs: %{
           yes: true,
           participant_id: participant.id,
-          proposal_url: "http://proposals.com/1"
+          proposal_url: "http://proposals.com/1",
+          organization_uuid: Ecto.UUID.generate
         },
         update_attrs: %{
           yes: false,
           participant_id: participant.id,
-          proposal_url: "http://proposals.com/2"
+          proposal_url: "http://proposals.com/2",
+          organization_uuid: Ecto.UUID.generate
         },
-        invalid_attrs: %{yes: nil}
+        invalid_attrs: %{
+          yes: nil,
+          participant_id: nil,
+          proposal_url: nil,
+          organization_uuid: nil
+        }
       ]
     end
 
@@ -43,7 +50,8 @@ defmodule LiquidVoting.VotingTest do
       assert {:ok, %Vote{}} = Voting.create_vote(%{
           yes: false,
           participant_id: participant.id,
-          proposal_url: "http://proposals.com/any"
+          proposal_url: "http://proposals.com/any",
+          organization_uuid: Ecto.UUID.generate
         })
       assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
     end
