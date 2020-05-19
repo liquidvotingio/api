@@ -51,7 +51,7 @@ defmodule LiquidVoting.VotingTest do
           yes: false,
           participant_id: participant.id,
           proposal_url: "http://proposals.com/any",
-          organization_uuid: Ecto.UUID.generate
+          organization_uuid: delegation.organization_uuid
         })
       assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
     end
@@ -70,14 +70,20 @@ defmodule LiquidVoting.VotingTest do
       assert {:error, %Ecto.Changeset{}} = Voting.create_vote(context[:valid_attrs])
     end
 
-    test "list_votes/0 returns all votes" do
+    test "list_votes/1 returns all votes for an organization_uuid" do
       vote = insert(:vote)
-      assert Voting.list_votes() == [vote]
+      assert Voting.list_votes(vote.organization_uuid) == [vote]
     end
 
-    test "get_vote!/1 returns the vote with given id" do
+    test "list_votes/2 returns all votes for a proposal_url and an organization_uuid" do
       vote = insert(:vote)
-      assert Voting.get_vote!(vote.id) == vote
+      insert(:vote, proposal_url: "https://different.org/proposal")
+      assert Voting.list_votes(vote.proposal_url, vote.organization_uuid) == [vote]
+    end
+
+    test "get_vote!/2 returns the vote with given id and organization_uuid" do
+      vote = insert(:vote)
+      assert Voting.get_vote!(vote.id, vote.organization_uuid) == vote
     end
 
     test "update_vote/2 with valid data updates the vote", context do
@@ -89,13 +95,13 @@ defmodule LiquidVoting.VotingTest do
     test "update_vote/2 with invalid data returns error changeset", context do
       vote = insert(:vote)
       assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, context[:invalid_attrs])
-      assert vote == Voting.get_vote!(vote.id)
+      assert vote == Voting.get_vote!(vote.id, vote.organization_uuid)
     end
 
     test "delete_vote/1 deletes the vote" do
       vote = insert(:vote)
       assert {:ok, %Vote{}} = Voting.delete_vote(vote)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id) end
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id, vote.organization_uuid) end
     end
 
     test "change_vote/1 returns a vote changeset" do
@@ -109,19 +115,19 @@ defmodule LiquidVoting.VotingTest do
     @update_attrs %{name: "some updated name", email: "another@email.com", organization_uuid: Ecto.UUID.generate}
     @invalid_attrs %{email: nil, organization_uuid: nil}
 
-    test "list_participants/0 returns all participants" do
+    test "list_participants/1 returns all participants for an organization_uuid" do
       participant = insert(:participant)
-      assert Voting.list_participants() == [participant]
+      assert Voting.list_participants(participant.organization_uuid) == [participant]
     end
 
-    test "get_participant!/1 returns the participant with given id" do
+    test "get_participant!/2 returns the participant with given id and organization_uuid" do
       participant = insert(:participant)
-      assert Voting.get_participant!(participant.id) == participant
+      assert Voting.get_participant!(participant.id, participant.organization_uuid) == participant
     end
 
-    test "get_participant_by_email/1 returns the participant with given email" do
+    test "get_participant_by_email/1 returns the participant with given email and organization_uuid" do
       participant = insert(:participant)
-      assert Voting.get_participant_by_email(participant.email) == participant
+      assert Voting.get_participant_by_email(participant.email, participant.organization_uuid) == participant
     end
 
     test "create_participant/1 with valid data creates a participant" do
@@ -166,13 +172,13 @@ defmodule LiquidVoting.VotingTest do
     test "update_participant/2 with invalid data returns error changeset" do
       participant = insert(:participant)
       assert {:error, %Ecto.Changeset{}} = Voting.update_participant(participant, @invalid_attrs)
-      assert participant == Voting.get_participant!(participant.id)
+      assert participant == Voting.get_participant!(participant.id, participant.organization_uuid)
     end
 
     test "delete_participant/1 deletes the participant" do
       participant = insert(:participant)
       assert {:ok, %Participant{}} = Voting.delete_participant(participant)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_participant!(participant.id) end
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_participant!(participant.id, participant.organization_uuid) end
     end
 
     test "change_participant/1 returns a participant changeset" do
@@ -202,14 +208,14 @@ defmodule LiquidVoting.VotingTest do
       ]
     end
 
-    test "list_delegations/0 returns all delegations" do
+    test "list_delegations/1 returns all delegations for an organization_uuid" do
       delegation = insert(:delegation)
-      assert Voting.list_delegations() == [delegation]
+      assert Voting.list_delegations(delegation.organization_uuid) == [delegation]
     end
 
-    test "get_delegation!/1 returns the delegation with given id" do
+    test "get_delegation!/2 returns the delegation with given id and organization_uuid" do
       delegation = insert(:delegation)
-      assert Voting.get_delegation!(delegation.id) == delegation
+      assert Voting.get_delegation!(delegation.id, delegation.organization_uuid) == delegation
     end
 
     test "create_delegation/1 with valid data creates a delegation", context do
@@ -237,7 +243,7 @@ defmodule LiquidVoting.VotingTest do
     test "delete_delegation/1 deletes the delegation" do
       delegation = insert(:delegation)
       assert {:ok, %Delegation{}} = Voting.delete_delegation(delegation)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_delegation!(delegation.id) end
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_delegation!(delegation.id, delegation.organization_uuid) end
     end
 
     test "change_delegation/1 returns a delegation changeset" do
