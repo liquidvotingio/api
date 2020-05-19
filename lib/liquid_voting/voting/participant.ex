@@ -23,6 +23,6 @@ defmodule LiquidVoting.Voting.Participant do
     participant
     |> cast(attrs, all_fields)
     |> validate_required(required_fields)
-    |> unique_constraint(:email)
+    |> unique_constraint(:email, name: :uniq_index_organization_uuid_participant_email)
   end
 end
