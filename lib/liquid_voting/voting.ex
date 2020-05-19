@@ -26,7 +26,7 @@ defmodule LiquidVoting.Voting do
       fn ->
         case %Vote{} |> Vote.changeset(attrs) |> Repo.insert() do
           {:ok, vote} ->
-            if delegation = Repo.get_by(Delegation, delegator_id: attrs[:participant_id]) do
+            if delegation = Repo.get_by(Delegation, [delegator_id: attrs[:participant_id], organization_uuid: attrs[:organization_uuid]]) do
               case delete_delegation(delegation) do
                 {:ok, _delegation} -> vote
                 {:error, changeset} -> Repo.rollback(changeset)
@@ -41,50 +41,55 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Returns the list of votes.
+  Returns the list of votes for an organization uuid.
 
   ## Examples
 
-      iex> list_votes()
+      iex> list_votes("a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Vote{}, ...]
 
   """
-  def list_votes do
-    Repo.all(Vote) |> Repo.preload([:participant])
-  end
-
-  @doc """
-  Returns the list of votes for a proposal_url
-
-  ## Examples
-
-      iex> list_votes("https://docs.google.com/document/d/someid")
-      [%Vote{}, ...]
-
-  """
-  def list_votes(proposal_url) do
+  def list_votes(organization_uuid) do
     Vote
-    |> where(proposal_url: ^proposal_url)
+    |> where(organization_uuid: ^organization_uuid)
     |> Repo.all()
     |> Repo.preload([:participant])
   end
 
   @doc """
-  Gets a single vote.
+  Returns the list of votes for a proposal_url and organization uuid
+
+  ## Examples
+
+      iex> list_votes("https://docs.google.com/document/d/someid", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      [%Vote{}, ...]
+
+  """
+  def list_votes(proposal_url, organization_uuid) do
+    Vote
+    |> where([proposal_url: ^proposal_url, organization_uuid: ^organization_uuid])
+    |> Repo.all()
+    |> Repo.preload([:participant])
+  end
+
+  @doc """
+  Gets a single vote by id and organization uuid
 
   Raises `Ecto.NoResultsError` if the Vote does not exist.
 
   ## Examples
 
-      iex> get_vote!(123)
+      iex> get_vote!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Vote{}
 
       iex> get_vote!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_vote!(id) do
-    Repo.get!(Vote, id) |> Repo.preload([:participant])
+  def get_vote!(id, organization_uuid) do
+    Vote
+    |> Repo.get_by!([id: id, organization_uuid: organization_uuid])
+    |> Repo.preload([:participant])
   end
 
   # Just for seeding
@@ -142,35 +147,57 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Returns the list of participants.
+  Returns the list of participants for an organization uuid
 
   ## Examples
 
-      iex> list_participants()
+      iex> list_participants("a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Participant{}, ...]
 
   """
-  def list_participants do
-    Repo.all(Participant)
+  def list_participants(organization_uuid) do
+    Participant
+    |> where(organization_uuid: ^organization_uuid)
+    |> Repo.all()
   end
 
   @doc """
-  Gets a single participant.
+  Gets a single participant for an organization uuid
 
   Raises `Ecto.NoResultsError` if the Participant does not exist.
 
   ## Examples
 
-      iex> get_participant!(123)
+      iex> get_participant!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Participant{}
 
-      iex> get_participant!(456)
+      iex> get_participant!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant!(id), do: Repo.get!(Participant, id)
+  def get_participant!(id, organization_uuid) do
+    Participant
+    |> Repo.get_by!([id: id, organization_uuid: organization_uuid])
+  end
 
-  def get_participant_by_email(email), do: Repo.get_by(Participant, email: email)
+  @doc """
+  Gets a single participant for an organization uuid by their email
+
+  Returns nil if the Participant does not exist.
+
+  ## Examples
+
+      iex> get_participant!("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %Participant{}
+
+      iex> get_participant!("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      nil
+
+  """
+  def get_participant_by_email(email, organization_uuid) do
+    Participant
+    |> Repo.get_by([email: email, organization_uuid: organization_uuid])
+  end
 
   @doc """
   Creates a participant.
@@ -201,7 +228,7 @@ defmodule LiquidVoting.Voting do
     |> Participant.changeset(attrs)
     |> Repo.insert(
       on_conflict: :replace_all_except_primary_key,
-      conflict_target: [:email]
+      conflict_target: [:organization_uuid, :email]
       )
   end
 
@@ -253,34 +280,39 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Returns the list of delegations.
+  Returns the list of delegations for an organization uuid
 
   ## Examples
 
-      iex> list_delegations()
+      iex> list_delegations("a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Delegation{}, ...]
 
   """
-  def list_delegations do
-    Repo.all(Delegation) |> Repo.preload([:delegator,:delegate])
+  def list_delegations(organization_uuid) do
+    Delegation
+    |> where(organization_uuid: ^organization_uuid)
+    |> Repo.all
+    |> Repo.preload([:delegator,:delegate])
   end
 
   @doc """
-  Gets a single delegation.
+  Gets a single delegation for an organization uuid
 
   Raises `Ecto.NoResultsError` if the Delegation does not exist.
 
   ## Examples
 
-      iex> get_delegation!(123)
+      iex> get_delegation!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Delegation{}
 
-      iex> get_delegation!(456)
+      iex> get_delegation!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(id) do
-    Repo.get!(Delegation, id) |> Repo.preload([:delegator,:delegate])
+  def get_delegation!(id, organization_uuid) do
+    Delegation
+    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
+    |> Repo.preload([:delegator,:delegate])
   end
 
   @doc """
