@@ -6,14 +6,17 @@ defmodule LiquidVoting.VotingResults.Result do
     field :no, :integer, default: 0
     field :yes, :integer, default: 0
     field :proposal_url, :string
+    field :organization_uuid, Ecto.UUID
 
     timestamps()
   end
 
   @doc false
   def changeset(result, attrs) do
+    required_fields = [:proposal_url, :organization_uuid]
+    all_fields = [:yes | [:no | required_fields]]
     result
-    |> cast(attrs, [:yes, :no, :proposal_url])
-    |> validate_required([:proposal_url])
+    |> cast(attrs, all_fields)
+    |> validate_required(required_fields)
   end
 end
