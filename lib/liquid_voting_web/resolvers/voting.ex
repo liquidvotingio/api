@@ -2,15 +2,17 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   alias LiquidVoting.{Voting,VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
-  def participants(_, _, _) do
-    {:ok, Voting.list_participants()}
+  def participants(_, _, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.list_participants(org_uuid)}
   end
 
-  def participant(_, %{id: id}, _) do
-    {:ok, Voting.get_participant!(id)}
+  def participant(_, %{id: id}, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.get_participant!(id, org_uuid)}
   end
 
-  def create_participant(_, args, _) do
+  def create_participant(_, args, %{context: %{org_uuid: org_uuid}}) do
+    args = Map.put(args, :org_uuid, org_uuid)
+
     case Voting.create_participant(args) do
       {:error, changeset} ->
         {:error,
@@ -23,34 +25,34 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def votes(_, %{proposal_url: proposal_url}, _) do
-    {:ok, Voting.list_votes(proposal_url)}
+  def votes(_, %{proposal_url: proposal_url}, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.list_votes(proposal_url, org_uuid)}
   end
 
-  def votes(_, _, _) do
-    {:ok, Voting.list_votes()}
+  def votes(_, _, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.list_votes(org_uuid)}
   end
 
-  def vote(_, %{id: id}, _) do
-    {:ok, Voting.get_vote!(id)}
+  def vote(_, %{id: id}, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.get_vote!(id, org_uuid)}
   end
 
-  def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, _) do
-    case Voting.upsert_participant(%{email: email}) do
+  def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{context: %{org_uuid: org_uuid}}) do
+    case Voting.upsert_participant(%{email: email, org_uuid: org_uuid}) do
       {:error, changeset} ->
         {:error,
          message: "Could not create vote with given email",
          details: ChangesetErrors.error_details(changeset)
         }
 
-      {:ok, participant} ->
-        args_with_participant_id = Map.put(args, :participant_id, participant.id)
-
-        create_vote_with_valid_arguments(args_with_participant_id)
+      {:ok, _} ->
+        args = Map.put(args, :org_uuid, org_uuid)
+        create_vote_with_valid_arguments(args)
     end
   end
 
-  def create_vote(_, %{participant_id: _, proposal_url: _, yes: _} = args, _) do
+  def create_vote(_, %{participant_id: _, proposal_url: _, yes: _} = args, %{context: %{org_uuid: org_uuid}}) do
+    args = Map.put(args, :org_uuid, org_uuid)
     create_vote_with_valid_arguments(args)
   end
 
@@ -72,16 +74,16 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def delegations(_, _, _) do
-    {:ok, Voting.list_delegations()}
+  def delegations(_, _, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.list_delegations(org_uuid)}
   end
 
-  def delegation(_, %{id: id}, _) do
-    {:ok, Voting.get_delegation!(id)}
+  def delegation(_, %{id: id}, %{context: %{org_uuid: org_uuid}}) do
+    {:ok, Voting.get_delegation!(id, org_uuid)}
   end
 
-  def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email} = args, _) do
-    case Voting.upsert_participant(%{email: delegator_email}) do
+  def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email} = args, %{context: %{org_uuid: org_uuid}}) do
+    case Voting.upsert_participant(%{email: delegator_email, org_uuid: org_uuid}) do
       {:error, changeset} ->
         {:error,
          message: "Could not create delegation with given email",
@@ -89,7 +91,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         }
 
       {:ok, delegator} ->
-        args_with_delegator_id = Map.put(args, :delegator_id, delegator.id)
+        args = Map.put(args, :delegator_id, delegator.id)
+        args = Map.put(args, :org_uuid, org_uuid)
 
         case Voting.upsert_participant(%{email: delegate_email}) do
           {:error, changeset} ->
@@ -99,13 +102,14 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
             }
 
           {:ok, delegate} ->
-            args_with_both_participant_ids = Map.put(args_with_delegator_id, :delegate_id, delegate.id)
-            create_delegation_with_valid_arguments(args_with_both_participant_ids)
+            args = Map.put(args, :delegate_id, delegate.id)
+            create_delegation_with_valid_arguments(args)
         end
     end
   end
 
-  def create_delegation(_, %{} = args, _) do
+  def create_delegation(_, %{} = args, %{context: %{org_uuid: org_uuid}}) do
+    args = Map.put(args, :org_uuid, org_uuid)
     create_delegation_with_valid_arguments(args)
   end
 

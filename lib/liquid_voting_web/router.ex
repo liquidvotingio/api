@@ -3,6 +3,7 @@ defmodule LiquidVotingWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug LiquidVotingWeb.Plugs.Context
   end
 
   scope "/" do

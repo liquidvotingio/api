@@ -28,7 +28,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{})
+      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
 
       assert vote["participant"]["email"] == context[:new_participant_email]
       assert vote["yes"] == context[:yes]
@@ -46,7 +46,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{})
+      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
 
       assert vote["participant"]["email"] == context[:participant_email]
       assert vote["yes"] == context[:yes]
@@ -69,7 +69,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{})
+      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
 
       assert vote["votingResult"]["yes"] == 1
       assert vote["votingResult"]["no"] == 0
@@ -87,7 +87,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{})
+      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
 
       assert vote["participant"]["email"] == context[:participant_email]
       assert vote["yes"] == context[:yes]
@@ -105,7 +105,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{errors: [%{message: message, details: details}]}} = Absinthe.run(query, Schema, context: %{})
+      {:ok, %{errors: [%{message: message, details: details}]}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
 
       assert message == "Could not create vote"
       assert details == "No participant identifier (id or email) submitted"
