@@ -15,8 +15,10 @@ defmodule LiquidVoting.VotingResults.Result do
   def changeset(result, attrs) do
     required_fields = [:proposal_url, :organization_uuid]
     all_fields = [:yes | [:no | required_fields]]
+
     result
     |> cast(attrs, all_fields)
     |> validate_required(required_fields)
+    |> unique_constraint(:organization_uuid_proposal_url, name: :uniq_index_organization_uuid_proposal_url)
   end
 end
