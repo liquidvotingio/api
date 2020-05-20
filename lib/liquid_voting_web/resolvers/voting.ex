@@ -45,8 +45,9 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
          details: ChangesetErrors.error_details(changeset)
         }
 
-      {:ok, _} ->
+      {:ok, participant} ->
         args = Map.put(args, :organization_uuid, organization_uuid)
+        args = Map.put(args, :participant_id, participant.id)
         create_vote_with_valid_arguments(args)
     end
   end
