@@ -94,7 +94,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         args = Map.put(args, :delegator_id, delegator.id)
         args = Map.put(args, :organization_uuid, organization_uuid)
 
-        case Voting.upsert_participant(%{email: delegate_email}) do
+        case Voting.upsert_participant(%{email: delegate_email, organization_uuid: organization_uuid}) do
           {:error, changeset} ->
             {:error,
              message: "Could not create delegation with given email",
