@@ -97,20 +97,23 @@ defmodule LiquidVoting.VotingResults do
   def get_result!(id), do: Repo.get!(Result, id)
 
   @doc """
-  Gets a single result by its proposal url
+  Gets a single result by its proposal url and organization_uuid
 
   Raises `Ecto.NoResultsError` if the Result does not exist.
 
   ## Examples
 
-      iex> get_result_by_proposal_url("https://www.myproposal.com/")
+      iex> get_result_by_proposal_url("https://www.myproposal.com/", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Result{}
 
-      iex> get_result_by_proposal_url("https://nonexistentproposal.com/")
+      iex> get_result_by_proposal_url("https://nonexistentproposal.com/", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       nil
 
   """
-  def get_result_by_proposal_url(proposal_url), do: Repo.get_by(Result, proposal_url: proposal_url)
+  def get_result_by_proposal_url(proposal_url, organization_uuid) do
+    Result
+    |> Repo.get_by([proposal_url: proposal_url, organization_uuid: organization_uuid])
+  end
 
   @doc """
   Creates a result.

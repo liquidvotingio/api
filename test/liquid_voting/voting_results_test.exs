@@ -65,13 +65,13 @@ defmodule LiquidVoting.VotingResultsTest do
       assert VotingResults.get_result!(result.id) == result
     end
 
-    test "get_result_by_proposal_url/1 returns the result with given proposal_url" do
+    test "get_result_by_proposal_url/2 returns the result with given proposal_url and organization_uuid" do
       result = insert(:voting_result)
-      assert VotingResults.get_result_by_proposal_url(result.proposal_url) == result
+      assert VotingResults.get_result_by_proposal_url(result.proposal_url, result.organization_uuid) == result
     end
 
-    test "get_result_by_proposal_url/1 with invalid data returns error changeset" do
-      assert VotingResults.get_result_by_proposal_url("https://invalid.com") == nil
+    test "get_result_by_proposal_url/2 with invalid data returns nil" do
+      assert VotingResults.get_result_by_proposal_url("https://invalid.com", Ecto.UUID.generate) == nil
     end
 
     test "create_result/1 with valid data creates a result", context do

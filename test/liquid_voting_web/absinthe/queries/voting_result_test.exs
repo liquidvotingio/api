@@ -18,7 +18,7 @@ defmodule LiquidVotingWeb.Absinthe.Queries.VotingResultTest do
       }
       """
 
-      {:ok, %{data: %{"votingResult" => result_payload}}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
+      {:ok, %{data: %{"votingResult" => result_payload}}} = Absinthe.run(query, Schema, context: %{organization_uuid: result.organization_uuid})
 
       assert result_payload["yes"] == result.yes
       assert result_payload["no"] == result.no

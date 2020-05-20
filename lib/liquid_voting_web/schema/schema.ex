@@ -102,7 +102,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :participant, non_null(:participant), resolve: dataloader(Voting)
     field :voting_result, :result,
       resolve: fn vote, _, _ ->
-        {:ok, VotingResults.get_result_by_proposal_url(vote.proposal_url)}
+        {:ok, VotingResults.get_result_by_proposal_url(vote.proposal_url, vote.organization_uuid)}
       end
 
   end
@@ -115,7 +115,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :voting_result, :result,
       resolve: fn delegation, _, _ ->
         if delegation.proposal_url do
-          {:ok, VotingResults.get_result_by_proposal_url(delegation.proposal_url)}
+          {:ok, VotingResults.get_result_by_proposal_url(delegation.proposal_url, delegation.organization_uuid)}
         else
           {:ok, nil}
         end
