@@ -70,7 +70,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         }
 
       {:ok, vote} ->
-        VotingResults.publish_voting_result_change(vote.proposal_url)
+        VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_uuid)
         {:ok, vote}
     end
   end
