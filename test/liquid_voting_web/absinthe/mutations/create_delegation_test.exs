@@ -54,7 +54,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     end
 
     test "including results in response, if present" do
-      insert(:voting_result, proposal_url: @proposal_url)
+      result = insert(:voting_result, proposal_url: @proposal_url)
 
       query = """
       mutation {
@@ -74,7 +74,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate})
+      {:ok, %{data: %{"createDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: result.organization_uuid})
 
       assert delegation["votingResult"]["yes"] == 0
       assert delegation["votingResult"]["no"] == 0
