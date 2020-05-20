@@ -68,33 +68,38 @@ defmodule LiquidVoting.VotingResults do
   end
 
   @doc """
-  Returns the list of results.
+  Returns the list of results in the scope of a organization_uuid.
 
   ## Examples
 
-      iex> list_results()
+      iex> list_results("a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Result{}, ...]
 
   """
-  def list_results do
-    Repo.all(Result)
+  def list_results(organization_uuid) do
+    Result
+    |> where(organization_uuid: ^organization_uuid)
+    |> Repo.all()
   end
 
   @doc """
-  Gets a single result.
+  Gets a single result for an organization_uuid
 
   Raises `Ecto.NoResultsError` if the Result does not exist.
 
   ## Examples
 
-      iex> get_result!(123)
+      iex> get_result!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Result{}
 
-      iex> get_result!(456)
+      iex> get_result!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
-  def get_result!(id), do: Repo.get!(Result, id)
+  def get_result!(id, organization_uuid) do
+    Result
+    |> Repo.get_by!([id: id, organization_uuid: organization_uuid])
+  end
 
   @doc """
   Gets a single result by its proposal url and organization_uuid

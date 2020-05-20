@@ -55,14 +55,14 @@ defmodule LiquidVoting.VotingResultsTest do
       ]
     end
 
-    test "list_results/0 returns all results" do
+    test "list_results/1 returns all results" do
       result = insert(:voting_result)
-      assert VotingResults.list_results() == [result]
+      assert VotingResults.list_results(result.organization_uuid) == [result]
     end
 
-    test "get_result!/1 returns the result with given id" do
+    test "get_result!/2 returns the result with given id" do
       result = insert(:voting_result)
-      assert VotingResults.get_result!(result.id) == result
+      assert VotingResults.get_result!(result.id, result.organization_uuid) == result
     end
 
     test "get_result_by_proposal_url/2 returns the result with given proposal_url and organization_uuid" do
