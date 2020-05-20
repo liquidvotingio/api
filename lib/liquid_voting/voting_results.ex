@@ -48,6 +48,15 @@ defmodule LiquidVoting.VotingResults do
       )
   end
 
+  @doc """
+  Publishes voting result changes to Absinthe's pubsub, so clients can receive updates in real-time
+
+  ## Examples
+
+      iex> publish_voting_result_change("https://www.medium/user/eloquent_proposal", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      :ok
+
+  """
   def publish_voting_result_change(proposal_url, organization_uuid) do
     result = calculate_result!(proposal_url, organization_uuid)
 
