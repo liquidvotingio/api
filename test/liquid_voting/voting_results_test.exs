@@ -8,19 +8,22 @@ defmodule LiquidVoting.VotingResultsTest do
   describe "calculate_result!/1" do
     setup do
       vote = insert(:vote, yes: true)
-      [proposal_url: vote.proposal_url]
+      [
+        proposal_url: vote.proposal_url,
+        organization_uuid: vote.organization_uuid
+      ]
     end
 
     test "returns a result with the number of yes and no votes", context do
-      assert %Result{no: no, yes: yes} = VotingResults.calculate_result!(context[:proposal_url])
+      assert %Result{no: no, yes: yes} = VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
       assert no == 0
       assert yes == 1
     end
 
     test "returns the same result struct for a given proposal_url", context do
-      %Result{id: id} = VotingResults.calculate_result!(context[:proposal_url])
-      insert(:vote, proposal_url: context[:proposal_url])
-      %Result{id: new_id} = VotingResults.calculate_result!(context[:proposal_url])
+      %Result{id: id} = VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
+      insert(:vote, proposal_url: context[:proposal_url], organization_uuid: context[:organization_uuid])
+      %Result{id: new_id} = VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
       assert id == new_id
     end
 
@@ -28,10 +31,27 @@ defmodule LiquidVoting.VotingResultsTest do
 
   describe "create, get and list results" do
     setup do
+      organization_uuid = Ecto.UUID.generate
       [
-        valid_attrs: %{no: 42, yes: 42, proposal_url: "https://proposals.com/1"},
-        update_attrs: %{no: 43, yes: 43, proposal_url: "https://proposals.com/1"},
-        invalid_attrs: %{no: 42, yes: 42, proposal_url: nil}
+        valid_attrs: %{
+          no: 42,
+          yes: 42,
+          proposal_url: "https://proposals.com/1",
+          organization_uuid: organization_uuid
+
+        },
+        update_attrs: %{
+          no: 43,
+          yes: 43,
+          proposal_url: "https://proposals.com/1",
+          organization_uuid: organization_uuid
+        },
+        invalid_attrs: %{
+          no: 42,
+          yes: 42,
+          proposal_url: nil,
+          organization_uuid: organization_uuid
+        }
       ]
     end
 
