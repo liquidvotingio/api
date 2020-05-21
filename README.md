@@ -6,7 +6,7 @@ A liquid voting service that aims to be easily plugged into proposal-making plat
 
 In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-It's deployed on https://liquidvoting.io/api, which you can play with using [this query runner](https://liquidvoting.io/graphiql). See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api). It uses demo auth key and any data will be wiped out eventually.
+It's deployed on https://liquidvoting.io/api. See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api).
 
 There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API. The live API is running on Google Kubernetes Engine. The intention to make the service easily deployable within a microservices/cloud native context.
 
@@ -62,10 +62,6 @@ docker run -it --rm \
   <same options>
   docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
 ```
-
-### Running it on Kubernetes
-
-liquidvoting.io is deployed to a k8s cluster on GKE. If you're curious or would like to deploy this service to your own cluster, the manifests are available on [this repo](https://github.com/oliverbarnes/liquid-voting-k8s).
 
 ### Once you're up and running
 
