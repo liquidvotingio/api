@@ -53,6 +53,11 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Voting.create_delegation(args)
     end
 
+    test "create_delegation/1 with duplicate data returns error changeset", context do
+      Voting.create_delegation(context[:valid_attrs])
+      assert {:error, %Ecto.Changeset{}} = Voting.create_delegation(context[:valid_attrs])
+    end
+
     test "update_delegation/2 with valid data updates the delegation", context do
       delegation = insert(:delegation)
       assert {:ok, %Delegation{} = delegation} = Voting.update_delegation(delegation, context[:update_attrs])
