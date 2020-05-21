@@ -2,15 +2,17 @@
 
 [![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/CI/CD/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?query=workflow%3ACI%2FCD)
 
-Proof of concept for a liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this blog post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
+A liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this blog post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
 
 In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-There's a demo deployed on https://liquidvoting.io/api, which you can play with using [this query runner](https://liquidvoting.io/graphiql). See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api).
+It's deployed on https://liquidvoting.io/api, which you can play with using [this query runner](https://liquidvoting.io/graphiql). See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api). It uses demo auth key and any data will be wiped out eventually.
 
 There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API. The live API is running on Google Kubernetes Engine. The intention to make the service easily deployable within a microservices/cloud native context.
 
-You can follow the [project backlog here](https://github.com/users/oliverbarnes/projects/1). 
+You can follow the [project backlog here](https://github.com/users/oliverbarnes/projects/1).
+
+The live API is getting ready to be used in production platforms. If you're interested, [let me know](mailto:oli.azevedo.barnes@gmail.com) so I can learn more about your project, and I'll provide you with an access key.
 
 ## Concepts and modeling
 
@@ -208,14 +210,3 @@ subscription {
 To see this in action, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through on the first one.
 
 With the examples above, the `yes` count should be `1`, and `no` should be `2` since `liz@somedomain.com` had a delegation from `nelson@somedomain.com`.
-
-## Notes:
-
-* No app auth, few validations, and less test coverage than ideal, to keep prototyping fast (for now).
-* Auth will be implemented as a separate micro-service
-
-## TODO
-
-* next services: [authentication](https://github.com/oliverbarnes/liquid-voting-service/issues/15), [notifications](https://github.com/oliverbarnes/liquid-voting-service/issues/13)
-* logging with ELK stack
-* blockchain integration: Blockstack, possibly others later
