@@ -93,7 +93,9 @@ jobs:
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
         kubectl rollout restart deployment/api-deployment
-        kubectl exec -ti $(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1) \
+        pod=$(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1)
+        kubectl wait --timeout=120s --for=condition=Ready pod/$pod
+        kubectl exec -ti pod/$pod \
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.migrate"
