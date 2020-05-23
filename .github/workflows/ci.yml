@@ -6,8 +6,6 @@ on:
     - master
     paths-ignore:
     - 'README.md'
-    - 'k8s/**'
-    - 'perftest/**'
     - 'LICENSE'
     - 'CODE_OF_CONDUCT.md'
   pull_request:
@@ -15,8 +13,6 @@ on:
     - master
     paths-ignore:
     - 'README.md'
-    - 'k8s/**'
-    - 'perftest/**'
     - 'LICENSE'
     - 'CODE_OF_CONDUCT.md'
 jobs:
