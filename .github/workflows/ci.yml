@@ -51,7 +51,7 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/api
+      IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/image
       TAG: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v1
