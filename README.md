@@ -8,9 +8,9 @@ In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [
 
 It's deployed on https://api.liquidvoting.io. See sample queries below, in [Using the API](https://github.com/liquidvotingio/api#using-the-api).
 
-There's [a dockerized version](https://github.com/liquidvotingio/api/packages) of the API. The live API is running on Google Kubernetes Engine. The intention is to make the service easily deployable within a microservices/cloud native context.
+There's [a dockerized version](https://github.com/liquidvotingio/api/packages/81472) of the API. The live API is running on Google Kubernetes Engine. The intention is to make the service easily deployable within a microservices/cloud native context.
 
-You can follow the [project backlog here](https://github.com/users/oliverbarnes/projects/1).
+You can follow the [project backlog here](https://github.com/orgs/liquidvotingio/projects/1).
 
 The live API is getting ready to be used in production platforms. If you're interested, [let me know](mailto:oli.azevedo.barnes@gmail.com) so I can learn more about your project, and I'll provide you with an access key.
 
