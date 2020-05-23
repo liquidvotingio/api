@@ -9,7 +9,7 @@ defmodule LiquidVotingWeb.Router do
   scope "/" do
     pipe_through :api
 
-    forward "/api", Absinthe.Plug,
+    forward "/", Absinthe.Plug,
       schema: LiquidVotingWeb.Schema.Schema
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,
