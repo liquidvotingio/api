@@ -1,14 +1,14 @@
 # Liquid Voting as a Service
 
-[![Actions Status](https://github.com/oliverbarnes/liquid-voting-service/workflows/CI/CD/badge.svg)](https://github.com/oliverbarnes/liquid-voting-service/actions?query=workflow%3ACI%2FCD)
+[![Actions Status](https://github.com/liquidvotingio/api/workflows/CI/CD/badge.svg)](https://github.com/liquidvotingio/api/actions?query=workflow%3ACI%2FCD)
 
 A liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this blog post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
 
 In this repo there's an Elixir/Phoenix GraphQL API implementing the most basic [liquid democracy](https://en.wikipedia.org/wiki/Liquid_democracy) concepts: participants, proposals, votes and delegations.
 
-It's deployed on https://api.liquidvoting.io. See sample queries below, in [Using the API](https://github.com/oliverbarnes/liquid-voting-service#using-the-api).
+It's deployed on https://api.liquidvoting.io. See sample queries below, in [Using the API](https://github.com/liquidvotingio/api#using-the-api).
 
-There's [a dockerized version](https://github.com/oliverbarnes/liquid-voting-service/packages/81059) of the API. The live API is running on Google Kubernetes Engine. The intention to make the service easily deployable within a microservices/cloud native context.
+There's [a dockerized version](https://github.com/liquidvotingio/api/packages) of the API. The live API is running on Google Kubernetes Engine. The intention is to make the service easily deployable within a microservices/cloud native context.
 
 You can follow the [project backlog here](https://github.com/users/oliverbarnes/projects/1).
 
@@ -50,7 +50,7 @@ docker run -it --rm \
   -e DB_NAME=liquid_voting_dev \
   -e DB_HOST=host.docker.internal \
   -p 4000:4000 \
-  docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest
+  docker.pkg.github.com/liquidvotingio/api/api:latest
 ```
 
 (assuming you already have the database up and running)
@@ -60,7 +60,7 @@ You can run migrations by passing an `eval` command to the containerized app, li
 ```
 docker run -it --rm \
   <same options>
-  docker.pkg.github.com/oliverbarnes/liquid-voting-service/liquid-voting-service:latest eval "LiquidVoting.Release.migrate"
+  docker.pkg.github.com/liquidvotingio/api/api:latest eval "LiquidVoting.Release.migrate"
 ```
 
 ### Once you're up and running
