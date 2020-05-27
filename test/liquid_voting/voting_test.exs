@@ -81,9 +81,24 @@ defmodule LiquidVoting.VotingTest do
       assert Voting.list_votes(vote.proposal_url, vote.organization_uuid) == [vote]
     end
 
-    test "get_vote!/2 returns the vote with given id and organization_uuid" do
+    test "get_vote!/2 returns the vote for given id and organization_uuid" do
       vote = insert(:vote)
       assert Voting.get_vote!(vote.id, vote.organization_uuid) == vote
+    end
+
+    test "get_vote!/3 returns the vote for given email, proposal url and organization_uuid" do
+      vote = insert(:vote)
+      participant = Voting.get_participant!(vote.participant_id, vote.organization_uuid)
+
+      assert Voting.get_vote!(
+        participant.email,
+        vote.proposal_url,
+        vote.organization_uuid
+      ) == vote
+    end
+
+    test "get_vote!/3 raises Ecto.NoResultsError if invalid attrs are passed in" do
+      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!("novote@gmail.com", "https://apropos.com/not", "a6158b19-6bf6-4457-9d13-ef8b141611b4") end
     end
 
     test "update_vote/2 with valid data updates the vote", context do
