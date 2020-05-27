@@ -187,16 +187,35 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant!("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Participant{}
 
-      iex> get_participant!("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       nil
 
   """
   def get_participant_by_email(email, organization_uuid) do
     Participant
     |> Repo.get_by([email: email, organization_uuid: organization_uuid])
+  end
+
+  @doc """
+  Gets a single participant for an organization uuid by their email
+
+  Returns nil if the Participant does not exist.
+
+  ## Examples
+
+      iex> get_participant_by_email!("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %Participant{}
+
+      iex> get_participant_by_email!("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_participant_by_email!(email, organization_uuid) do
+    Participant
+    |> Repo.get_by!([email: email, organization_uuid: organization_uuid])
   end
 
   @doc """

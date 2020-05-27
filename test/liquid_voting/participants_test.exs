@@ -20,9 +20,24 @@ defmodule LiquidVoting.ParticipantsTest do
       assert Voting.get_participant!(participant.id, participant.organization_uuid) == participant
     end
 
-    test "get_participant_by_email/1 returns the participant with given email and organization_uuid" do
+    test "get_participant_by_email/2 returns the participant with given email and organization_uuid" do
       participant = insert(:participant)
       assert Voting.get_participant_by_email(participant.email, participant.organization_uuid) == participant
+    end
+
+    test "get_participant_by_email/2 returns nil when a participant is not found" do
+      assert Voting.get_participant_by_email("non@participant.com", @valid_attrs[:organization_uuid]) == nil
+    end
+
+    test "get_participant_by_email!/2 returns the participant with given email and organization_uuid" do
+      participant = insert(:participant)
+      assert Voting.get_participant_by_email!(participant.email, participant.organization_uuid) == participant
+    end
+
+    test "get_participant_by_email!/2 raises Ecto.NoResultsError when participant is not found" do
+      assert_raise Ecto.NoResultsError, fn ->
+        Voting.get_participant_by_email!("non@participant.com", @valid_attrs[:organization_uuid])
+      end
     end
 
     test "create_participant/1 with valid data creates a participant" do
