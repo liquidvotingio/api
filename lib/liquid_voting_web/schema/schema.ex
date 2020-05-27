@@ -65,6 +65,14 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve &Resolvers.Voting.create_vote/3
     end
 
+    @desc "Delete a vote for a proposal"
+    field :delete_vote, :vote do
+      arg :proposal_url, non_null(:string)
+      arg :participant_id, :id
+      arg :participant_email, :string
+      resolve &Resolvers.Voting.delete_vote/3
+    end
+
     @desc "Create a delegation"
     field :create_delegation, :delegation do
       arg :delegator_id, :id

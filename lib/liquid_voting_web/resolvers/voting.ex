@@ -75,6 +75,12 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
+  def delete_vote(_, %{participant_email: email, proposal_url: proposal_url}, %{context: %{organization_uuid: organization_uuid}}) do
+    Voting.get_vote!(email, proposal_url, organization_uuid) |> Voting.delete_vote
+  rescue 
+    Ecto.NoResultsError -> {:error, message: "No vote found to delete" }
+  end
+
   def delegations(_, _, %{context: %{organization_uuid: organization_uuid}}) do
     {:ok, Voting.list_delegations(organization_uuid)}
   end
