@@ -1,4 +1,5 @@
 .git
+.github
 _build
 deps
 test
