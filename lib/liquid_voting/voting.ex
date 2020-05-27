@@ -92,6 +92,26 @@ defmodule LiquidVoting.Voting do
     |> Repo.preload([:participant])
   end
 
+  @doc """
+  Gets a single vote by participant email, proposal_url and organization uuid
+
+  ## Examples
+
+      iex> get_vote!("alice@email.com, "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %Vote{}
+
+      iex> get_vote!("hasno@votes.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      ** (Ecto.NoResultsError)
+
+
+  """
+  def get_vote!(email, proposal_url, organization_uuid) do
+    participant = get_participant_by_email!(email, organization_uuid)
+    Vote
+    |> Repo.get_by!([participant_id: participant.id, proposal_url: proposal_url, organization_uuid: organization_uuid])
+    |> Repo.preload([:participant])    
+  end
+
   # Just for seeding
   def create_vote!(attrs \\ %{}) do
     %Vote{}
