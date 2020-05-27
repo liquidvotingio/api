@@ -13,19 +13,23 @@ defmodule LiquidVoting.Factory do
   end
 
   def vote_factory do
+    organization_uuid = Ecto.UUID.generate
+
     %Vote{
       yes: true,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
-      participant: build(:participant),
-      organization_uuid: Ecto.UUID.generate
+      participant: build(:participant, organization_uuid: organization_uuid),
+      organization_uuid: organization_uuid
     }
   end
 
   def delegation_factory do
+    organization_uuid = Ecto.UUID.generate
+
     %Delegation{
-      delegator: build(:participant),
-      delegate: build(:participant),
-      organization_uuid: Ecto.UUID.generate
+      delegator: build(:participant, organization_uuid: organization_uuid),
+      delegate: build(:participant, organization_uuid: organization_uuid),
+      organization_uuid: organization_uuid
     }
   end
 
