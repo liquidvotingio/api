@@ -154,6 +154,22 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
+  Deletes a Vote.
+
+  ## Examples
+
+      iex> delete_vote!(vote)
+      %Vote{}
+
+      iex> delete_vote!(vote)
+      Ecto.*Error
+
+  """
+  def delete_vote!(%Vote{} = vote) do
+    Repo.delete!(vote)
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking vote changes.
 
   ## Examples
