@@ -116,7 +116,6 @@ defmodule LiquidVoting.VotingTest do
     test "delete_vote/1 deletes the vote" do
       vote = insert(:vote)
       assert {:ok, %Vote{}} = Voting.delete_vote(vote)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!(vote.id, vote.organization_uuid) end
     end
 
     test "change_vote/1 returns a vote changeset" do
