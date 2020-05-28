@@ -7,10 +7,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
   describe "delete vote" do
     setup do
       vote = insert(:vote)
+      result = insert(:voting_result, yes: 1, proposal_url: vote.proposal_url)
       [
         participant_email: vote.participant.email,
         proposal_url: vote.proposal_url,
-        organization_uuid: vote.organization_uuid
+        organization_uuid: vote.organization_uuid,
+        result: result
       ]
     end
 
@@ -21,6 +23,10 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
           participant {
             email
           }
+          votingResult {
+            yes
+            no
+          }
         }
       }
       """
@@ -28,6 +34,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
       {:ok, %{data: %{"deleteVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert vote["participant"]["email"] == context[:participant_email]
+      assert vote["votingResult"]["yes"] == 0
+      assert vote["votingResult"]["no"] == 0
     end
 
     test "when vote doesn't exist", context do

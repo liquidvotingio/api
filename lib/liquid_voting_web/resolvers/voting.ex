@@ -76,7 +76,9 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   end
 
   def delete_vote(_, %{participant_email: email, proposal_url: proposal_url}, %{context: %{organization_uuid: organization_uuid}}) do
-    Voting.get_vote!(email, proposal_url, organization_uuid) |> Voting.delete_vote
+    deleted_vote = Voting.get_vote!(email, proposal_url, organization_uuid) |> Voting.delete_vote!
+    VotingResults.publish_voting_result_change(deleted_vote.proposal_url, deleted_vote.organization_uuid)
+    {:ok, deleted_vote}
   rescue 
     Ecto.NoResultsError -> {:error, message: "No vote found to delete" }
   end
