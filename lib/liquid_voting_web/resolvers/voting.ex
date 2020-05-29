@@ -1,5 +1,6 @@
 defmodule LiquidVotingWeb.Resolvers.Voting do
   alias LiquidVoting.{Voting,VotingResults}
+  alias LiquidVoting.Delegations
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def participants(_, _, %{context: %{organization_uuid: organization_uuid}}) do
@@ -84,11 +85,11 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   end
 
   def delegations(_, _, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.list_delegations(organization_uuid)}
+    {:ok, Delegations.list_delegations(organization_uuid)}
   end
 
   def delegation(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.get_delegation!(id, organization_uuid)}
+    {:ok, Delegations.get_delegation!(id, organization_uuid)}
   end
 
   def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email} = args, %{context: %{organization_uuid: organization_uuid}}) do
@@ -123,7 +124,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   end
 
   def create_delegation_with_valid_arguments(args) do
-    case Voting.create_delegation(args) do
+    case Delegations.create_delegation(args) do
       {:error, changeset} ->
         {:error,
          message: "Could not create delegation",

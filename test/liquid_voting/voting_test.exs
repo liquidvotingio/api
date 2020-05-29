@@ -3,7 +3,8 @@ defmodule LiquidVoting.VotingTest do
   import LiquidVoting.Factory
 
   alias LiquidVoting.Voting
-  alias LiquidVoting.Voting.{Vote, Delegation}
+  alias LiquidVoting.Voting.Vote
+  alias LiquidVoting.Delegations.Delegation
 
   describe "votes" do
     setup do
