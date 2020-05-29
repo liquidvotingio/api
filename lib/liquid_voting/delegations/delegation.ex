@@ -1,4 +1,4 @@
-defmodule LiquidVoting.Voting.Delegation do
+defmodule LiquidVoting.Delegations.Delegation do
   use Ecto.Schema
   import Ecto.Changeset
 

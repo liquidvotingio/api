@@ -1,7 +1,8 @@
 defmodule LiquidVoting.Factory do
   use ExMachina.Ecto, repo: LiquidVoting.Repo
 
-  alias LiquidVoting.Voting.{Participant,Vote,Delegation}
+  alias LiquidVoting.Voting.{Vote,Participant}
+  alias LiquidVoting.Delegations.Delegation
   alias LiquidVoting.VotingResults.Result
 
   def participant_factory do
