@@ -67,4 +67,11 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   end
 
   ## Delete global delegations
+  def delete_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email}, %{context: %{organization_uuid: organization_uuid}}) do
+    deleted_delegation = Delegations.get_delegation!(delegator_email, delegate_email, organization_uuid) |> Delegations.delete_delegation!
+    # VotingResults.publish_voting_result_change(proposal_url, organization_uuid)
+    {:ok, deleted_delegation}
+  rescue 
+    Ecto.NoResultsError -> {:error, message: "No delegation found to delete" }
+  end
 end

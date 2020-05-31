@@ -51,10 +51,10 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> get_delegation!("delegator@email.com", "delegate@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!("delegator@email.com", "delegate@email.com", "https://aproposal.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Delegation{}
 
-      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com" "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com", "https://aproposal.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
@@ -64,6 +64,28 @@ defmodule LiquidVoting.Delegations do
 
     Delegation
     |> Repo.get_by!([delegator_id: delegator.id, delegate_id: delegate.id, proposal_url: proposal_url, organization_uuid: organization_uuid])
+  end
+
+  @doc """
+  Gets a single global delegation by delegator email, delegate email and organization uuid
+
+  Raises `Ecto.NoResultsError` if the Delegation does not exist.
+
+  ## Examples
+
+      iex> get_delegation!("delegator@email.com", "delegate@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %Delegation{}
+
+      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_delegation!(delegator_email, delegate_email, organization_uuid) do
+    delegator = Voting.get_participant_by_email!(delegator_email, organization_uuid)
+    delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
+
+    Delegation
+    |> Repo.get_by!([delegator_id: delegator.id, delegate_id: delegate.id, organization_uuid: organization_uuid])
   end
 
   @doc """

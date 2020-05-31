@@ -55,4 +55,47 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       assert message == "No delegation found to delete"
     end
   end
+
+  describe "delete global delegation" do
+    setup do
+      delegation = insert(:delegation)
+      [
+        delegator_email: delegation.delegator.email,
+        delegate_email: delegation.delegate.email,
+        organization_uuid: delegation.organization_uuid
+      ]
+    end
+
+    test "with participant emails", context do
+      query = """
+      mutation {
+        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}") {
+          proposalUrl
+        }
+      }
+      """
+
+      {:ok, %{data: %{"deleteDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+
+      assert delegation["proposalUrl"] == context[:proposal_url]
+    end
+
+    test "when delegation doesn't exist", context do
+      query = """
+      mutation {
+        deleteDelegation(delegatorEmail: "random@person.com", delegateEmail: "random2@person.com") {
+          proposalUrl
+          votingResult {
+            yes
+            no
+          }
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message}]}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+
+      assert message == "No delegation found to delete"
+    end
+  end
 end
