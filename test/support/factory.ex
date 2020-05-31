@@ -34,6 +34,17 @@ defmodule LiquidVoting.Factory do
     }
   end
 
+  def delegation_for_proposal_factory do
+    organization_uuid = Ecto.UUID.generate
+
+    %Delegation{
+      delegator: build(:participant, organization_uuid: organization_uuid),
+      delegate: build(:participant, organization_uuid: organization_uuid),
+      proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
+      organization_uuid: organization_uuid
+    }
+  end
+
   def voting_result_factory do
     %Result{
       no: 0,
