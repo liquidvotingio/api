@@ -11,6 +11,9 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     {:ok, Delegations.get_delegation!(id, organization_uuid)}
   end
 
+  # Will add participants to the db if they don't exist yet, or fetch them if they do. 
+  # Their ids are used for delegator_id and delegate_id when inserting the delegation
+  # with create_delegation_with_valid_arguments/1
   def create_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email} = args, %{context: %{organization_uuid: organization_uuid}}) do
     case Voting.upsert_participant(%{email: delegator_email, organization_uuid: organization_uuid}) do
       {:error, changeset} ->
