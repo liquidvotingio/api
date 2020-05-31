@@ -82,6 +82,16 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg :proposal_url, :string
       resolve &Resolvers.Delegations.create_delegation/3
     end
+
+    @desc "Delete a delegation"
+    field :delete_delegation, :delegation do
+      arg :delegator_id, :id
+      arg :delegate_id, :id
+      arg :delegator_email, :string
+      arg :delegate_email, :string
+      arg :proposal_url, :string
+      resolve &Resolvers.Delegations.delete_delegation/3
+    end
   end
 
   subscription do
