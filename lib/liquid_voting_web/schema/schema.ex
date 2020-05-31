@@ -38,13 +38,13 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Get a list of delegations"
     field :delegations, list_of(:delegation) do
-      resolve &Resolvers.Voting.delegations/3
+      resolve &Resolvers.Delegations.delegations/3
     end
 
     @desc "Get a delegation by its id"
     field :delegation, :delegation do
       arg :id, non_null(:id)
-      resolve &Resolvers.Voting.delegation/3
+      resolve &Resolvers.Delegations.delegation/3
     end
   end
 
@@ -80,7 +80,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg :delegator_email, :string
       arg :delegate_email, :string
       arg :proposal_url, :string
-      resolve &Resolvers.Voting.create_delegation/3
+      resolve &Resolvers.Delegations.create_delegation/3
     end
   end
 
@@ -143,6 +143,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     loader =
       Dataloader.new
       |> Dataloader.add_source(Voting, source)
+      |> Dataloader.add_source(Delegations, source)
 
     Map.put(ctx, :loader, loader)
   end
