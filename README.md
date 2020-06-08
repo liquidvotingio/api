@@ -65,7 +65,13 @@ docker run -it --rm \
 
 ### Once you're up and running
 
-You can use [Absinthe](https://absinthe-graphql.org/)'s handy query runner GUI by opening [http://localhost:4000/graphiql](http://localhost:4000/graphiql).
+Point a [GraphiQL app](https://www.electronjs.org/apps/graphiql) to http://localhost:4000/, then configure a `Org-UUID` header:
+
+```json
+{ "Org-UUID": "b7a9cae5-6e3a-48b1-8730-8b5c8d6c9b5a"}
+```
+
+You can then use the queries below to interact with the API.
 
 ## Using the API
 
