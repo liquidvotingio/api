@@ -67,8 +67,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
           }
           proposalUrl
           votingResult {
-            yes
-            no
+            in_favor
+            against
           }
         }
       }
@@ -76,8 +76,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       {:ok, %{data: %{"createDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: result.organization_uuid})
 
-      assert delegation["votingResult"]["yes"] == 0
-      assert delegation["votingResult"]["no"] == 0
+      assert delegation["votingResult"]["in_favor"] == 0
+      assert delegation["votingResult"]["against"] == 0
     end
   end
 

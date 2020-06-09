@@ -14,10 +14,10 @@ defmodule LiquidVoting.VotingResultsTest do
       ]
     end
 
-    test "returns a result with the number of yes and no votes", context do
-      assert %Result{no: no, yes: yes} = VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
-      assert no == 0
-      assert yes == 1
+    test "returns a result with the number of in_favor and no votes", context do
+      assert %Result{in_favor: in_favor, against: against} = VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
+      assert in_favor == 1
+      assert against == 0
     end
 
     test "returns the same result struct for a given proposal_url", context do
@@ -34,21 +34,21 @@ defmodule LiquidVoting.VotingResultsTest do
       organization_uuid = Ecto.UUID.generate
       [
         valid_attrs: %{
-          no: 42,
-          yes: 42,
+          in_favor: 42,
+          against: 42,
           proposal_url: "https://proposals.com/1",
           organization_uuid: organization_uuid
 
         },
         update_attrs: %{
-          no: 43,
-          yes: 43,
+          in_favor: 43,
+          against: 43,
           proposal_url: "https://proposals.com/1",
           organization_uuid: organization_uuid
         },
         invalid_attrs: %{
-          no: 42,
-          yes: 42,
+          in_favor: 42,
+          against: 42,
           proposal_url: nil,
           organization_uuid: organization_uuid
         }
@@ -76,8 +76,8 @@ defmodule LiquidVoting.VotingResultsTest do
 
     test "create_result/1 with valid data creates a result", context do
       assert {:ok, %Result{} = result} = VotingResults.create_result(context[:valid_attrs])
-      assert result.no == 42
-      assert result.yes == 42
+      assert result.in_favor == 42
+      assert result.against == 42
     end
 
     test "create_result/1 with invalid data returns error changeset", context do

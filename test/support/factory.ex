@@ -47,8 +47,8 @@ defmodule LiquidVoting.Factory do
 
   def voting_result_factory do
     %Result{
-      no: 0,
-      yes: 0,
+      in_favor: 0,
+      against: 0,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
       organization_uuid: Ecto.UUID.generate
     }

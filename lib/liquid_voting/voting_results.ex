@@ -23,8 +23,8 @@ defmodule LiquidVoting.VotingResults do
     votes = Voting.list_votes(proposal_url, organization_uuid)
 
     attrs = %{
-      yes: 0,
-      no: 0,
+      in_favor: 0,
+      against: 0,
       proposal_url: proposal_url,
       organization_uuid: organization_uuid
     }
@@ -34,9 +34,9 @@ defmodule LiquidVoting.VotingResults do
         {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
         if vote.yes do
-          Map.update!(attrs, :yes, &(&1 + vote.weight))
+          Map.update!(attrs, :in_favor, &(&1 + vote.weight))
         else
-          Map.update!(attrs, :no, &(&1 + vote.weight))
+          Map.update!(attrs, :against, &(&1 + vote.weight))
         end
       end
 

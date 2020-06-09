@@ -142,8 +142,8 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
   object :result do
     field :id, non_null(:id)
-    field :yes, non_null(:integer)
-    field :no, non_null(:integer)
+    field :in_favor, non_null(:integer)
+    field :against, non_null(:integer)
     field :proposal_url, non_null(:string)
   end
 

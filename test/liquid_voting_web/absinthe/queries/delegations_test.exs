@@ -19,8 +19,8 @@ defmodule LiquidVotingWeb.Absinthe.Queries.DelegationsTest do
             email
           }
           votingResult {
-            yes
-            no
+            in_favor
+            against
             proposalUrl
           } 
         }
