@@ -1,6 +1,6 @@
 # Liquid Voting as a Service
 
-[![Actions Status](https://github.com/liquidvotingio/api/workflows/CI/CD/badge.svg)](https://github.com/liquidvotingio/api/actions?query=workflow%3ACI%2FCD)
+[![Actions Status](https://github.com/liquidvotingio/api/workflows/CD/badge.svg)](https://github.com/liquidvotingio/api/actions?query=workflow%3ACD)
 
 A liquid voting service that aims to be easily plugged into proposal-making platforms of different kinds. Learn more about the idea and motivation [on this blog post](https://medium.com/@oliver_azevedo_barnes/liquid-voting-as-a-service-c6e17b81ac1b).
 
