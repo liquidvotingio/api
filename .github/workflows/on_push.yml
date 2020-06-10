@@ -8,13 +8,6 @@ on:
     - 'README.md'
     - 'LICENSE'
     - 'CODE_OF_CONDUCT.md'
-  pull_request:
-    branches:
-    - master
-    paths-ignore:
-    - 'README.md'
-    - 'LICENSE'
-    - 'CODE_OF_CONDUCT.md'
 
 jobs:
   tests:
@@ -48,7 +41,6 @@ jobs:
         POSTGRES_HOST: postgres
 
   build-publish:
-    if: github.event_name == 'push'
     name: Build & Publish Docker Image
     needs: [tests]
     runs-on: ubuntu-latest
@@ -72,7 +64,6 @@ jobs:
         docker push $IMAGE_NAME
 
   deploy:
-    if: github.event_name == 'push'
     name: Deploy to GKE
     needs: [build-publish]
     runs-on: ubuntu-latest
