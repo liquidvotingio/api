@@ -3,8 +3,8 @@ defmodule LiquidVoting.VotingResults.Result do
   import Ecto.Changeset
 
   schema "results" do
-    field :no, :integer, default: 0
-    field :yes, :integer, default: 0
+    field :in_favor, :integer, default: 0
+    field :against, :integer, default: 0
     field :proposal_url, :string
     field :organization_uuid, Ecto.UUID
 
@@ -14,7 +14,7 @@ defmodule LiquidVoting.VotingResults.Result do
   @doc false
   def changeset(result, attrs) do
     required_fields = [:proposal_url, :organization_uuid]
-    all_fields = [:yes | [:no | required_fields]]
+    all_fields = [:in_favor | [:against | required_fields]]
 
     result
     |> cast(attrs, all_fields)

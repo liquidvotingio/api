@@ -63,8 +63,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
           yes
           proposalUrl
           votingResult {
-            yes
-            no
+            in_favor
+            against
           }
         }
       }
@@ -72,8 +72,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
 
       {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
-      assert vote["votingResult"]["yes"] == 1
-      assert vote["votingResult"]["no"] == 0
+      assert vote["votingResult"]["in_favor"] == 1
+      assert vote["votingResult"]["against"] == 0
     end
 
     test "with participant's id", context do
