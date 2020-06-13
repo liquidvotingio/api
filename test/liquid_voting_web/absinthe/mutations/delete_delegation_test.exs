@@ -8,7 +8,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
     setup do
       delegation = insert(:delegation_for_proposal)
       insert(:vote, participant: delegation.delegate, proposal_url: delegation.proposal_url, organization_uuid: delegation.organization_uuid)
-      insert(:voting_result, yes: 2, proposal_url: delegation.proposal_url, organization_uuid: delegation.organization_uuid)
+      insert(:voting_result, in_favor: 2, proposal_url: delegation.proposal_url, organization_uuid: delegation.organization_uuid)
       [
         delegator_email: delegation.delegator.email,
         delegate_email: delegation.delegate.email,
@@ -23,8 +23,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}", proposalUrl: "#{context[:proposal_url]}") {
           proposalUrl
           votingResult {
-            yes
-            no
+            in_favor
+            against
           }
         }
       }
@@ -33,8 +33,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       {:ok, %{data: %{"deleteDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert delegation["proposalUrl"] == context[:proposal_url]
-      assert delegation["votingResult"]["yes"] == 1
-      assert delegation["votingResult"]["no"] == 0
+      assert delegation["votingResult"]["in_favor"] == 1
+      assert delegation["votingResult"]["against"] == 0
     end
 
     test "when delegation doesn't exist", context do
@@ -43,8 +43,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         deleteDelegation(delegatorEmail: "random@person.com", delegateEmail: "random2@person.com", proposalUrl: "https://random.com") {
           proposalUrl
           votingResult {
-            yes
-            no
+            in_favor
+            against
           }
         }
       }
@@ -86,8 +86,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         deleteDelegation(delegatorEmail: "random@person.com", delegateEmail: "random2@person.com") {
           proposalUrl
           votingResult {
-            yes
-            no
+            in_favor
+            against
           }
         }
       }
