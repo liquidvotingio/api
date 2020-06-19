@@ -105,7 +105,7 @@ mutation {
     }
     yes
     votingResult {
-      in_favor
+      inFavor
       against
     }
   }
@@ -190,7 +190,7 @@ query {
 
 query {
   votingResult(proposalUrl: "https://github.com/user/repo/pulls/15") {
-    in_favor
+    inFavor
     against
     proposalUrl
   }
@@ -202,13 +202,13 @@ And [subscribe](https://github.com/absinthe-graphql/absinthe/blob/master/guides/
 ```
 subscription {
   votingResultChange(proposalUrl:"https://github.com/user/repo/pulls/15") {
-    in_favor
+    inFavor
     against
-    proposal_url
+    proposalUrl
   }
 }
 ```
 
 To see this in action, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through on the first one.
 
-With the examples above, the `in_favor` count should be `1`, and `against` should be `2` since `liz@somedomain.com` had a delegation from `nelson@somedomain.com`.
+With the examples above, the `inFavor` count should be `1`, and `against` should be `2` since `liz@somedomain.com` had a delegation from `nelson@somedomain.com`.
