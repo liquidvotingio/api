@@ -43,7 +43,7 @@ defmodule LiquidVoting.VotingResults do
     %Result{}
     |> Result.changeset(attrs)
     |> Repo.insert!(
-      on_conflict: :replace_all_except_primary_key,
+      on_conflict: {:replace_all_except, [:id]},
       conflict_target: [:organization_uuid, :proposal_url]
       )
   end
