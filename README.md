@@ -30,7 +30,7 @@ The syntax for subscribing, and for all other queries and mutations, can be seen
 
 ### Building from the repo
 
-You'll need Elixir 1.9, Phoenix 1.4.10 and Postgres 10 installed.
+You'll need Elixir 1.10, Phoenix 1.4.10 and Postgres 10 installed.
 
 Clone the repo and:
 
