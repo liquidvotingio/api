@@ -7,8 +7,19 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
   describe "delete delegation specific to a proposal" do
     setup do
       delegation = insert(:delegation_for_proposal)
-      insert(:vote, participant: delegation.delegate, proposal_url: delegation.proposal_url, organization_uuid: delegation.organization_uuid)
-      insert(:voting_result, in_favor: 2, proposal_url: delegation.proposal_url, organization_uuid: delegation.organization_uuid)
+
+      insert(:vote,
+        participant: delegation.delegate,
+        proposal_url: delegation.proposal_url,
+        organization_uuid: delegation.organization_uuid
+      )
+
+      insert(:voting_result,
+        in_favor: 2,
+        proposal_url: delegation.proposal_url,
+        organization_uuid: delegation.organization_uuid
+      )
+
       [
         delegator_email: delegation.delegator.email,
         delegate_email: delegation.delegate.email,
@@ -20,7 +31,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
     test "with participant emails", context do
       query = """
       mutation {
-        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}", proposalUrl: "#{context[:proposal_url]}") {
+        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{
+        context[:delegate_email]
+      }", proposalUrl: "#{context[:proposal_url]}") {
           proposalUrl
           votingResult {
             in_favor
@@ -30,7 +43,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       }
       """
 
-      {:ok, %{data: %{"deleteDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"deleteDelegation" => delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert delegation["proposalUrl"] == context[:proposal_url]
       assert delegation["votingResult"]["in_favor"] == 1
@@ -50,7 +64,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       }
       """
 
-      {:ok, %{errors: [%{message: message}]}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{errors: [%{message: message}]}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert message == "No delegation found to delete"
     end
@@ -59,6 +74,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
   describe "delete global delegation" do
     setup do
       delegation = insert(:delegation)
+
       [
         delegator_email: delegation.delegator.email,
         delegate_email: delegation.delegate.email,
@@ -69,13 +85,16 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
     test "with participant emails", context do
       query = """
       mutation {
-        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}") {
+        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{
+        context[:delegate_email]
+      }") {
           proposalUrl
         }
       }
       """
 
-      {:ok, %{data: %{"deleteDelegation" => delegation}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"deleteDelegation" => delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert delegation["proposalUrl"] == context[:proposal_url]
     end
@@ -93,7 +112,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       }
       """
 
-      {:ok, %{errors: [%{message: message}]}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{errors: [%{message: message}]}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert message == "No delegation found to delete"
     end

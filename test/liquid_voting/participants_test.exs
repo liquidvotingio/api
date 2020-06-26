@@ -6,8 +6,16 @@ defmodule LiquidVoting.ParticipantsTest do
   alias LiquidVoting.Voting.Participant
 
   describe "participants" do
-    @valid_attrs %{name: "some name", email: "some@email.com", organization_uuid: Ecto.UUID.generate}
-    @update_attrs %{name: "some updated name", email: "another@email.com", organization_uuid: Ecto.UUID.generate}
+    @valid_attrs %{
+      name: "some name",
+      email: "some@email.com",
+      organization_uuid: Ecto.UUID.generate()
+    }
+    @update_attrs %{
+      name: "some updated name",
+      email: "another@email.com",
+      organization_uuid: Ecto.UUID.generate()
+    }
     @invalid_attrs %{email: nil, organization_uuid: nil}
 
     test "list_participants/1 returns all participants for an organization_uuid" do
@@ -22,16 +30,23 @@ defmodule LiquidVoting.ParticipantsTest do
 
     test "get_participant_by_email/2 returns the participant with given email and organization_uuid" do
       participant = insert(:participant)
-      assert Voting.get_participant_by_email(participant.email, participant.organization_uuid) == participant
+
+      assert Voting.get_participant_by_email(participant.email, participant.organization_uuid) ==
+               participant
     end
 
     test "get_participant_by_email/2 returns nil when a participant is not found" do
-      assert Voting.get_participant_by_email("non@participant.com", @valid_attrs[:organization_uuid]) == nil
+      assert Voting.get_participant_by_email(
+               "non@participant.com",
+               @valid_attrs[:organization_uuid]
+             ) == nil
     end
 
     test "get_participant_by_email!/2 returns the participant with given email and organization_uuid" do
       participant = insert(:participant)
-      assert Voting.get_participant_by_email!(participant.email, participant.organization_uuid) == participant
+
+      assert Voting.get_participant_by_email!(participant.email, participant.organization_uuid) ==
+               participant
     end
 
     test "get_participant_by_email!/2 raises Ecto.NoResultsError when participant is not found" do
@@ -75,7 +90,10 @@ defmodule LiquidVoting.ParticipantsTest do
 
     test "update_participant/2 with valid data updates the participant" do
       participant = insert(:participant)
-      assert {:ok, %Participant{} = participant} = Voting.update_participant(participant, @update_attrs)
+
+      assert {:ok, %Participant{} = participant} =
+               Voting.update_participant(participant, @update_attrs)
+
       assert participant.name == "some updated name"
     end
 
@@ -88,7 +106,10 @@ defmodule LiquidVoting.ParticipantsTest do
     test "delete_participant/1 deletes the participant" do
       participant = insert(:participant)
       assert {:ok, %Participant{}} = Voting.delete_participant(participant)
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_participant!(participant.id, participant.organization_uuid) end
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Voting.get_participant!(participant.id, participant.organization_uuid)
+      end
     end
 
     test "change_participant/1 returns a participant changeset" do

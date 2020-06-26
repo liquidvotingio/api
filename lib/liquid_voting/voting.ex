@@ -6,7 +6,7 @@ defmodule LiquidVoting.Voting do
   import Ecto.Query, warn: false
   alias LiquidVoting.Repo
 
-  alias LiquidVoting.Voting.{Vote,Participant}
+  alias LiquidVoting.Voting.{Vote, Participant}
   alias LiquidVoting.Delegations
   alias LiquidVoting.Delegations.Delegation
 
@@ -24,22 +24,26 @@ defmodule LiquidVoting.Voting do
 
   """
   def create_vote(attrs \\ %{}) do
-    Repo.transaction(
-      fn ->
-        case %Vote{} |> Vote.changeset(attrs) |> Repo.insert() do
-          {:ok, vote} ->
-            if delegation = Repo.get_by(Delegation, [delegator_id: attrs[:participant_id], organization_uuid: attrs[:organization_uuid]]) do
-              case Delegations.delete_delegation(delegation) do
-                {:ok, _delegation} -> vote
-                {:error, changeset} -> Repo.rollback(changeset)
-              end
-            else
-              vote
+    Repo.transaction(fn ->
+      case %Vote{} |> Vote.changeset(attrs) |> Repo.insert() do
+        {:ok, vote} ->
+          if delegation =
+               Repo.get_by(Delegation,
+                 delegator_id: attrs[:participant_id],
+                 organization_uuid: attrs[:organization_uuid]
+               ) do
+            case Delegations.delete_delegation(delegation) do
+              {:ok, _delegation} -> vote
+              {:error, changeset} -> Repo.rollback(changeset)
             end
-          {:error, changeset} -> Repo.rollback(changeset)
-        end
+          else
+            vote
+          end
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
       end
-    )
+    end)
   end
 
   @doc """
@@ -69,7 +73,7 @@ defmodule LiquidVoting.Voting do
   """
   def list_votes(proposal_url, organization_uuid) do
     Vote
-    |> where([proposal_url: ^proposal_url, organization_uuid: ^organization_uuid])
+    |> where(proposal_url: ^proposal_url, organization_uuid: ^organization_uuid)
     |> Repo.all()
     |> Repo.preload([:participant])
   end
@@ -90,7 +94,7 @@ defmodule LiquidVoting.Voting do
   """
   def get_vote!(id, organization_uuid) do
     Vote
-    |> Repo.get_by!([id: id, organization_uuid: organization_uuid])
+    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
     |> Repo.preload([:participant])
   end
 
@@ -109,9 +113,14 @@ defmodule LiquidVoting.Voting do
   """
   def get_vote!(email, proposal_url, organization_uuid) do
     participant = get_participant_by_email!(email, organization_uuid)
+
     Vote
-    |> Repo.get_by!([participant_id: participant.id, proposal_url: proposal_url, organization_uuid: organization_uuid])
-    |> Repo.preload([:participant])    
+    |> Repo.get_by!(
+      participant_id: participant.id,
+      proposal_url: proposal_url,
+      organization_uuid: organization_uuid
+    )
+    |> Repo.preload([:participant])
   end
 
   # Just for seeding
@@ -215,7 +224,7 @@ defmodule LiquidVoting.Voting do
   """
   def get_participant!(id, organization_uuid) do
     Participant
-    |> Repo.get_by!([id: id, organization_uuid: organization_uuid])
+    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
   end
 
   @doc """
@@ -234,7 +243,7 @@ defmodule LiquidVoting.Voting do
   """
   def get_participant_by_email(email, organization_uuid) do
     Participant
-    |> Repo.get_by([email: email, organization_uuid: organization_uuid])
+    |> Repo.get_by(email: email, organization_uuid: organization_uuid)
   end
 
   @doc """
@@ -253,7 +262,7 @@ defmodule LiquidVoting.Voting do
   """
   def get_participant_by_email!(email, organization_uuid) do
     Participant
-    |> Repo.get_by!([email: email, organization_uuid: organization_uuid])
+    |> Repo.get_by!(email: email, organization_uuid: organization_uuid)
   end
 
   @doc """
@@ -286,7 +295,7 @@ defmodule LiquidVoting.Voting do
     |> Repo.insert(
       on_conflict: {:replace_all_except, [:id]},
       conflict_target: [:organization_uuid, :email]
-      )
+    )
   end
 
   @doc """

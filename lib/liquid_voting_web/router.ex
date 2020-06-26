@@ -14,8 +14,6 @@ defmodule LiquidVotingWeb.Router do
       socket: LiquidVotingWeb.UserSocket,
       interface: :simple
 
-    forward "/", Absinthe.Plug,
-      schema: LiquidVotingWeb.Schema.Schema
-
+    forward "/", Absinthe.Plug, schema: LiquidVotingWeb.Schema.Schema
   end
 end
