@@ -4,10 +4,9 @@ defmodule LiquidVoting.Delegations do
   """
 
   import Ecto.Query, warn: false
-  alias LiquidVoting.Repo
 
-  alias LiquidVoting.Delegations.Delegation
-  alias LiquidVoting.Voting
+  alias __MODULE__.Delegation
+  alias LiquidVoting.{Repo, Voting}
 
   @doc """
   Returns the list of delegations for an organization uuid
@@ -63,8 +62,8 @@ defmodule LiquidVoting.Delegations do
     delegator = Voting.get_participant_by_email!(delegator_email, organization_uuid)
     delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
 
-    Delegation
-    |> Repo.get_by!(
+    Repo.get_by!(
+      Delegation,
       delegator_id: delegator.id,
       delegate_id: delegate.id,
       proposal_url: proposal_url,
@@ -90,8 +89,8 @@ defmodule LiquidVoting.Delegations do
     delegator = Voting.get_participant_by_email!(delegator_email, organization_uuid)
     delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
 
-    Delegation
-    |> Repo.get_by!(
+    Repo.get_by!(
+      Delegation,
       delegator_id: delegator.id,
       delegate_id: delegate.id,
       organization_uuid: organization_uuid
@@ -152,9 +151,7 @@ defmodule LiquidVoting.Delegations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_delegation(%Delegation{} = delegation) do
-    Repo.delete(delegation)
-  end
+  def delete_delegation(%Delegation{} = delegation), do: Repo.delete(delegation)
 
   @doc """
   Deletes a Delegation.
@@ -168,9 +165,7 @@ defmodule LiquidVoting.Delegations do
       ** (Ecto.NoResultsError)
 
   """
-  def delete_delegation!(%Delegation{} = delegation) do
-    Repo.delete!(delegation)
-  end
+  def delete_delegation!(%Delegation{} = delegation), do: Repo.delete!(delegation)
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking delegation changes.
@@ -181,7 +176,5 @@ defmodule LiquidVoting.Delegations do
       %Ecto.Changeset{source: %Delegation{}}
 
   """
-  def change_delegation(%Delegation{} = delegation) do
-    Delegation.changeset(delegation, %{})
-  end
+  def change_delegation(%Delegation{} = delegation), do: Delegation.changeset(delegation, %{})
 end
