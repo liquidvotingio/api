@@ -39,3 +39,18 @@ jobs:
         MIX_ENV: test
         # refers to the service name, since we're running on containers
         POSTGRES_HOST: postgres
+
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    container:
+      image: elixir:1.10.2-slim
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dependencies
+      run: |
+        mix local.rebar --force
+        mix local.hex --force
+        mix deps.get
+    - name: Run Formatter
+      run: mix format --check-formatted
