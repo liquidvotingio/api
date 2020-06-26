@@ -8,6 +8,7 @@ defmodule LiquidVoting.Delegations do
 
   alias LiquidVoting.Delegations.Delegation
   alias LiquidVoting.Voting
+
   @doc """
   Returns the list of delegations for an organization uuid
 
@@ -20,8 +21,8 @@ defmodule LiquidVoting.Delegations do
   def list_delegations(organization_uuid) do
     Delegation
     |> where(organization_uuid: ^organization_uuid)
-    |> Repo.all
-    |> Repo.preload([:delegator,:delegate])
+    |> Repo.all()
+    |> Repo.preload([:delegator, :delegate])
   end
 
   @doc """
@@ -41,7 +42,7 @@ defmodule LiquidVoting.Delegations do
   def get_delegation!(id, organization_uuid) do
     Delegation
     |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
-    |> Repo.preload([:delegator,:delegate])
+    |> Repo.preload([:delegator, :delegate])
   end
 
   @doc """
@@ -63,7 +64,12 @@ defmodule LiquidVoting.Delegations do
     delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
 
     Delegation
-    |> Repo.get_by!([delegator_id: delegator.id, delegate_id: delegate.id, proposal_url: proposal_url, organization_uuid: organization_uuid])
+    |> Repo.get_by!(
+      delegator_id: delegator.id,
+      delegate_id: delegate.id,
+      proposal_url: proposal_url,
+      organization_uuid: organization_uuid
+    )
   end
 
   @doc """
@@ -85,7 +91,11 @@ defmodule LiquidVoting.Delegations do
     delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
 
     Delegation
-    |> Repo.get_by!([delegator_id: delegator.id, delegate_id: delegate.id, organization_uuid: organization_uuid])
+    |> Repo.get_by!(
+      delegator_id: delegator.id,
+      delegate_id: delegate.id,
+      organization_uuid: organization_uuid
+    )
   end
 
   @doc """
@@ -109,7 +119,7 @@ defmodule LiquidVoting.Delegations do
   def create_delegation!(attrs \\ %{}) do
     %Delegation{}
     |> Delegation.changeset(attrs)
-    |> Repo.insert
+    |> Repo.insert()
   end
 
   @doc """

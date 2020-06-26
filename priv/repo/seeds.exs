@@ -37,4 +37,3 @@
 
 # VotingResults.calculate_result!(proposal_url)
 # |> IO.inspect
-

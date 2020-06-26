@@ -15,13 +15,13 @@ defmodule LiquidVoting.VotingTest do
           yes: true,
           participant_id: participant.id,
           proposal_url: "http://proposals.com/1",
-          organization_uuid: Ecto.UUID.generate
+          organization_uuid: Ecto.UUID.generate()
         },
         update_attrs: %{
           yes: false,
           participant_id: participant.id,
           proposal_url: "http://proposals.com/2",
-          organization_uuid: Ecto.UUID.generate
+          organization_uuid: Ecto.UUID.generate()
         },
         invalid_attrs: %{
           yes: nil,
@@ -41,6 +41,7 @@ defmodule LiquidVoting.VotingTest do
       proposal_url = """
       https://www.bigassstring.com/search?ei=WdznXfzyIoeT1fAP79yWqAc&q=chrome+extension+popup+js+xhr+onload+document.body&oq=chrome+extension+popup+js+xhr+onload+document.body&gs_l=psy-ab.3...309222.313422..314027...0.0..1.201.1696.5j9j1....2..0....1..gws-wiz.2OvPoKSwZ_I&ved=0ahUKEwi8g5fQspzmAhWHSRUIHW-uBXUQ4dUDCAs&uact=5"
       """
+
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
       assert {:ok, %Vote{} = vote} = Voting.create_vote(args)
     end
@@ -48,12 +49,15 @@ defmodule LiquidVoting.VotingTest do
     test "create_vote/1 deletes previous delegation by participant if present" do
       participant = insert(:participant)
       delegation = insert(:delegation, delegator: participant)
-      assert {:ok, %Vote{}} = Voting.create_vote(%{
-          yes: false,
-          participant_id: participant.id,
-          proposal_url: "http://proposals.com/any",
-          organization_uuid: delegation.organization_uuid
-        })
+
+      assert {:ok, %Vote{}} =
+               Voting.create_vote(%{
+                 yes: false,
+                 participant_id: participant.id,
+                 proposal_url: "http://proposals.com/any",
+                 organization_uuid: delegation.organization_uuid
+               })
+
       assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
     end
 
@@ -92,14 +96,20 @@ defmodule LiquidVoting.VotingTest do
       participant = Voting.get_participant!(vote.participant_id, vote.organization_uuid)
 
       assert Voting.get_vote!(
-        participant.email,
-        vote.proposal_url,
-        vote.organization_uuid
-      ) == vote
+               participant.email,
+               vote.proposal_url,
+               vote.organization_uuid
+             ) == vote
     end
 
     test "get_vote!/3 raises Ecto.NoResultsError if invalid attrs are passed in" do
-      assert_raise Ecto.NoResultsError, fn -> Voting.get_vote!("novote@gmail.com", "https://apropos.com/not", "a6158b19-6bf6-4457-9d13-ef8b141611b4") end
+      assert_raise Ecto.NoResultsError, fn ->
+        Voting.get_vote!(
+          "novote@gmail.com",
+          "https://apropos.com/not",
+          "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
+      end
     end
 
     test "update_vote/2 with valid data updates the vote", context do

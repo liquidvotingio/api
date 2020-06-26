@@ -19,6 +19,8 @@ defmodule LiquidVoting.VotingResults.Result do
     result
     |> cast(attrs, all_fields)
     |> validate_required(required_fields)
-    |> unique_constraint(:organization_uuid_proposal_url, name: :uniq_index_organization_uuid_proposal_url)
+    |> unique_constraint(:organization_uuid_proposal_url,
+      name: :uniq_index_organization_uuid_proposal_url
+    )
   end
 end
