@@ -2,8 +2,8 @@ import Config
 
 db_user = System.fetch_env!("DB_USERNAME")
 db_password = System.fetch_env!("DB_PASSWORD")
-db_name= System.fetch_env!("DB_NAME")
-db_host= System.fetch_env!("DB_HOST")
+db_name = System.fetch_env!("DB_NAME")
+db_host = System.fetch_env!("DB_HOST")
 db_pool_size = System.get_env("DB_POOL_SIZE") || "10"
 
 port = System.get_env("APP_PORT") || "4000"

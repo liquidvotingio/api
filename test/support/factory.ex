@@ -1,7 +1,7 @@
 defmodule LiquidVoting.Factory do
   use ExMachina.Ecto, repo: LiquidVoting.Repo
 
-  alias LiquidVoting.Voting.{Vote,Participant}
+  alias LiquidVoting.Voting.{Vote, Participant}
   alias LiquidVoting.Delegations.Delegation
   alias LiquidVoting.VotingResults.Result
 
@@ -9,12 +9,12 @@ defmodule LiquidVoting.Factory do
     %Participant{
       name: sequence(:name, &"Jane Doe #{&1}"),
       email: sequence(:email, &"jane#{&1}@somedomain.com"),
-      organization_uuid: Ecto.UUID.generate
+      organization_uuid: Ecto.UUID.generate()
     }
   end
 
   def vote_factory do
-    organization_uuid = Ecto.UUID.generate
+    organization_uuid = Ecto.UUID.generate()
 
     %Vote{
       yes: true,
@@ -25,7 +25,7 @@ defmodule LiquidVoting.Factory do
   end
 
   def delegation_factory do
-    organization_uuid = Ecto.UUID.generate
+    organization_uuid = Ecto.UUID.generate()
 
     %Delegation{
       delegator: build(:participant, organization_uuid: organization_uuid),
@@ -35,7 +35,7 @@ defmodule LiquidVoting.Factory do
   end
 
   def delegation_for_proposal_factory do
-    organization_uuid = Ecto.UUID.generate
+    organization_uuid = Ecto.UUID.generate()
 
     %Delegation{
       delegator: build(:participant, organization_uuid: organization_uuid),
@@ -50,7 +50,7 @@ defmodule LiquidVoting.Factory do
       in_favor: 0,
       against: 0,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
-      organization_uuid: Ecto.UUID.generate
+      organization_uuid: Ecto.UUID.generate()
     }
   end
 end

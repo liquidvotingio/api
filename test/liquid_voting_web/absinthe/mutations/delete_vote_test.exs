@@ -8,6 +8,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
     setup do
       vote = insert(:vote)
       result = insert(:voting_result, in_favor: 1, proposal_url: vote.proposal_url)
+
       [
         participant_email: vote.participant.email,
         proposal_url: vote.proposal_url,
@@ -19,7 +20,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
     test "with a participant's email and proposal_url", context do
       query = """
       mutation {
-        deleteVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{context[:proposal_url]}") {
+        deleteVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
+        context[:proposal_url]
+      }") {
           participant {
             email
           }
@@ -31,7 +34,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
       }
       """
 
-      {:ok, %{data: %{"deleteVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"deleteVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert vote["participant"]["email"] == context[:participant_email]
       assert vote["votingResult"]["in_favor"] == 0
@@ -43,14 +47,18 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
 
       query = """
       mutation {
-        deleteVote(participantEmail: "#{another_participant.email}", proposalUrl:"#{context[:proposal_url]}") {
+        deleteVote(participantEmail: "#{another_participant.email}", proposalUrl:"#{
+        context[:proposal_url]
+      }") {
           participant {
             email
           }
         }
       }
       """
-      {:ok, %{errors: [%{message: message}]}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+
+      {:ok, %{errors: [%{message: message}]}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert message == "No vote found to delete"
     end

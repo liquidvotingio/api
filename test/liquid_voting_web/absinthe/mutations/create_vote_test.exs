@@ -7,6 +7,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
   describe "create vote" do
     setup do
       participant = insert(:participant)
+
       [
         participant_id: participant.id,
         participant_email: participant.email,
@@ -20,7 +21,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "with a new participant's email", context do
       query = """
       mutation {
-        createVote(participantEmail: "#{context[:new_participant_email]}", proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+        createVote(participantEmail: "#{context[:new_participant_email]}", proposalUrl:"#{
+        context[:proposal_url]
+      }", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -29,7 +32,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert vote["participant"]["email"] == context[:new_participant_email]
       assert vote["yes"] == context[:yes]
@@ -38,7 +42,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "with an existing participant's email", context do
       query = """
       mutation {
-        createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+        createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
+        context[:proposal_url]
+      }", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -47,7 +53,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert vote["participant"]["email"] == context[:participant_email]
       assert vote["yes"] == context[:yes]
@@ -56,7 +63,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "including voting results in the response", context do
       query = """
       mutation {
-        createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+        createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
+        context[:proposal_url]
+      }", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -70,7 +79,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert vote["votingResult"]["in_favor"] == 1
       assert vote["votingResult"]["against"] == 0
@@ -79,7 +89,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "with participant's id", context do
       query = """
       mutation {
-        createVote(participantId: "#{context[:participant_id]}", proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+        createVote(participantId: "#{context[:participant_id]}", proposalUrl:"#{
+        context[:proposal_url]
+      }", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -88,7 +100,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{data: %{"createVote" => vote}}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert vote["participant"]["email"] == context[:participant_email]
       assert vote["yes"] == context[:yes]
@@ -106,7 +119,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }
       """
 
-      {:ok, %{errors: [%{message: message, details: details}]}} = Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert message == "Could not create vote"
       assert details == "No participant identifier (id or email) submitted"

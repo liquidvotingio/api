@@ -30,7 +30,7 @@ defmodule LiquidVoting.VotingResults do
     }
 
     attrs =
-      Enum.reduce votes, attrs, fn (vote, attrs) ->
+      Enum.reduce(votes, attrs, fn vote, attrs ->
         {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
         if vote.yes do
@@ -38,14 +38,14 @@ defmodule LiquidVoting.VotingResults do
         else
           Map.update!(attrs, :against, &(&1 + vote.weight))
         end
-      end
+      end)
 
     %Result{}
     |> Result.changeset(attrs)
     |> Repo.insert!(
       on_conflict: {:replace_all_except, [:id]},
       conflict_target: [:organization_uuid, :proposal_url]
-      )
+    )
   end
 
   @doc """
@@ -98,7 +98,7 @@ defmodule LiquidVoting.VotingResults do
   """
   def get_result!(id, organization_uuid) do
     Result
-    |> Repo.get_by!([id: id, organization_uuid: organization_uuid])
+    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
   end
 
   @doc """
@@ -117,7 +117,7 @@ defmodule LiquidVoting.VotingResults do
   """
   def get_result_by_proposal_url(proposal_url, organization_uuid) do
     Result
-    |> Repo.get_by([proposal_url: proposal_url, organization_uuid: organization_uuid])
+    |> Repo.get_by(proposal_url: proposal_url, organization_uuid: organization_uuid)
   end
 
   @doc """
@@ -141,6 +141,6 @@ defmodule LiquidVoting.VotingResults do
   def create_result!(attrs \\ %{}) do
     %Result{}
     |> Result.changeset(attrs)
-    |> Repo.insert!
+    |> Repo.insert!()
   end
 end
