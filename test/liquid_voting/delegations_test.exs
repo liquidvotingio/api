@@ -2,7 +2,6 @@ defmodule LiquidVoting.DelegationsTest do
   use LiquidVoting.DataCase
   import LiquidVoting.Factory
 
-  alias LiquidVoting.Voting
   alias LiquidVoting.Delegations
   alias LiquidVoting.Delegations.Delegation
 
