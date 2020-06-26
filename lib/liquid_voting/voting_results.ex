@@ -4,10 +4,9 @@ defmodule LiquidVoting.VotingResults do
   """
 
   import Ecto.Query, warn: false
-  alias LiquidVoting.Repo
-  alias LiquidVoting.Voting
-  alias LiquidVoting.VotingWeight
-  alias LiquidVoting.VotingResults.Result
+
+  alias __MODULE__.Result
+  alias LiquidVoting.{Repo, Voting, VotingWeight}
 
   @doc """
   Creates or updates voting result based on votes
@@ -96,10 +95,8 @@ defmodule LiquidVoting.VotingResults do
       ** (Ecto.NoResultsError)
 
   """
-  def get_result!(id, organization_uuid) do
-    Result
-    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
-  end
+  def get_result!(id, organization_uuid),
+    do: Repo.get_by!(Result, id: id, organization_uuid: organization_uuid)
 
   @doc """
   Gets a single result by its proposal url and organization_uuid
@@ -115,10 +112,8 @@ defmodule LiquidVoting.VotingResults do
       nil
 
   """
-  def get_result_by_proposal_url(proposal_url, organization_uuid) do
-    Result
-    |> Repo.get_by(proposal_url: proposal_url, organization_uuid: organization_uuid)
-  end
+  def get_result_by_proposal_url(proposal_url, organization_uuid),
+    do: Repo.get_by(Result, proposal_url: proposal_url, organization_uuid: organization_uuid)
 
   @doc """
   Creates a result.
