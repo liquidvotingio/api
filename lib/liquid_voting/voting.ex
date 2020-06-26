@@ -4,10 +4,9 @@ defmodule LiquidVoting.Voting do
   """
 
   import Ecto.Query, warn: false
-  alias LiquidVoting.Repo
 
-  alias LiquidVoting.Voting.{Vote, Participant}
-  alias LiquidVoting.Delegations
+  alias __MODULE__.{Vote, Participant}
+  alias LiquidVoting.{Repo, Delegations}
   alias LiquidVoting.Delegations.Delegation
 
   @doc """
@@ -25,7 +24,12 @@ defmodule LiquidVoting.Voting do
   """
   def create_vote(attrs \\ %{}) do
     Repo.transaction(fn ->
-      case %Vote{} |> Vote.changeset(attrs) |> Repo.insert() do
+      # TODO: refactor case statements into small functions. 
+
+      %Vote{}
+      |> Vote.changeset(attrs)
+      |> Repo.insert()
+      |> case do
         {:ok, vote} ->
           if delegation =
                Repo.get_by(Delegation,
@@ -160,9 +164,7 @@ defmodule LiquidVoting.Voting do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_vote(%Vote{} = vote) do
-    Repo.delete(vote)
-  end
+  def delete_vote(%Vote{} = vote), do: Repo.delete(vote)
 
   @doc """
   Deletes a Vote.
@@ -176,9 +178,7 @@ defmodule LiquidVoting.Voting do
       Ecto.*Error
 
   """
-  def delete_vote!(%Vote{} = vote) do
-    Repo.delete!(vote)
-  end
+  def delete_vote!(%Vote{} = vote), do: Repo.delete!(vote)
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking vote changes.
@@ -189,9 +189,7 @@ defmodule LiquidVoting.Voting do
       %Ecto.Changeset{source: %Vote{}}
 
   """
-  def change_vote(%Vote{} = vote) do
-    Vote.changeset(vote, %{})
-  end
+  def change_vote(%Vote{} = vote), do: Vote.changeset(vote, %{})
 
   @doc """
   Returns the list of participants for an organization uuid
@@ -222,10 +220,8 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant!(id, organization_uuid) do
-    Participant
-    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
-  end
+  def get_participant!(id, organization_uuid),
+    do: Repo.get_by!(Participant, id: id, organization_uuid: organization_uuid)
 
   @doc """
   Gets a single participant for an organization uuid by their email
@@ -241,10 +237,8 @@ defmodule LiquidVoting.Voting do
       nil
 
   """
-  def get_participant_by_email(email, organization_uuid) do
-    Participant
-    |> Repo.get_by(email: email, organization_uuid: organization_uuid)
-  end
+  def get_participant_by_email(email, organization_uuid),
+    do: Repo.get_by(Participant, email: email, organization_uuid: organization_uuid)
 
   @doc """
   Gets a single participant for an organization uuid by their email
@@ -260,10 +254,8 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant_by_email!(email, organization_uuid) do
-    Participant
-    |> Repo.get_by!(email: email, organization_uuid: organization_uuid)
-  end
+  def get_participant_by_email!(email, organization_uuid),
+    do: Repo.get_by!(Participant, email: email, organization_uuid: organization_uuid)
 
   @doc """
   Creates a participant.
@@ -328,9 +320,7 @@ defmodule LiquidVoting.Voting do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_participant(%Participant{} = participant) do
-    Repo.delete(participant)
-  end
+  def delete_participant(%Participant{} = participant), do: Repo.delete(participant)
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking participant changes.
@@ -341,7 +331,6 @@ defmodule LiquidVoting.Voting do
       %Ecto.Changeset{source: %Participant{}}
 
   """
-  def change_participant(%Participant{} = participant) do
-    Participant.changeset(participant, %{})
-  end
+  def change_participant(%Participant{} = participant),
+    do: Participant.changeset(participant, %{})
 end
