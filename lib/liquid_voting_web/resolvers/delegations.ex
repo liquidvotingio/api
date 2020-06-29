@@ -2,17 +2,16 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   alias LiquidVoting.{Delegations, Voting, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
-  def delegations(_, _, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Delegations.list_delegations(organization_uuid)}
-  end
+  def delegations(_, _, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Delegations.list_delegations(organization_uuid)}
 
-  def delegation(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Delegations.get_delegation!(id, organization_uuid)}
-  end
+  def delegation(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Delegations.get_delegation!(id, organization_uuid)}
 
   # Will add participants to the db if they don't exist yet, or fetch them if they do. 
   # Their ids are used for delegator_id and delegate_id when inserting the delegation
   # with create_delegation_with_valid_arguments/1
+  # TODO: break up into smaller functions. 
   def create_delegation(
         _,
         %{delegator_email: delegator_email, delegate_email: delegate_email} = args,
@@ -25,8 +24,10 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
          details: ChangesetErrors.error_details(changeset)}
 
       {:ok, delegator} ->
-        args = Map.put(args, :delegator_id, delegator.id)
-        args = Map.put(args, :organization_uuid, organization_uuid)
+        args =
+          args
+          |> Map.put(:delegator_id, delegator.id)
+          |> Map.put(:organization_uuid, organization_uuid)
 
         case Voting.upsert_participant(%{
                email: delegate_email,
@@ -38,15 +39,17 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
              details: ChangesetErrors.error_details(changeset)}
 
           {:ok, delegate} ->
-            args = Map.put(args, :delegate_id, delegate.id)
-            create_delegation_with_valid_arguments(args)
+            args
+            |> Map.put(:delegate_id, delegate.id)
+            |> create_delegation_with_valid_arguments()
         end
     end
   end
 
   def create_delegation(_, %{} = args, %{context: %{organization_uuid: organization_uuid}}) do
-    args = Map.put(args, :organization_uuid, organization_uuid)
-    create_delegation_with_valid_arguments(args)
+    args
+    |> Map.put(:organization_uuid, organization_uuid)
+    |> create_delegation_with_valid_arguments()
   end
 
   def create_delegation_with_valid_arguments(args) do
@@ -71,12 +74,8 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
         %{context: %{organization_uuid: organization_uuid}}
       ) do
     deleted_delegation =
-      Delegations.get_delegation!(
-        delegator_email,
-        delegate_email,
-        proposal_url,
-        organization_uuid
-      )
+      delegator_email
+      |> Delegations.get_delegation!(delegate_email, proposal_url, organization_uuid)
       |> Delegations.delete_delegation!()
 
     VotingResults.publish_voting_result_change(proposal_url, organization_uuid)
@@ -90,7 +89,8 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
         context: %{organization_uuid: organization_uuid}
       }) do
     deleted_delegation =
-      Delegations.get_delegation!(delegator_email, delegate_email, organization_uuid)
+      delegator_email
+      |> Delegations.get_delegation!(delegate_email, organization_uuid)
       |> Delegations.delete_delegation!()
 
     # VotingResults.publish_voting_result_change(proposal_url, organization_uuid)
