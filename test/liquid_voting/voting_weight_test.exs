@@ -2,7 +2,7 @@ defmodule LiquidVoting.VotingWeightTest do
   use LiquidVoting.DataCase
 
   import LiquidVoting.Factory
-  
+
   alias LiquidVoting.{Repo, VotingWeight}
 
   describe "update_vote_weight/1 simplest scenario (global delegations)" do
