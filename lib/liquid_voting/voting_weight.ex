@@ -4,9 +4,8 @@ defmodule LiquidVoting.VotingWeight do
   """
 
   import Ecto.Query, warn: false
-  alias LiquidVoting.Repo
 
-  alias LiquidVoting.Voting
+  alias LiquidVoting.{Repo, Voting}
 
   @doc """
   Updates vote weight based on delegations given to voter
@@ -72,7 +71,5 @@ defmodule LiquidVoting.VotingWeight do
   # Base case for the above recursion:
   # 
   # If no delegations left, just return the latest weight
-  defp delegation_weight(_ = [], _, weight) do
-    weight
-  end
+  defp delegation_weight(_ = [], _, weight), do: weight
 end
