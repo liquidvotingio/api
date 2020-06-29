@@ -2,13 +2,11 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   alias LiquidVoting.{Voting, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
-  def participants(_, _, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.list_participants(organization_uuid)}
-  end
+  def participants(_, _, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Voting.list_participants(organization_uuid)}
 
-  def participant(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.get_participant!(id, organization_uuid)}
-  end
+  def participant(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Voting.get_participant!(id, organization_uuid)}
 
   def create_participant(_, args, %{context: %{organization_uuid: organization_uuid}}) do
     args = Map.put(args, :organization_uuid, organization_uuid)
@@ -24,17 +22,14 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def votes(_, %{proposal_url: proposal_url}, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.list_votes(proposal_url, organization_uuid)}
-  end
+  def votes(_, %{proposal_url: proposal_url}, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Voting.list_votes(proposal_url, organization_uuid)}
 
-  def votes(_, _, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.list_votes(organization_uuid)}
-  end
+  def votes(_, _, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Voting.list_votes(organization_uuid)}
 
-  def vote(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}) do
-    {:ok, Voting.get_vote!(id, organization_uuid)}
-  end
+  def vote(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Voting.get_vote!(id, organization_uuid)}
 
   def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{
         context: %{organization_uuid: organization_uuid}
@@ -46,24 +41,26 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
          details: ChangesetErrors.error_details(changeset)}
 
       {:ok, participant} ->
-        args = Map.put(args, :organization_uuid, organization_uuid)
-        args = Map.put(args, :participant_id, participant.id)
-        create_vote_with_valid_arguments(args)
+        args
+        |> Map.put(:organization_uuid, organization_uuid)
+        |> Map.put(:participant_id, participant.id)
+        |> create_vote_with_valid_arguments()
     end
   end
 
   def create_vote(_, %{participant_id: _, proposal_url: _, yes: _} = args, %{
         context: %{organization_uuid: organization_uuid}
       }) do
-    args = Map.put(args, :organization_uuid, organization_uuid)
-    create_vote_with_valid_arguments(args)
+    args
+    |> Map.put(:organization_uuid, organization_uuid)
+    |> create_vote_with_valid_arguments()
   end
 
-  def create_vote(_, %{proposal_url: _, yes: _}, _) do
-    {:error,
-     message: "Could not create vote",
-     details: "No participant identifier (id or email) submitted"}
-  end
+  def create_vote(_, %{proposal_url: _, yes: _}, _),
+    do:
+      {:error,
+       message: "Could not create vote",
+       details: "No participant identifier (id or email) submitted"}
 
   defp create_vote_with_valid_arguments(args) do
     case Voting.create_vote(args) do
