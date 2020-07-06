@@ -20,7 +20,7 @@ defmodule LiquidVoting.Voting.Participant do
   @doc false
   def changeset(participant, attrs) do
     required_fields = [:email, :organization_uuid]
-    all_fields = [:name, :uuid | required_fields]
+    all_fields = [:name | required_fields]
 
     participant
     |> cast(attrs, all_fields)
