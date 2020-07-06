@@ -61,6 +61,11 @@ defmodule LiquidVoting.ParticipantsTest do
       assert participant.name == @valid_attrs[:name]
     end
 
+    test "create_participant/1 with valid data creates a uuid" do
+      assert {:ok, %Participant{} = participant} = Voting.create_participant(@valid_attrs)
+      assert {:ok, _uuid_bitstring} = Ecto.UUID.dump(participant.uuid)
+    end
+
     test "create_participant/1 with missing data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Voting.create_participant(@invalid_attrs)
     end
