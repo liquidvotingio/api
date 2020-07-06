@@ -8,6 +8,7 @@ defmodule LiquidVoting.Voting.Participant do
   schema "participants" do
     field :name, :string
     field :email, EctoFields.Email
+    field :uuid, Ecto.UUID, autogenerate: true
     field :organization_uuid, Ecto.UUID
 
     has_many :votes, Vote
