@@ -5,11 +5,11 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def participants(_, _, %{context: %{organization_uuid: organization_uuid}}),
     do: {:ok, Voting.list_participants(organization_uuid)}
 
-  def participant(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.get_participant!(id, organization_uuid)}
-
   def participant(_, %{uuid: uuid}, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.get_participant_by_uuid(uuid, organization_uuid)}
+    do: {:ok, Voting.get_participant!(uuid, organization_uuid)}
+
+  #def participant(_, %{uuid: uuid}, %{context: %{organization_uuid: organization_uuid}}),
+    #do: {:ok, Voting.get_participant_by_uuid(uuid, organization_uuid)}
 
   def create_participant(_, args, %{context: %{organization_uuid: organization_uuid}}) do
     args = Map.put(args, :organization_uuid, organization_uuid)

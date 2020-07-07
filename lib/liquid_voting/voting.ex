@@ -220,8 +220,8 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant!(id, organization_uuid),
-    do: Repo.get_by!(Participant, id: id, organization_uuid: organization_uuid)
+  def get_participant!(uuid, organization_uuid),
+    do: Repo.get_by!(Participant, uuid: uuid, organization_uuid: organization_uuid)
 
   @doc """
   Gets a single participant for an organization uuid by their email

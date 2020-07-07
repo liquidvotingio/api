@@ -21,7 +21,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Get a participant by its id"
     field :participant, :participant do
-      arg(:id, non_null(:id))
+      arg(:uuid, non_null(:string))
       resolve(&Resolvers.Voting.participant/3)
     end
 
@@ -112,7 +112,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   end
 
   object :participant do
-    field :id, :id
+    #field :id, :id
     # TODO: create custom GraphQL data type for Ecto.UUID
     field :uuid, non_null(:string)
     field :name, :string
