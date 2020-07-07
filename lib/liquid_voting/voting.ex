@@ -237,6 +237,25 @@ defmodule LiquidVoting.Voting do
       nil
 
   """
+
+  def get_participant_by_uuid(uuid, organization_uuid),
+    do: Repo.get_by(Participant, uuid: uuid, organization_uuid: organization_uuid)
+
+  @doc """
+  Gets a single participant for an organization uuid by their uuid
+
+  Returns nil if the Participant does not exist.
+
+  ## Examples
+
+      iex> get_participant_by_uuid("2b041b4e-81bd-4c6f-96db-0bac9b03b991", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %Participant{}
+
+      iex> get_participant_by_uuid("2b041b4e-81bd-4c6f-96db-0bac9b03b991", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      ** (Ecto.NoResultsError)
+
+  """
+
   def get_participant_by_email(email, organization_uuid),
     do: Repo.get_by(Participant, email: email, organization_uuid: organization_uuid)
 
@@ -254,6 +273,7 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
+
   def get_participant_by_email!(email, organization_uuid),
     do: Repo.get_by!(Participant, email: email, organization_uuid: organization_uuid)
 
