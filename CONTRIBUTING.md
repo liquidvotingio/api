@@ -6,7 +6,7 @@ Issues and pull requests are very welcome for bug reports and feature requests a
 
 Please provide as much information as possible, describing the bug or feature in detail. Screenshots and videos are great.
 
-All code needs to include programmatic tests, and to have been tested manually as well.
+All code needs to include programmatic tests, and to have been tested manually as well. Tests will run on [the repo's CI](https://github.com/liquidvotingio/api/actions), and should pass before asking for a PR review.
 
 If you're interested in contributing to the project long term (every skill level welcome), let us know [over email](mailto:oli.azevedo.barnes@gmail.com)  and we'll onboard you through a call and adding you on our slack.
 
