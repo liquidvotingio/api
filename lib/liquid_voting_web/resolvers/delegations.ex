@@ -1,5 +1,5 @@
 defmodule LiquidVotingWeb.Resolvers.Delegations do
-  alias LiquidVoting.{Delegations, Voting, VotingResults}
+  alias LiquidVoting.{Delegations, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def delegations(_, _, %{context: %{organization_uuid: organization_uuid}}),
@@ -11,48 +11,34 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   # Will add participants to the db if they don't exist yet, or fetch them if they do. 
   # Their ids are used for delegator_id and delegate_id when inserting the delegation
   # with create_delegation_with_valid_arguments/1
-  # TODO: break up into smaller functions. 
   def create_delegation(
         _,
-        %{delegator_email: delegator_email, delegate_email: delegate_email} = args,
+        %{delegator_email: _, delegate_email: _} = args,
         %{context: %{organization_uuid: organization_uuid}}
       ) do
-    case Voting.upsert_participant(%{email: delegator_email, organization_uuid: organization_uuid}) do
-      {:error, changeset} ->
+    args
+    |> Map.put(:organization_uuid, organization_uuid)
+    |> Delegations.make_delegation()
+    |> case do
+      {:ok, new_resources} ->
+        {:ok, new_resources.delegation}
+
+      {:error, name, changeset, _} ->
         {:error,
-         message: "Could not create delegation with given email",
-         details: ChangesetErrors.error_details(changeset)}
-
-      {:ok, delegator} ->
-        args =
-          args
-          |> Map.put(:delegator_id, delegator.id)
-          |> Map.put(:organization_uuid, organization_uuid)
-
-        case Voting.upsert_participant(%{
-               email: delegate_email,
-               organization_uuid: organization_uuid
-             }) do
-          {:error, changeset} ->
-            {:error,
-             message: "Could not create delegation with given email",
-             details: ChangesetErrors.error_details(changeset)}
-
-          {:ok, delegate} ->
-            args
-            |> Map.put(:delegate_id, delegate.id)
-            |> create_delegation_with_valid_arguments()
-        end
+         message: "Could not create #{name}", details: ChangesetErrors.error_details(changeset)}
     end
   end
 
-  def create_delegation(_, %{} = args, %{context: %{organization_uuid: organization_uuid}}) do
+  # Create delegation with IDs
+  #  We assume participants already exist if IDs are passed in: no upsert necessary.
+  # NOTE: inconsistent validation with pattern match in this clause and the above
+  def create_delegation(_, %{} = args, %{context: context}) do
     args
-    |> Map.put(:organization_uuid, organization_uuid)
+    |> Map.put(:organization_uuid, context.organization_uuid)
     |> create_delegation_with_valid_arguments()
   end
 
-  def create_delegation_with_valid_arguments(args) do
+  defp create_delegation_with_valid_arguments(args) do
     case Delegations.create_delegation(args) do
       {:error, changeset} ->
         {:error,
@@ -63,7 +49,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     end
   end
 
-  ## Delete proposal-specific delegations
+  # Delete proposal-specific delegations
   def delete_delegation(
         _,
         %{
@@ -84,7 +70,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     Ecto.NoResultsError -> {:error, message: "No delegation found to delete"}
   end
 
-  ## Delete global delegations
+  # Delete global delegations
   def delete_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email}, %{
         context: %{organization_uuid: organization_uuid}
       }) do

@@ -7,6 +7,7 @@ defmodule LiquidVoting.Delegations do
 
   alias __MODULE__.Delegation
   alias LiquidVoting.{Repo, Voting}
+  alias Ecto.Multi
 
   @doc """
   Returns the list of delegations for an organization uuid
@@ -119,6 +120,34 @@ defmodule LiquidVoting.Delegations do
     %Delegation{}
     |> Delegation.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def make_delegation(args) do
+    delegator_args = %{email: args.delegator_email, organization_uuid: args.organization_uuid}
+    delegate_args = %{email: args.delegate_email, organization_uuid: args.organization_uuid}
+
+    multi =
+      Multi.new()
+      |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_args) end)
+      |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_args) end)
+      |> Multi.run(:delegation, fn _repo, changes ->
+        changes
+        |> build_delegation_args(args)
+        |> create_delegation()
+      end)
+      |> Repo.transaction()
+  end
+
+  defp build_delegation_args(changes, args) do
+    args
+    |> Map.get(:proposal_url)
+    |> case do
+      nil -> Map.new()
+      proposal_url -> %{proposal_url: proposal_url}
+    end
+    |> Map.put(:delegator_id, changes.delegator.id)
+    |> Map.put(:delegate_id, changes.delegate.id)
+    |> Map.put(:organization_uuid, args.organization_uuid)
   end
 
   @doc """
