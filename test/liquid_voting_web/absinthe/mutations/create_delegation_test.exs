@@ -165,7 +165,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
         Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
 
       assert message == "Could not create delegation"
-      assert details == %{delegate_id: ["can't be blank"]}
+      assert details == "invalid arguments"
     end
   end
 
