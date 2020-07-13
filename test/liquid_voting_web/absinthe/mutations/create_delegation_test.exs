@@ -4,11 +4,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
   alias LiquidVotingWeb.Schema.Schema
 
-  describe "create delegation with new participants" do
-    @new_delegator_email "new-delegator@email.com"
-    @new_delegate_email "new-delegate@email.com"
-    @proposal_url "https://www.proposal.com/my"
+  @new_delegator_email "new-delegator@email.com"
+  @new_delegate_email "new-delegate@email.com"
+  @proposal_url "https://www.proposal.com/my"
 
+  describe "create delegation with new participants" do
     test "with emails" do
       query = """
       mutation {
