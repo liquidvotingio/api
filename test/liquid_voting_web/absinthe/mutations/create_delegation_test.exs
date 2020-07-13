@@ -168,4 +168,30 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert details == %{delegate_id: ["can't be blank"]}
     end
   end
+
+  # TODO: test validations at different levels: GraphQL and DB
+  describe "create delegation with missing field" do
+    test "with emails" do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{nil}") {
+          delegator {
+            email
+            name
+          }
+          delegate {
+            email
+            name
+          }
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
+
+      assert message == "Could not create delegate"
+      assert details == %{email: ["can't be blank"]}
+    end
+  end
 end
