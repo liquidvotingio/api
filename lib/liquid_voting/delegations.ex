@@ -126,16 +126,15 @@ defmodule LiquidVoting.Delegations do
     delegator_args = %{email: args.delegator_email, organization_uuid: args.organization_uuid}
     delegate_args = %{email: args.delegate_email, organization_uuid: args.organization_uuid}
 
-    multi =
-      Multi.new()
-      |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_args) end)
-      |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_args) end)
-      |> Multi.run(:delegation, fn _repo, changes ->
-        changes
-        |> build_delegation_args(args)
-        |> create_delegation()
-      end)
-      |> Repo.transaction()
+    Multi.new()
+    |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_args) end)
+    |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_args) end)
+    |> Multi.run(:delegation, fn _repo, changes ->
+      changes
+      |> build_delegation_args(args)
+      |> create_delegation()
+    end)
+    |> Repo.transaction()
   end
 
   defp build_delegation_args(changes, args) do
