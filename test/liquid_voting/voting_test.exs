@@ -13,19 +13,19 @@ defmodule LiquidVoting.VotingTest do
       [
         valid_attrs: %{
           yes: true,
-          participant_id: participant.id,
+          participant_uuid: participant.uuid,
           proposal_url: "http://proposals.com/1",
           organization_uuid: Ecto.UUID.generate()
         },
         update_attrs: %{
           yes: false,
-          participant_id: participant.id,
+          participant_uuid: participant.uuid,
           proposal_url: "http://proposals.com/2",
           organization_uuid: Ecto.UUID.generate()
         },
         invalid_attrs: %{
           yes: nil,
-          participant_id: nil,
+          participant_uuid: nil,
           proposal_url: nil,
           organization_uuid: nil
         }
@@ -53,12 +53,12 @@ defmodule LiquidVoting.VotingTest do
       assert {:ok, %Vote{}} =
                Voting.create_vote(%{
                  yes: false,
-                 participant_id: participant.id,
+                 participant_uuid: participant.uuid,
                  proposal_url: "http://proposals.com/any",
                  organization_uuid: delegation.organization_uuid
                })
 
-      assert LiquidVoting.Repo.get(Delegation, delegation.id) == nil
+      assert LiquidVoting.Repo.get(Delegation, delegation.uuid) == nil
     end
 
     test "create_vote/1 with missing data returns error changeset", context do
@@ -86,14 +86,14 @@ defmodule LiquidVoting.VotingTest do
       assert Voting.list_votes(vote.proposal_url, vote.organization_uuid) == [vote]
     end
 
-    test "get_vote!/2 returns the vote for given id and organization_uuid" do
+    test "get_vote!/2 returns the vote for given uuid and organization_uuid" do
       vote = insert(:vote)
-      assert Voting.get_vote!(vote.id, vote.organization_uuid) == vote
+      assert Voting.get_vote!(vote.uuid, vote.organization_uuid) == vote
     end
 
     test "get_vote!/3 returns the vote for given email, proposal url and organization_uuid" do
       vote = insert(:vote)
-      participant = Voting.get_participant!(vote.participant_id, vote.organization_uuid)
+      participant = Voting.get_participant!(vote.participant_uuid, vote.organization_uuid)
 
       assert Voting.get_vote!(
                participant.email,
@@ -121,7 +121,7 @@ defmodule LiquidVoting.VotingTest do
     test "update_vote/2 with invalid data returns error changeset", context do
       vote = insert(:vote)
       assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, context[:invalid_attrs])
-      assert vote == Voting.get_vote!(vote.id, vote.organization_uuid)
+      assert vote == Voting.get_vote!(vote.uuid, vote.organization_uuid)
     end
 
     test "delete_vote/1 deletes the vote" do

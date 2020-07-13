@@ -5,8 +5,8 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   def delegations(_, _, %{context: %{organization_uuid: organization_uuid}}),
     do: {:ok, Delegations.list_delegations(organization_uuid)}
 
-  def delegation(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Delegations.get_delegation!(id, organization_uuid)}
+  def delegation(_, %{uuid: uuid}, %{context: %{organization_uuid: organization_uuid}}),
+    do: {:ok, Delegations.get_delegation!(uuid, organization_uuid)}
 
   # Will add participants to the db if they don't exist yet, or fetch them if they do. 
   # Their ids are used for delegator_id and delegate_id when inserting the delegation
@@ -26,7 +26,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       {:ok, delegator} ->
         args =
           args
-          |> Map.put(:delegator_id, delegator.id)
+          |> Map.put(:delegator_uuid, delegator.uuid)
           |> Map.put(:organization_uuid, organization_uuid)
 
         case Voting.upsert_participant(%{
@@ -40,7 +40,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
 
           {:ok, delegate} ->
             args
-            |> Map.put(:delegate_id, delegate.id)
+            |> Map.put(:delegate_uuid, delegate.uuid)
             |> create_delegation_with_valid_arguments()
         end
     end

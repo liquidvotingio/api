@@ -4,19 +4,29 @@ defmodule LiquidVoting.Delegations.Delegation do
 
   alias LiquidVoting.Voting.Participant
 
+  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   schema "delegations" do
     field :proposal_url, EctoFields.URL
     field :organization_uuid, Ecto.UUID
 
-    belongs_to :delegator, Participant
-    belongs_to :delegate, Participant
+    belongs_to :delegator, Participant,
+      references: :uuid,
+      foreign_key: :delegator_uuid,
+      type: :binary_id
+
+    belongs_to :delegate, Participant,
+      references: :uuid,
+      foreign_key: :delegate_uuid,
+      type: :binary_id
 
     timestamps()
   end
 
   @doc false
   def changeset(delegation, attrs) do
-    required_fields = [:delegator_id, :delegate_id, :organization_uuid]
+    required_fields = [:delegator_uuid, :delegate_uuid, :organization_uuid]
     all_fields = [:proposal_url | required_fields]
 
     delegation

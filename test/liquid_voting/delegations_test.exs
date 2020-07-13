@@ -13,16 +13,20 @@ defmodule LiquidVoting.DelegationsTest do
 
       [
         valid_attrs: %{
-          delegator_id: delegator.id,
-          delegate_id: delegate.id,
+          delegator_uuid: delegator.uuid,
+          delegate_uuid: delegate.uuid,
           organization_uuid: Ecto.UUID.generate()
         },
         update_attrs: %{
-          delegator_id: delegator.id,
-          delegate_id: another_delegate.id,
+          delegator_uuid: delegator.uuid,
+          delegate_uuid: another_delegate.uuid,
           organization_uuid: Ecto.UUID.generate()
         },
-        invalid_attrs: %{delegator_id: delegator.id, delegate_id: nil, organization_uuid: nil}
+        invalid_attrs: %{
+          delegator_uuid: delegator.uuid,
+          delegate_uuid: nil,
+          organization_uuid: nil
+        }
       ]
     end
 
@@ -31,10 +35,10 @@ defmodule LiquidVoting.DelegationsTest do
       assert Delegations.list_delegations(delegation.organization_uuid) == [delegation]
     end
 
-    test "get_delegation!/2 returns the delegation with given id and organization_uuid" do
+    test "get_delegation!/2 returns the delegation with given uuid and organization_uuid" do
       delegation = insert(:delegation)
 
-      assert Delegations.get_delegation!(delegation.id, delegation.organization_uuid) ==
+      assert Delegations.get_delegation!(delegation.uuid, delegation.organization_uuid) ==
                delegation
     end
 
@@ -74,7 +78,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{}} = Delegations.delete_delegation(delegation)
 
       assert_raise Ecto.NoResultsError, fn ->
-        Delegations.get_delegation!(delegation.id, delegation.organization_uuid)
+        Delegations.get_delegation!(delegation.uuid, delegation.organization_uuid)
       end
     end
 

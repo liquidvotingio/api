@@ -42,8 +42,9 @@ defmodule LiquidVoting.VotingResults do
     %Result{}
     |> Result.changeset(attrs)
     |> Repo.insert!(
-      on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_uuid, :proposal_url]
+      on_conflict: {:replace_all_except, [:uuid]},
+      conflict_target: [:organization_uuid, :proposal_url],
+      returning: true
     )
   end
 
@@ -95,8 +96,8 @@ defmodule LiquidVoting.VotingResults do
       ** (Ecto.NoResultsError)
 
   """
-  def get_result!(id, organization_uuid),
-    do: Repo.get_by!(Result, id: id, organization_uuid: organization_uuid)
+  def get_result!(uuid, organization_uuid),
+    do: Repo.get_by!(Result, uuid: uuid, organization_uuid: organization_uuid)
 
   @doc """
   Gets a single result by its proposal url and organization_uuid

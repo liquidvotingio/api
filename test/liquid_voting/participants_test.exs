@@ -23,9 +23,11 @@ defmodule LiquidVoting.ParticipantsTest do
       assert Voting.list_participants(participant.organization_uuid) == [participant]
     end
 
-    test "get_participant!/2 returns the participant with given id and organization_uuid" do
+    test "get_participant!/2 returns the participant with given uuid and organization_uuid" do
       participant = insert(:participant)
-      assert Voting.get_participant!(participant.id, participant.organization_uuid) == participant
+
+      assert Voting.get_participant!(participant.uuid, participant.organization_uuid) ==
+               participant
     end
 
     test "get_participant_by_email/2 returns the participant with given email and organization_uuid" do
@@ -61,7 +63,7 @@ defmodule LiquidVoting.ParticipantsTest do
       assert participant.name == @valid_attrs[:name]
     end
 
-    test "create_participant/1 with valid data creates a uuid" do
+    test "create_participant/1 with valid initial data creates a uuid" do
       assert {:ok, %Participant{} = participant} = Voting.create_participant(@valid_attrs)
       assert {:ok, _uuid_bitstring} = Ecto.UUID.dump(participant.uuid)
     end
@@ -105,7 +107,9 @@ defmodule LiquidVoting.ParticipantsTest do
     test "update_participant/2 with invalid data returns error changeset" do
       participant = insert(:participant)
       assert {:error, %Ecto.Changeset{}} = Voting.update_participant(participant, @invalid_attrs)
-      assert participant == Voting.get_participant!(participant.id, participant.organization_uuid)
+
+      assert participant ==
+               Voting.get_participant!(participant.uuid, participant.organization_uuid)
     end
 
     test "delete_participant/1 deletes the participant" do
@@ -113,7 +117,7 @@ defmodule LiquidVoting.ParticipantsTest do
       assert {:ok, %Participant{}} = Voting.delete_participant(participant)
 
       assert_raise Ecto.NoResultsError, fn ->
-        Voting.get_participant!(participant.id, participant.organization_uuid)
+        Voting.get_participant!(participant.uuid, participant.organization_uuid)
       end
     end
 

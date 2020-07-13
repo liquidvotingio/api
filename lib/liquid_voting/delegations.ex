@@ -38,9 +38,9 @@ defmodule LiquidVoting.Delegations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(id, organization_uuid) do
+  def get_delegation!(uuid, organization_uuid) do
     Delegation
-    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
+    |> Repo.get_by!(uuid: uuid, organization_uuid: organization_uuid)
     |> Repo.preload([:delegator, :delegate])
   end
 
@@ -64,8 +64,8 @@ defmodule LiquidVoting.Delegations do
 
     Repo.get_by!(
       Delegation,
-      delegator_id: delegator.id,
-      delegate_id: delegate.id,
+      delegator_uuid: delegator.uuid,
+      delegate_uuid: delegate.uuid,
       proposal_url: proposal_url,
       organization_uuid: organization_uuid
     )
@@ -91,8 +91,8 @@ defmodule LiquidVoting.Delegations do
 
     Repo.get_by!(
       Delegation,
-      delegator_id: delegator.id,
-      delegate_id: delegate.id,
+      delegator_uuid: delegator.uuid,
+      delegate_uuid: delegate.uuid,
       organization_uuid: organization_uuid
     )
   end

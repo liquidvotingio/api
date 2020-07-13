@@ -9,7 +9,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       participant = insert(:participant)
 
       [
-        participant_id: participant.id,
+        participant_uuid: participant.uuid,
         participant_email: participant.email,
         new_participant_email: "noob@email.com",
         proposal_url: "https://github.com/user/repo/pulls/15",
@@ -86,10 +86,10 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       assert vote["votingResult"]["against"] == 0
     end
 
-    test "with participant's id", context do
+    test "with participant's uuid", context do
       query = """
       mutation {
-        createVote(participantId: "#{context[:participant_id]}", proposalUrl:"#{
+        createVote(participantUuid: "#{context[:participant_uuid]}", proposalUrl:"#{
         context[:proposal_url]
       }", yes: #{context[:yes]}) {
           participant {
@@ -123,7 +123,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
 
       assert message == "Could not create vote"
-      assert details == "No participant identifier (id or email) submitted"
+      assert details == "No participant identifier (uuid or email) submitted"
     end
   end
 end

@@ -33,7 +33,7 @@ defmodule LiquidVoting.Voting do
         {:ok, vote} ->
           if delegation =
                Repo.get_by(Delegation,
-                 delegator_id: attrs[:participant_id],
+                 delegator_uuid: attrs[:participant_uuid],
                  organization_uuid: attrs[:organization_uuid]
                ) do
             case Delegations.delete_delegation(delegation) do
@@ -96,9 +96,9 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_vote!(id, organization_uuid) do
+  def get_vote!(uuid, organization_uuid) do
     Vote
-    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
+    |> Repo.get_by!(uuid: uuid, organization_uuid: organization_uuid)
     |> Repo.preload([:participant])
   end
 
@@ -120,7 +120,7 @@ defmodule LiquidVoting.Voting do
 
     Vote
     |> Repo.get_by!(
-      participant_id: participant.id,
+      participant_uuid: participant.uuid,
       proposal_url: proposal_url,
       organization_uuid: organization_uuid
     )
@@ -220,8 +220,8 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant!(id, organization_uuid),
-    do: Repo.get_by!(Participant, id: id, organization_uuid: organization_uuid)
+  def get_participant!(uuid, organization_uuid),
+    do: Repo.get_by!(Participant, uuid: uuid, organization_uuid: organization_uuid)
 
   @doc """
   Gets a single participant for an organization uuid by their email
@@ -243,7 +243,7 @@ defmodule LiquidVoting.Voting do
   @doc """
   Gets a single participant for an organization uuid by their email
 
-  Returns nil if the Participant does not exist.
+  Raises `Ecto.NoResultsError` if the Participant does not exist.
 
   ## Examples
 
@@ -285,8 +285,9 @@ defmodule LiquidVoting.Voting do
     %Participant{}
     |> Participant.changeset(attrs)
     |> Repo.insert(
-      on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_uuid, :email]
+      on_conflict: {:replace_all_except, [:uuid]},
+      conflict_target: [:organization_uuid, :email],
+      returning: true
     )
   end
 
