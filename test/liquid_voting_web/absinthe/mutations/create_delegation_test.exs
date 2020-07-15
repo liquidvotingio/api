@@ -101,11 +101,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       ]
     end
 
-    test "with uuids", context do
+    test "with ids", context do
       query = """
       mutation {
-        createDelegation(delegatorUuid: "#{context[:delegator].uuid}", delegateUuid: "#{
-        context[:delegate].uuid
+        createDelegation(delegatorId: "#{context[:delegator].id}", delegateId: "#{
+        context[:delegate].id
       }") {
           delegator {
             email
@@ -150,7 +150,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     test "with missing field", context do
       query = """
       mutation {
-        createDelegation(delegatorUuid: "#{context[:delegator].uuid}") {
+        createDelegation(delegatorId: "#{context[:delegator].id}") {
           delegator {
             email
           }
@@ -165,7 +165,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
         Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
 
       assert message == "Could not create delegation"
-      assert details == %{delegate_uuid: ["can't be blank"]}
+      assert details == %{delegate_id: ["can't be blank"]}
     end
   end
 end

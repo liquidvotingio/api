@@ -3,7 +3,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateParticipants do
 
   def change do
     create table(:participants, primary_key: false) do
-      add :uuid, :uuid, primary_key: true
+      add :id, :uuid, primary_key: true
       add :name, :string
       add :email, :string
       add :organization_uuid, :uuid

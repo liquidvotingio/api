@@ -27,7 +27,7 @@ defmodule LiquidVoting.VotingResultsTest do
     end
 
     test "returns the same result struct for a given proposal_url", context do
-      %Result{uuid: uuid} =
+      %Result{id: id} =
         VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
 
       insert(:vote,
@@ -35,10 +35,10 @@ defmodule LiquidVoting.VotingResultsTest do
         organization_uuid: context[:organization_uuid]
       )
 
-      %Result{uuid: new_uuid} =
+      %Result{id: new_id} =
         VotingResults.calculate_result!(context[:proposal_url], context[:organization_uuid])
 
-      assert uuid == new_uuid
+      assert id == new_id
     end
   end
 
@@ -75,7 +75,7 @@ defmodule LiquidVoting.VotingResultsTest do
 
     test "get_result!/2 returns the result with given uuid" do
       result = insert(:voting_result)
-      assert VotingResults.get_result!(result.uuid, result.organization_uuid) == result
+      assert VotingResults.get_result!(result.id, result.organization_uuid) == result
     end
 
     test "get_result_by_proposal_url/2 returns the result with given proposal_url and organization_uuid" do

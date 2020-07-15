@@ -3,7 +3,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateResults do
 
   def change do
     create table(:results, primary_key: false) do
-      add :uuid, :uuid, primary_key: true
+      add :id, :uuid, primary_key: true
       add :in_favor, :integer, default: 0
       add :against, :integer, default: 0
       add :proposal_url, :string, default: false, null: false

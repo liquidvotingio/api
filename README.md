@@ -113,13 +113,13 @@ mutation {
 
 ```
 
-Then run some [queries](https://graphql.org/learn/queries/#fields), inserting valid uuid values where indicated:
+Then run some [queries](https://graphql.org/learn/queries/#fields), inserting valid id values where indicated:
 
 ```
 query {
   participants {
     email
-    uuid
+    id
     delegationsReceived {
       delegator {
         email
@@ -132,7 +132,7 @@ query {
 }
 
 query {
-  participant(uuid: <participant uuid fetched in previous query>) {
+  participant(id: <participant id fetched in previous query>) {
     email
     delegationsReceived {
       delegator {
@@ -150,7 +150,7 @@ query {
     yes
     weight
     proposalUrl
-    uuid
+    id
     participant {
       email
     }
@@ -158,7 +158,7 @@ query {
 }
 
 query {
-  vote(uuid: <vote uuid fetched in previous query>) {
+  vote(id: <vote id fetched in previous query>) {
     yes
     weight
     proposalUrl
@@ -170,7 +170,7 @@ query {
 
 query {
   delegations {
-    uuid
+    id
     delegator {
       email
     }
@@ -181,7 +181,7 @@ query {
 }
 
 query {
-  delegation(uuid: <delegation uuid fetched in previous query>) {
+  delegation(id: <delegation id fetched in previous query>) {
     delegator {
       email
     }

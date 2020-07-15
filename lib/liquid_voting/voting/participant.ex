@@ -5,7 +5,7 @@ defmodule LiquidVoting.Voting.Participant do
   alias LiquidVoting.Voting.Vote
   alias LiquidVoting.Delegations.Delegation
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "participants" do
     field :name, :string
@@ -13,7 +13,7 @@ defmodule LiquidVoting.Voting.Participant do
     field :organization_uuid, Ecto.UUID
 
     has_many :votes, Vote
-    has_many :delegations_received, Delegation, foreign_key: :delegate_uuid
+    has_many :delegations_received, Delegation, foreign_key: :delegate_id
 
     timestamps()
   end

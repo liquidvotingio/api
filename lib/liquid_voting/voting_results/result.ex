@@ -2,7 +2,7 @@ defmodule LiquidVoting.VotingResults.Result do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:uuid, :binary_id, autogenerate: true}
+  @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "results" do
     field :in_favor, :integer, default: 0

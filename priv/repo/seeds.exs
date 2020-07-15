@@ -7,13 +7,13 @@
 # delegator2 = Voting.create_participant!(%{name: "Louie Louie", email: "louie@louie.com"})
 
 # Voting.create_delegation!(%{
-#   delegator_uuid: delegator.uuid,
-#   delegate_uuid: participant.uuid
+#   delegator_id: delegator.id,
+#   delegate_id: participant.id
 # })
 
 # Voting.create_delegation!(%{
-#   delegator_uuid: delegator2.uuid,
-#   delegate_uuid: participant.uuid
+#   delegator_id: delegator2.id,
+#   delegate_id: participant.id
 # })
 
 # participant = Repo.preload(participant, :delegations_received)
@@ -23,7 +23,7 @@
 #   Voting.create_vote!(%{
 #     yes: true,
 #     proposal_url: proposal_url,
-#     participant_uuid: participant.uuid
+#     participant_id: participant.id
 #   })
 
 # participant2 = Voting.create_participant!(%{name: "Francine Dunlop", email: "francine@dunlop.com"})
@@ -32,7 +32,7 @@
 #   Voting.create_vote!(%{
 #     yes: false,
 #     proposal_url: proposal_url,
-#     participant_uuid: participant2.uuid
+#     participant_id: participant2.id
 #   })
 
 # VotingResults.calculate_result!(proposal_url)
