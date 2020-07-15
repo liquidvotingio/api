@@ -2,8 +2,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateParticipants do
   use Ecto.Migration
 
   def change do
-    create table(:participants, primary_key: false) do
-      add :id, :uuid, primary_key: true
+    create table(:participants) do
       add :name, :string
       add :email, :string
       add :organization_uuid, :uuid

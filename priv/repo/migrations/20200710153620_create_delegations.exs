@@ -2,15 +2,9 @@ defmodule LiquidVoting.Repo.Migrations.CreateDelegations do
   use Ecto.Migration
 
   def change do
-    create table(:delegations, primary_key: false) do
-      add :id, :uuid, primary_key: true
-
-      add :delegator_id,
-          references(:participants, column: :id, type: :uuid, on_delete: :delete_all)
-
-      add :delegate_id,
-          references(:participants, column: :id, type: :uuid, on_delete: :delete_all)
-
+    create table(:delegations) do
+      add :delegator_id, references(:participants, on_delete: :delete_all)
+      add :delegate_id, references(:participants, on_delete: :delete_all)
       add :proposal_url, :text
       add :organization_uuid, :uuid
 
