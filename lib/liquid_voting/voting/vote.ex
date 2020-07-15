@@ -2,6 +2,8 @@ defmodule LiquidVoting.Voting.Vote do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias LiquidVoting.Voting.Participant
+
   @primary_key {:uuid, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
@@ -11,7 +13,7 @@ defmodule LiquidVoting.Voting.Vote do
     field :proposal_url, EctoFields.URL
     field :organization_uuid, Ecto.UUID
 
-    belongs_to :participant, LiquidVoting.Voting.Participant,
+    belongs_to :participant, Participant,
       references: :uuid,
       foreign_key: :participant_uuid,
       type: :binary_id
