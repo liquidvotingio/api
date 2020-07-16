@@ -5,7 +5,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateParticipants do
     create table(:participants) do
       add :name, :string
       add :email, :string
-      add :organization_id, :uuid
+      add :organization_id, :uuid, null: false
 
       timestamps()
     end

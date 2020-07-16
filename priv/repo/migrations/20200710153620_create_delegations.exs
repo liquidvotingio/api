@@ -6,7 +6,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateDelegations do
       add :delegator_id, references(:participants, on_delete: :delete_all)
       add :delegate_id, references(:participants, on_delete: :delete_all)
       add :proposal_url, :text
-      add :organization_id, :uuid
+      add :organization_id, :uuid, null: false
 
       timestamps()
     end

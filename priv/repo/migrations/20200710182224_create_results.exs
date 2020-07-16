@@ -6,7 +6,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateResults do
       add :in_favor, :integer, default: 0
       add :against, :integer, default: 0
       add :proposal_url, :string, default: false, null: false
-      add :organization_id, :uuid
+      add :organization_id, :uuid, null: false
 
       timestamps()
     end
