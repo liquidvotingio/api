@@ -17,7 +17,7 @@ Please note that for all communication and interactions we expect our [code of c
 Documentation can be found at
 
 - The [liquidvoting.io](https://liquidvoting.io) website, edited on its [github page repo](https://github.com/liquidvotingio/liquidvotingio.github.io)
-- READMES for [the api](https://github.com/liquidvotingio/api) and [auth]([api](https://github.com/liquidvotingio/api) repos
+- READMES for [the api](https://github.com/liquidvotingio/api) and [auth](https://github.com/liquidvotingio/auth) repos
 - Code comments
 - Tests
 
