@@ -116,12 +116,6 @@ defmodule LiquidVoting.Delegations do
     |> Repo.insert()
   end
 
-  def create_delegation!(attrs \\ %{}) do
-    %Delegation{}
-    |> Delegation.changeset(attrs)
-    |> Repo.insert()
-  end
-
   def make_delegation(args) do
     delegator_args = %{email: args.delegator_email, organization_uuid: args.organization_uuid}
     delegate_args = %{email: args.delegate_email, organization_uuid: args.organization_uuid}
