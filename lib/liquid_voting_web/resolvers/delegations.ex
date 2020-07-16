@@ -11,31 +11,8 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   # Will add participants to the db if they don't exist yet, or fetch them if they do. 
   # Their ids are used for delegator_id and delegate_id when inserting the delegation
   # with create_delegation_with_valid_arguments/1
-  def create_delegation(
-        _,
-        %{delegator_email: _, delegate_email: _} = args,
-        %{context: %{organization_uuid: organization_uuid}}
-      ) do
-    args
-    |> Map.put(:organization_uuid, organization_uuid)
-    |> Delegations.make_delegation()
-    |> case do
-      {:ok, new_resources} ->
-        {:ok, new_resources.delegation}
-
-      {:error, name, changeset, _} ->
-        {:error,
-         message: "Could not create #{name}", details: ChangesetErrors.error_details(changeset)}
-    end
-  end
-
-  # Create delegation with IDs
-  # We assume participants already exist if IDs are passed in: no upsert necessary.
-  def create_delegation(
-        _,
-        %{delegator_id: _, delegate_id: _} = args,
-        %{context: %{organization_uuid: organization_uuid}}
-      ) do
+  # TODO: consider returning an error when organization_uuid is missing.
+  def create_delegation(_, args, %{context: %{organization_uuid: organization_uuid}}) do
     args
     |> Map.put(:organization_uuid, organization_uuid)
     |> Delegations.create_delegation()
@@ -46,12 +23,12 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       {:error, changeset} ->
         {:error,
          message: "Could not create delegation", details: ChangesetErrors.error_details(changeset)}
+
+      {:error, name, changeset, _} ->
+        {:error,
+         message: "Could not create #{name}", details: ChangesetErrors.error_details(changeset)}
     end
   end
-
-  # TODO: flesh out error cases
-  def create_delegation(_, _args, _context),
-    do: {:error, message: "Could not create delegation", details: "invalid arguments"}
 
   # Delete proposal-specific delegations
   def delete_delegation(

@@ -101,6 +101,9 @@ defmodule LiquidVoting.Delegations do
   @doc """
   Creates a delegation.
 
+  The delegation will be global if no `proposal_url` is passed in. 
+  The delegation can be created by ID or by email. 
+
   ## Examples
 
       iex> create_delegation(%{field: value})
@@ -110,37 +113,33 @@ defmodule LiquidVoting.Delegations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_delegation(attrs \\ %{}) do
-    %Delegation{}
-    |> Delegation.changeset(attrs)
-    |> Repo.insert()
-  end
+  def create_delegation(attrs \\ %{})
 
-  def make_delegation(args) do
-    delegator_args = %{email: args.delegator_email, organization_uuid: args.organization_uuid}
-    delegate_args = %{email: args.delegate_email, organization_uuid: args.organization_uuid}
+  def create_delegation(%{delegator_email: _, delegate_email: _} = args) do
+    delegator_attrs = %{email: args.delegator_email, organization_uuid: args.organization_uuid}
+    delegate_attrs = %{email: args.delegate_email, organization_uuid: args.organization_uuid}
+    attrs = Map.take(args, [:organization_uuid, :proposal_url])
 
     Multi.new()
-    |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_args) end)
-    |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_args) end)
+    |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_attrs) end)
+    |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_attrs) end)
     |> Multi.run(:delegation, fn _repo, changes ->
-      changes
-      |> build_delegation_args(args)
+      attrs
+      |> Map.put(:delegator_id, changes.delegator.id)
+      |> Map.put(:delegate_id, changes.delegate.id)
       |> create_delegation()
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, resources} -> {:ok, resources.delegation}
+      error -> error
+    end
   end
 
-  defp build_delegation_args(changes, args) do
-    args
-    |> Map.get(:proposal_url)
-    |> case do
-      nil -> Map.new()
-      proposal_url -> %{proposal_url: proposal_url}
-    end
-    |> Map.put(:delegator_id, changes.delegator.id)
-    |> Map.put(:delegate_id, changes.delegate.id)
-    |> Map.put(:organization_uuid, args.organization_uuid)
+  def create_delegation(attrs) do
+    %Delegation{}
+    |> Delegation.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
