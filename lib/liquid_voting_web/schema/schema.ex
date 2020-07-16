@@ -19,7 +19,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve(&Resolvers.Voting.participants/3)
     end
 
-    @desc "Get a participant by its uuid"
+    @desc "Get a participant by its id"
     field :participant, :participant do
       arg(:id, non_null(:string))
       resolve(&Resolvers.Voting.participant/3)
@@ -30,7 +30,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve(&Resolvers.Voting.votes/3)
     end
 
-    @desc "Get a vote by its uuid"
+    @desc "Get a vote by its id"
     field :vote, :vote do
       arg(:id, non_null(:string))
       resolve(&Resolvers.Voting.vote/3)
@@ -41,7 +41,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve(&Resolvers.Delegations.delegations/3)
     end
 
-    @desc "Get a delegation by its uuid"
+    @desc "Get a delegation by its id"
     field :delegation, :delegation do
       arg(:id, non_null(:string))
       resolve(&Resolvers.Delegations.delegation/3)
