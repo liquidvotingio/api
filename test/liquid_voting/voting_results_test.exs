@@ -73,7 +73,7 @@ defmodule LiquidVoting.VotingResultsTest do
       assert VotingResults.list_results(result.organization_id) == [result]
     end
 
-    test "get_result!/2 returns the result with given uuid" do
+    test "get_result!/2 returns the result with given id" do
       result = insert(:voting_result)
       assert VotingResults.get_result!(result.id, result.organization_id) == result
     end
