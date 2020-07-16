@@ -2,14 +2,14 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   alias LiquidVoting.{Voting, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
-  def participants(_, _, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.list_participants(organization_uuid)}
+  def participants(_, _, %{context: %{organization_id: organization_id}}),
+    do: {:ok, Voting.list_participants(organization_id)}
 
-  def participant(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.get_participant!(id, organization_uuid)}
+  def participant(_, %{id: id}, %{context: %{organization_id: organization_id}}),
+    do: {:ok, Voting.get_participant!(id, organization_id)}
 
-  def create_participant(_, args, %{context: %{organization_uuid: organization_uuid}}) do
-    args = Map.put(args, :organization_uuid, organization_uuid)
+  def create_participant(_, args, %{context: %{organization_id: organization_id}}) do
+    args = Map.put(args, :organization_id, organization_id)
 
     case Voting.create_participant(args) do
       {:error, changeset} ->
@@ -22,19 +22,19 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def votes(_, %{proposal_url: proposal_url}, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.list_votes(proposal_url, organization_uuid)}
+  def votes(_, %{proposal_url: proposal_url}, %{context: %{organization_id: organization_id}}),
+    do: {:ok, Voting.list_votes(proposal_url, organization_id)}
 
-  def votes(_, _, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.list_votes(organization_uuid)}
+  def votes(_, _, %{context: %{organization_id: organization_id}}),
+    do: {:ok, Voting.list_votes(organization_id)}
 
-  def vote(_, %{id: id}, %{context: %{organization_uuid: organization_uuid}}),
-    do: {:ok, Voting.get_vote!(id, organization_uuid)}
+  def vote(_, %{id: id}, %{context: %{organization_id: organization_id}}),
+    do: {:ok, Voting.get_vote!(id, organization_id)}
 
   def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{
-        context: %{organization_uuid: organization_uuid}
+        context: %{organization_id: organization_id}
       }) do
-    case Voting.upsert_participant(%{email: email, organization_uuid: organization_uuid}) do
+    case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
       {:error, changeset} ->
         {:error,
          message: "Could not create vote with given email",
@@ -42,17 +42,17 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
       {:ok, participant} ->
         args
-        |> Map.put(:organization_uuid, organization_uuid)
+        |> Map.put(:organization_id, organization_id)
         |> Map.put(:participant_id, participant.id)
         |> create_vote_with_valid_arguments()
     end
   end
 
   def create_vote(_, %{participant_id: _, proposal_url: _, yes: _} = args, %{
-        context: %{organization_uuid: organization_uuid}
+        context: %{organization_id: organization_id}
       }) do
     args
-    |> Map.put(:organization_uuid, organization_uuid)
+    |> Map.put(:organization_id, organization_id)
     |> create_vote_with_valid_arguments()
   end
 
@@ -69,20 +69,20 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
          message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
 
       {:ok, vote} ->
-        VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_uuid)
+        VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_id)
         {:ok, vote}
     end
   end
 
   def delete_vote(_, %{participant_email: email, proposal_url: proposal_url}, %{
-        context: %{organization_uuid: organization_uuid}
+        context: %{organization_id: organization_id}
       }) do
     deleted_vote =
-      Voting.get_vote!(email, proposal_url, organization_uuid) |> Voting.delete_vote!()
+      Voting.get_vote!(email, proposal_url, organization_id) |> Voting.delete_vote!()
 
     VotingResults.publish_voting_result_change(
       deleted_vote.proposal_url,
-      deleted_vote.organization_uuid
+      deleted_vote.organization_id
     )
 
     {:ok, deleted_vote}

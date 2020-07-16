@@ -5,15 +5,15 @@ defmodule LiquidVoting.Repo.Migrations.CreateParticipants do
     create table(:participants) do
       add :name, :string
       add :email, :string
-      add :organization_uuid, :uuid
+      add :organization_id, :uuid
 
       timestamps()
     end
 
-    create index(:participants, [:organization_uuid])
+    create index(:participants, [:organization_id])
 
-    create unique_index(:participants, [:organization_uuid, :email],
-             name: :uniq_index_organization_uuid_participant_email
+    create unique_index(:participants, [:organization_id, :email],
+             name: :uniq_index_organization_id_participant_email
            )
   end
 end

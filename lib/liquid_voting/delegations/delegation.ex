@@ -9,7 +9,7 @@ defmodule LiquidVoting.Delegations.Delegation do
 
   schema "delegations" do
     field :proposal_url, EctoFields.URL
-    field :organization_uuid, Ecto.UUID
+    field :organization_id, Ecto.UUID
 
     belongs_to :delegator, Participant
     belongs_to :delegate, Participant
@@ -19,7 +19,7 @@ defmodule LiquidVoting.Delegations.Delegation do
 
   @doc false
   def changeset(delegation, attrs) do
-    required_fields = [:delegator_id, :delegate_id, :organization_uuid]
+    required_fields = [:delegator_id, :delegate_id, :organization_id]
     all_fields = [:proposal_url | required_fields]
 
     delegation

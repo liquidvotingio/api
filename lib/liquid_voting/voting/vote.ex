@@ -11,7 +11,7 @@ defmodule LiquidVoting.Voting.Vote do
     field :yes, :boolean, default: false
     field :weight, :integer, default: 1
     field :proposal_url, EctoFields.URL
-    field :organization_uuid, Ecto.UUID
+    field :organization_id, Ecto.UUID
 
     belongs_to :participant, Participant
 
@@ -20,7 +20,7 @@ defmodule LiquidVoting.Voting.Vote do
 
   @doc false
   def changeset(vote, attrs) do
-    required_fields = [:yes, :weight, :participant_id, :proposal_url, :organization_uuid]
+    required_fields = [:yes, :weight, :participant_id, :proposal_url, :organization_id]
 
     vote
     |> cast(attrs, required_fields)

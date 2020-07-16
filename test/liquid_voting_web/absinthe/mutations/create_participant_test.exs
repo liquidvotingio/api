@@ -8,7 +8,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
     @new_participant_name "Noobie"
     @another_name "Another Name"
     @invalid_email "invalid_email"
-    @organization_uuid Ecto.UUID.generate()
+    @organization_id Ecto.UUID.generate()
 
     test "with a new participant's email and name" do
       query = """
@@ -21,7 +21,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
       """
 
       {:ok, %{data: %{"createParticipant" => participant}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: @organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       assert participant["email"] == @new_participant_email
       assert participant["name"] == @new_participant_name
@@ -37,7 +37,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
       }
       """
 
-      {:ok, _} = Absinthe.run(query, Schema, context: %{organization_uuid: @organization_uuid})
+      {:ok, _} = Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       query = """
       mutation {
@@ -49,7 +49,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
       """
 
       {:ok, %{errors: [%{message: message, details: details}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: @organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       assert message == "Could not create participant"
       assert details == %{email: ["has already been taken"]}
@@ -66,7 +66,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
       """
 
       {:ok, %{errors: [%{message: message}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: @organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       assert to_charlist(message) == 'In argument "name": Expected type "String!", found null.'
     end
@@ -82,7 +82,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
       """
 
       {:ok, %{errors: [%{message: message}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: @organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       assert to_charlist(message) == 'In argument "email": Expected type "String!", found null.'
     end
@@ -98,7 +98,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateParticipantTest do
       """
 
       {:ok, %{errors: [%{message: message, details: details}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: @organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       assert message == "Could not create participant"
       assert details == %{email: ["is invalid"]}

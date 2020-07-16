@@ -6,26 +6,26 @@ defmodule LiquidVoting.Repo.Migrations.CreateDelegations do
       add :delegator_id, references(:participants, on_delete: :delete_all)
       add :delegate_id, references(:participants, on_delete: :delete_all)
       add :proposal_url, :text
-      add :organization_uuid, :uuid
+      add :organization_id, :uuid
 
       timestamps()
     end
 
-    create index(:delegations, [:delegator_id, :organization_uuid],
+    create index(:delegations, [:delegator_id, :organization_id],
              name: :index_delegation_delegator_org
            )
 
-    create index(:delegations, [:delegate_id, :organization_uuid],
+    create index(:delegations, [:delegate_id, :organization_id],
              name: :index_delegation_delegate_org
            )
 
-    create index(:delegations, [:proposal_url, :organization_uuid],
+    create index(:delegations, [:proposal_url, :organization_id],
              name: :index_delegation_proposal_org
            )
 
-    create index(:delegations, [:organization_uuid])
+    create index(:delegations, [:organization_id])
 
-    create unique_index(:delegations, [:organization_uuid, :delegator_id, :delegate_id],
+    create unique_index(:delegations, [:organization_id, :delegator_id, :delegate_id],
              name: :uniq_index_org_delegator_delegate
            )
   end

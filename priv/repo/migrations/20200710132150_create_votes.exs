@@ -7,16 +7,16 @@ defmodule LiquidVoting.Repo.Migrations.CreateVotes do
       add :weight, :integer, default: 1
       add :participant_id, references(:participants, on_delete: :nothing)
       add :proposal_url, :text, default: false, null: false
-      add :organization_uuid, :uuid
+      add :organization_id, :uuid
 
       timestamps()
     end
 
-    create index(:votes, [:participant_id, :organization_uuid], name: :index_vote_participant_org)
-    create index(:votes, [:proposal_url, :organization_uuid], name: :index_vote_proposal_org)
-    create index(:votes, [:organization_uuid])
+    create index(:votes, [:participant_id, :organization_id], name: :index_vote_participant_org)
+    create index(:votes, [:proposal_url, :organization_id], name: :index_vote_proposal_org)
+    create index(:votes, [:organization_id])
 
-    create unique_index(:votes, [:organization_uuid, :participant_id, :proposal_url],
+    create unique_index(:votes, [:organization_id, :participant_id, :proposal_url],
              name: :uniq_index_org_vote_participant_proposal
            )
   end
