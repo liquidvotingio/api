@@ -19,7 +19,7 @@ defmodule LiquidVotingWeb.Absinthe.Queries.VotingResultTest do
       """
 
       {:ok, %{data: %{"votingResult" => result_payload}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: result.organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: result.organization_id})
 
       assert result_payload["in_favor"] == result.in_favor
       assert result_payload["against"] == result.against

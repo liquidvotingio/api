@@ -28,7 +28,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       """
 
       {:ok, %{data: %{"createDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
 
       assert delegation["delegator"]["email"] == @new_delegator_email
       assert delegation["delegator"]["name"] == nil
@@ -54,7 +54,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       """
 
       {:ok, %{data: %{"createDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
 
       assert delegation["proposalUrl"] == @proposal_url
     end
@@ -83,7 +83,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       """
 
       {:ok, %{data: %{"createDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: result.organization_uuid})
+        Absinthe.run(query, Schema, context: %{organization_id: result.organization_id})
 
       assert delegation["votingResult"]["in_favor"] == 0
       assert delegation["votingResult"]["against"] == 0
@@ -118,7 +118,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       """
 
       {:ok, %{data: %{"createDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
 
       assert delegation["delegator"]["email"] == context[:delegator].email
       assert delegation["delegate"]["email"] == context[:delegate].email
@@ -141,7 +141,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       """
 
       {:ok, %{data: %{"createDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
 
       assert delegation["delegator"]["email"] == context[:delegator].email
       assert delegation["delegate"]["email"] == context[:delegate].email
@@ -162,7 +162,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       """
 
       {:ok, %{errors: [%{message: message, details: details}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: Ecto.UUID.generate()})
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
 
       assert message == "Could not create delegation"
       assert details == %{delegate_id: ["can't be blank"]}

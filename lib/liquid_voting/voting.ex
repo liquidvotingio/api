@@ -34,7 +34,7 @@ defmodule LiquidVoting.Voting do
           if delegation =
                Repo.get_by(Delegation,
                  delegator_id: attrs[:participant_id],
-                 organization_uuid: attrs[:organization_uuid]
+                 organization_id: attrs[:organization_id]
                ) do
             case Delegations.delete_delegation(delegation) do
               {:ok, _delegation} -> vote
@@ -51,7 +51,7 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Returns the list of votes for an organization uuid.
+  Returns the list of votes for an organization id.
 
   ## Examples
 
@@ -59,15 +59,15 @@ defmodule LiquidVoting.Voting do
       [%Vote{}, ...]
 
   """
-  def list_votes(organization_uuid) do
+  def list_votes(organization_id) do
     Vote
-    |> where(organization_uuid: ^organization_uuid)
+    |> where(organization_id: ^organization_id)
     |> Repo.all()
     |> Repo.preload([:participant])
   end
 
   @doc """
-  Returns the list of votes for a proposal_url and organization uuid
+  Returns the list of votes for a proposal_url and organization id
 
   ## Examples
 
@@ -75,15 +75,15 @@ defmodule LiquidVoting.Voting do
       [%Vote{}, ...]
 
   """
-  def list_votes(proposal_url, organization_uuid) do
+  def list_votes(proposal_url, organization_id) do
     Vote
-    |> where(proposal_url: ^proposal_url, organization_uuid: ^organization_uuid)
+    |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
     |> Repo.all()
     |> Repo.preload([:participant])
   end
 
   @doc """
-  Gets a single vote by id and organization uuid
+  Gets a single vote by id and organization id
 
   Raises `Ecto.NoResultsError` if the Vote does not exist.
 
@@ -96,14 +96,14 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_vote!(id, organization_uuid) do
+  def get_vote!(id, organization_id) do
     Vote
-    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
+    |> Repo.get_by!(id: id, organization_id: organization_id)
     |> Repo.preload([:participant])
   end
 
   @doc """
-  Gets a single vote by participant email, proposal_url and organization uuid
+  Gets a single vote by participant email, proposal_url and organization id
 
   ## Examples
 
@@ -115,14 +115,14 @@ defmodule LiquidVoting.Voting do
 
 
   """
-  def get_vote!(email, proposal_url, organization_uuid) do
-    participant = get_participant_by_email!(email, organization_uuid)
+  def get_vote!(email, proposal_url, organization_id) do
+    participant = get_participant_by_email!(email, organization_id)
 
     Vote
     |> Repo.get_by!(
       participant_id: participant.id,
       proposal_url: proposal_url,
-      organization_uuid: organization_uuid
+      organization_id: organization_id
     )
     |> Repo.preload([:participant])
   end
@@ -192,7 +192,7 @@ defmodule LiquidVoting.Voting do
   def change_vote(%Vote{} = vote), do: Vote.changeset(vote, %{})
 
   @doc """
-  Returns the list of participants for an organization uuid
+  Returns the list of participants for an organization id
 
   ## Examples
 
@@ -200,14 +200,14 @@ defmodule LiquidVoting.Voting do
       [%Participant{}, ...]
 
   """
-  def list_participants(organization_uuid) do
+  def list_participants(organization_id) do
     Participant
-    |> where(organization_uuid: ^organization_uuid)
+    |> where(organization_id: ^organization_id)
     |> Repo.all()
   end
 
   @doc """
-  Gets a single participant for an organization uuid
+  Gets a single participant for an organization id
 
   Raises `Ecto.NoResultsError` if the Participant does not exist.
 
@@ -220,11 +220,11 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant!(id, organization_uuid),
-    do: Repo.get_by!(Participant, id: id, organization_uuid: organization_uuid)
+  def get_participant!(id, organization_id),
+    do: Repo.get_by!(Participant, id: id, organization_id: organization_id)
 
   @doc """
-  Gets a single participant for an organization uuid by their email
+  Gets a single participant for an organization id by their email
 
   Returns nil if the Participant does not exist.
 
@@ -237,13 +237,13 @@ defmodule LiquidVoting.Voting do
       nil
 
   """
-  def get_participant_by_email(email, organization_uuid),
-    do: Repo.get_by(Participant, email: email, organization_uuid: organization_uuid)
+  def get_participant_by_email(email, organization_id),
+    do: Repo.get_by(Participant, email: email, organization_id: organization_id)
 
   @doc """
-  Gets a single participant for an organization uuid by their email
+  Gets a single participant for an organization id by their email
 
-  Returns nil if the Participant does not exist.
+  Raises `Ecto.NoResultsError` if the Participant does not exist.
 
   ## Examples
 
@@ -254,8 +254,8 @@ defmodule LiquidVoting.Voting do
       ** (Ecto.NoResultsError)
 
   """
-  def get_participant_by_email!(email, organization_uuid),
-    do: Repo.get_by!(Participant, email: email, organization_uuid: organization_uuid)
+  def get_participant_by_email!(email, organization_id),
+    do: Repo.get_by!(Participant, email: email, organization_id: organization_id)
 
   @doc """
   Creates a participant.
@@ -286,7 +286,8 @@ defmodule LiquidVoting.Voting do
     |> Participant.changeset(attrs)
     |> Repo.insert(
       on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_uuid, :email]
+      conflict_target: [:organization_id, :email],
+      returning: true
     )
   end
 

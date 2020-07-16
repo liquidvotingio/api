@@ -9,49 +9,51 @@ defmodule LiquidVoting.ParticipantsTest do
     @valid_attrs %{
       name: "some name",
       email: "some@email.com",
-      organization_uuid: Ecto.UUID.generate()
+      organization_id: Ecto.UUID.generate()
     }
     @update_attrs %{
       name: "some updated name",
       email: "another@email.com",
-      organization_uuid: Ecto.UUID.generate()
+      organization_id: Ecto.UUID.generate()
     }
-    @invalid_attrs %{email: nil, organization_uuid: nil}
+    @invalid_attrs %{email: nil, organization_id: nil}
 
-    test "list_participants/1 returns all participants for an organization_uuid" do
+    test "list_participants/1 returns all participants for an organization_id" do
       participant = insert(:participant)
-      assert Voting.list_participants(participant.organization_uuid) == [participant]
+      assert Voting.list_participants(participant.organization_id) == [participant]
     end
 
-    test "get_participant!/2 returns the participant with given id and organization_uuid" do
+    test "get_participant!/2 returns the participant with given id and organization_id" do
       participant = insert(:participant)
-      assert Voting.get_participant!(participant.id, participant.organization_uuid) == participant
+
+      assert Voting.get_participant!(participant.id, participant.organization_id) ==
+               participant
     end
 
-    test "get_participant_by_email/2 returns the participant with given email and organization_uuid" do
+    test "get_participant_by_email/2 returns the participant with given email and organization_id" do
       participant = insert(:participant)
 
-      assert Voting.get_participant_by_email(participant.email, participant.organization_uuid) ==
+      assert Voting.get_participant_by_email(participant.email, participant.organization_id) ==
                participant
     end
 
     test "get_participant_by_email/2 returns nil when a participant is not found" do
       assert Voting.get_participant_by_email(
                "non@participant.com",
-               @valid_attrs[:organization_uuid]
+               @valid_attrs[:organization_id]
              ) == nil
     end
 
-    test "get_participant_by_email!/2 returns the participant with given email and organization_uuid" do
+    test "get_participant_by_email!/2 returns the participant with given email and organization_id" do
       participant = insert(:participant)
 
-      assert Voting.get_participant_by_email!(participant.email, participant.organization_uuid) ==
+      assert Voting.get_participant_by_email!(participant.email, participant.organization_id) ==
                participant
     end
 
     test "get_participant_by_email!/2 raises Ecto.NoResultsError when participant is not found" do
       assert_raise Ecto.NoResultsError, fn ->
-        Voting.get_participant_by_email!("non@participant.com", @valid_attrs[:organization_uuid])
+        Voting.get_participant_by_email!("non@participant.com", @valid_attrs[:organization_id])
       end
     end
 
@@ -61,9 +63,9 @@ defmodule LiquidVoting.ParticipantsTest do
       assert participant.name == @valid_attrs[:name]
     end
 
-    test "create_participant/1 with valid data creates a uuid" do
+    test "create_participant/1 with valid data creates an id" do
       assert {:ok, %Participant{} = participant} = Voting.create_participant(@valid_attrs)
-      assert {:ok, _uuid_bitstring} = Ecto.UUID.dump(participant.uuid)
+      assert {:ok, _uuid_bitstring} = Ecto.UUID.dump(participant.id)
     end
 
     test "create_participant/1 with missing data returns error changeset" do
@@ -105,7 +107,9 @@ defmodule LiquidVoting.ParticipantsTest do
     test "update_participant/2 with invalid data returns error changeset" do
       participant = insert(:participant)
       assert {:error, %Ecto.Changeset{}} = Voting.update_participant(participant, @invalid_attrs)
-      assert participant == Voting.get_participant!(participant.id, participant.organization_uuid)
+
+      assert participant ==
+               Voting.get_participant!(participant.id, participant.organization_id)
     end
 
     test "delete_participant/1 deletes the participant" do
@@ -113,7 +117,7 @@ defmodule LiquidVoting.ParticipantsTest do
       assert {:ok, %Participant{}} = Voting.delete_participant(participant)
 
       assert_raise Ecto.NoResultsError, fn ->
-        Voting.get_participant!(participant.id, participant.organization_uuid)
+        Voting.get_participant!(participant.id, participant.organization_id)
       end
     end
 
