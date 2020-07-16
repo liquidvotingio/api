@@ -30,6 +30,7 @@ defmodule LiquidVoting.VotingResults do
 
     attrs =
       Enum.reduce(votes, attrs, fn vote, attrs ->
+        #  TODO: this update should be happening on vote creation or delegation creation?
         {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
         if vote.yes do
@@ -58,6 +59,7 @@ defmodule LiquidVoting.VotingResults do
 
   """
   def publish_voting_result_change(proposal_url, organization_id) do
+    # TODO: decouple publishing and result calculation
     result = calculate_result!(proposal_url, organization_id)
 
     Absinthe.Subscription.publish(
