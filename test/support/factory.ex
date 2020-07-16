@@ -9,39 +9,39 @@ defmodule LiquidVoting.Factory do
     %Participant{
       name: sequence(:name, &"Jane Doe #{&1}"),
       email: sequence(:email, &"jane#{&1}@somedomain.com"),
-      organization_uuid: Ecto.UUID.generate()
+      organization_id: Ecto.UUID.generate()
     }
   end
 
   def vote_factory do
-    organization_uuid = Ecto.UUID.generate()
+    organization_id = Ecto.UUID.generate()
 
     %Vote{
       yes: true,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
-      participant: build(:participant, organization_uuid: organization_uuid),
-      organization_uuid: organization_uuid
+      participant: build(:participant, organization_id: organization_id),
+      organization_id: organization_id
     }
   end
 
   def delegation_factory do
-    organization_uuid = Ecto.UUID.generate()
+    organization_id = Ecto.UUID.generate()
 
     %Delegation{
-      delegator: build(:participant, organization_uuid: organization_uuid),
-      delegate: build(:participant, organization_uuid: organization_uuid),
-      organization_uuid: organization_uuid
+      delegator: build(:participant, organization_id: organization_id),
+      delegate: build(:participant, organization_id: organization_id),
+      organization_id: organization_id
     }
   end
 
   def delegation_for_proposal_factory do
-    organization_uuid = Ecto.UUID.generate()
+    organization_id = Ecto.UUID.generate()
 
     %Delegation{
-      delegator: build(:participant, organization_uuid: organization_uuid),
-      delegate: build(:participant, organization_uuid: organization_uuid),
+      delegator: build(:participant, organization_id: organization_id),
+      delegate: build(:participant, organization_id: organization_id),
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
-      organization_uuid: organization_uuid
+      organization_id: organization_id
     }
   end
 
@@ -50,7 +50,7 @@ defmodule LiquidVoting.Factory do
       in_favor: 0,
       against: 0,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
-      organization_uuid: Ecto.UUID.generate()
+      organization_id: Ecto.UUID.generate()
     }
   end
 end

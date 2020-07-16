@@ -10,7 +10,7 @@ defmodule LiquidVoting.VotingResults do
 
   @doc """
   Creates or updates voting result based on votes
-  given to a proposal within the scope of a organization_uuid
+  given to a proposal within the scope of a organization_id
 
   ## Examples
 
@@ -18,14 +18,14 @@ defmodule LiquidVoting.VotingResults do
       %Result{}
 
   """
-  def calculate_result!(proposal_url, organization_uuid) do
-    votes = Voting.list_votes(proposal_url, organization_uuid)
+  def calculate_result!(proposal_url, organization_id) do
+    votes = Voting.list_votes(proposal_url, organization_id)
 
     attrs = %{
       in_favor: 0,
       against: 0,
       proposal_url: proposal_url,
-      organization_uuid: organization_uuid
+      organization_id: organization_id
     }
 
     attrs =
@@ -43,7 +43,8 @@ defmodule LiquidVoting.VotingResults do
     |> Result.changeset(attrs)
     |> Repo.insert!(
       on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_uuid, :proposal_url]
+      conflict_target: [:organization_id, :proposal_url],
+      returning: true
     )
   end
 
@@ -56,8 +57,8 @@ defmodule LiquidVoting.VotingResults do
       :ok
 
   """
-  def publish_voting_result_change(proposal_url, organization_uuid) do
-    result = calculate_result!(proposal_url, organization_uuid)
+  def publish_voting_result_change(proposal_url, organization_id) do
+    result = calculate_result!(proposal_url, organization_id)
 
     Absinthe.Subscription.publish(
       LiquidVotingWeb.Endpoint,
@@ -67,7 +68,7 @@ defmodule LiquidVoting.VotingResults do
   end
 
   @doc """
-  Returns the list of results in the scope of a organization_uuid.
+  Returns the list of results in the scope of a organization_id.
 
   ## Examples
 
@@ -75,14 +76,14 @@ defmodule LiquidVoting.VotingResults do
       [%Result{}, ...]
 
   """
-  def list_results(organization_uuid) do
+  def list_results(organization_id) do
     Result
-    |> where(organization_uuid: ^organization_uuid)
+    |> where(organization_id: ^organization_id)
     |> Repo.all()
   end
 
   @doc """
-  Gets a single result for an organization_uuid
+  Gets a single result for an organization_id
 
   Raises `Ecto.NoResultsError` if the Result does not exist.
 
@@ -95,11 +96,11 @@ defmodule LiquidVoting.VotingResults do
       ** (Ecto.NoResultsError)
 
   """
-  def get_result!(id, organization_uuid),
-    do: Repo.get_by!(Result, id: id, organization_uuid: organization_uuid)
+  def get_result!(id, organization_id),
+    do: Repo.get_by!(Result, id: id, organization_id: organization_id)
 
   @doc """
-  Gets a single result by its proposal url and organization_uuid
+  Gets a single result by its proposal url and organization_id
 
   Raises `Ecto.NoResultsError` if the Result does not exist.
 
@@ -112,8 +113,8 @@ defmodule LiquidVoting.VotingResults do
       nil
 
   """
-  def get_result_by_proposal_url(proposal_url, organization_uuid),
-    do: Repo.get_by(Result, proposal_url: proposal_url, organization_uuid: organization_uuid)
+  def get_result_by_proposal_url(proposal_url, organization_id),
+    do: Repo.get_by(Result, proposal_url: proposal_url, organization_id: organization_id)
 
   @doc """
   Creates a result.
