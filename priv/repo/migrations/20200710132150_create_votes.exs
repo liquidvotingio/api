@@ -12,8 +12,8 @@ defmodule LiquidVoting.Repo.Migrations.CreateVotes do
       timestamps()
     end
 
-    create index(:votes, [:participant_id, :organization_id], name: :index_vote_participant_org)
-    create index(:votes, [:proposal_url, :organization_id], name: :index_vote_proposal_org)
+    create index(:votes, [:organization_id, :participant_id])
+    create index(:votes, [:organization_id, :proposal_url])
     create index(:votes, [:organization_id])
 
     create unique_index(:votes, [:organization_id, :participant_id, :proposal_url],
