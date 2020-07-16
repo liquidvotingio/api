@@ -30,28 +30,28 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   end
 
   # Create delegation with IDs
-  #  We assume participants already exist if IDs are passed in: no upsert necessary.
-  # NOTE: inconsistent validation with pattern match in this clause and the above
-  def create_delegation(_, %{delegator_id: _, delegate_id: _} = args, %{context: context}) do
+  # We assume participants already exist if IDs are passed in: no upsert necessary.
+  def create_delegation(
+        _,
+        %{delegator_id: _, delegate_id: _} = args,
+        %{context: %{organization_uuid: organization_uuid}}
+      ) do
     args
-    |> Map.put(:organization_uuid, context.organization_uuid)
-    |> create_delegation_with_valid_arguments()
+    |> Map.put(:organization_uuid, organization_uuid)
+    |> Delegations.create_delegation()
+    |> case do
+      {:ok, delegation} ->
+        {:ok, delegation}
+
+      {:error, changeset} ->
+        {:error,
+         message: "Could not create delegation", details: ChangesetErrors.error_details(changeset)}
+    end
   end
 
   # TODO: flesh out error cases
   def create_delegation(_, _args, _context),
     do: {:error, message: "Could not create delegation", details: "invalid arguments"}
-
-  defp create_delegation_with_valid_arguments(args) do
-    case Delegations.create_delegation(args) do
-      {:error, changeset} ->
-        {:error,
-         message: "Could not create delegation", details: ChangesetErrors.error_details(changeset)}
-
-      {:ok, delegation} ->
-        {:ok, delegation}
-    end
-  end
 
   # Delete proposal-specific delegations
   def delete_delegation(
