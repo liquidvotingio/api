@@ -4,6 +4,8 @@ use Mix.Config
 config :liquid_voting,
   ecto_repos: [LiquidVoting.Repo]
 
+config :liquid_voting, LiquidVoting.Repo, migration_primary_key: [name: :id, type: :binary_id]
+
 config :liquid_voting, LiquidVotingWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "JnwIS2wvbN45zqsUjKCgZ1kq8ifWd4lsP08y89uFS5w3uHoFJ9UmdcgiFI3GcKBl",

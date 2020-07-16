@@ -10,7 +10,7 @@ defmodule LiquidVoting.Delegations do
   alias Ecto.Multi
 
   @doc """
-  Returns the list of delegations for an organization uuid
+  Returns the list of delegations for an organization id
 
   ## Examples
 
@@ -18,15 +18,15 @@ defmodule LiquidVoting.Delegations do
       [%Delegation{}, ...]
 
   """
-  def list_delegations(organization_uuid) do
+  def list_delegations(organization_id) do
     Delegation
-    |> where(organization_uuid: ^organization_uuid)
+    |> where(organization_id: ^organization_id)
     |> Repo.all()
     |> Repo.preload([:delegator, :delegate])
   end
 
   @doc """
-  Gets a single delegation for an organization uuid
+  Gets a single delegation for an organization id
 
   Raises `Ecto.NoResultsError` if the Delegation does not exist.
 
@@ -39,14 +39,14 @@ defmodule LiquidVoting.Delegations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(id, organization_uuid) do
+  def get_delegation!(id, organization_id) do
     Delegation
-    |> Repo.get_by!(id: id, organization_uuid: organization_uuid)
+    |> Repo.get_by!(id: id, organization_id: organization_id)
     |> Repo.preload([:delegator, :delegate])
   end
 
   @doc """
-  Gets a single delegation by delegator email, delegate email, proposal_url and organization uuid
+  Gets a single delegation by delegator email, delegate email, proposal_url and organization id
 
   Raises `Ecto.NoResultsError` if the Delegation does not exist.
 
@@ -59,21 +59,21 @@ defmodule LiquidVoting.Delegations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(delegator_email, delegate_email, proposal_url, organization_uuid) do
-    delegator = Voting.get_participant_by_email!(delegator_email, organization_uuid)
-    delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
+  def get_delegation!(delegator_email, delegate_email, proposal_url, organization_id) do
+    delegator = Voting.get_participant_by_email!(delegator_email, organization_id)
+    delegate = Voting.get_participant_by_email!(delegate_email, organization_id)
 
     Repo.get_by!(
       Delegation,
       delegator_id: delegator.id,
       delegate_id: delegate.id,
       proposal_url: proposal_url,
-      organization_uuid: organization_uuid
+      organization_id: organization_id
     )
   end
 
   @doc """
-  Gets a single global delegation by delegator email, delegate email and organization uuid
+  Gets a single global delegation by delegator email, delegate email and organization id
 
   Raises `Ecto.NoResultsError` if the Delegation does not exist.
 
@@ -86,15 +86,15 @@ defmodule LiquidVoting.Delegations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(delegator_email, delegate_email, organization_uuid) do
-    delegator = Voting.get_participant_by_email!(delegator_email, organization_uuid)
-    delegate = Voting.get_participant_by_email!(delegate_email, organization_uuid)
+  def get_delegation!(delegator_email, delegate_email, organization_id) do
+    delegator = Voting.get_participant_by_email!(delegator_email, organization_id)
+    delegate = Voting.get_participant_by_email!(delegate_email, organization_id)
 
     Repo.get_by!(
       Delegation,
       delegator_id: delegator.id,
       delegate_id: delegate.id,
-      organization_uuid: organization_uuid
+      organization_id: organization_id
     )
   end
 
@@ -116,9 +116,9 @@ defmodule LiquidVoting.Delegations do
   def create_delegation(attrs \\ %{})
 
   def create_delegation(%{delegator_email: _, delegate_email: _} = args) do
-    delegator_attrs = %{email: args.delegator_email, organization_uuid: args.organization_uuid}
-    delegate_attrs = %{email: args.delegate_email, organization_uuid: args.organization_uuid}
-    attrs = Map.take(args, [:organization_uuid, :proposal_url])
+    delegator_attrs = %{email: args.delegator_email, organization_id: args.organization_id}
+    delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
+    attrs = Map.take(args, [:organization_id, :proposal_url])
 
     Multi.new()
     |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_attrs) end)

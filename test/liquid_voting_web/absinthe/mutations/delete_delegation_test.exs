@@ -11,20 +11,20 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       insert(:vote,
         participant: delegation.delegate,
         proposal_url: delegation.proposal_url,
-        organization_uuid: delegation.organization_uuid
+        organization_id: delegation.organization_id
       )
 
       insert(:voting_result,
         in_favor: 2,
         proposal_url: delegation.proposal_url,
-        organization_uuid: delegation.organization_uuid
+        organization_id: delegation.organization_id
       )
 
       [
         delegator_email: delegation.delegator.email,
         delegate_email: delegation.delegate.email,
         proposal_url: delegation.proposal_url,
-        organization_uuid: delegation.organization_uuid
+        organization_id: delegation.organization_id
       ]
     end
 
@@ -44,7 +44,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       """
 
       {:ok, %{data: %{"deleteDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
       assert delegation["proposalUrl"] == context[:proposal_url]
       assert delegation["votingResult"]["in_favor"] == 1
@@ -65,7 +65,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       """
 
       {:ok, %{errors: [%{message: message}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
       assert message == "No delegation found to delete"
     end
@@ -78,7 +78,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       [
         delegator_email: delegation.delegator.email,
         delegate_email: delegation.delegate.email,
-        organization_uuid: delegation.organization_uuid
+        organization_id: delegation.organization_id
       ]
     end
 
@@ -94,7 +94,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       """
 
       {:ok, %{data: %{"deleteDelegation" => delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
       assert delegation["proposalUrl"] == context[:proposal_url]
     end
@@ -113,7 +113,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       """
 
       {:ok, %{errors: [%{message: message}]}} =
-        Absinthe.run(query, Schema, context: %{organization_uuid: context[:organization_uuid]})
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
       assert message == "No delegation found to delete"
     end
