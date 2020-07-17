@@ -88,4 +88,14 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   rescue
     Ecto.NoResultsError -> {:error, message: "No vote found to delete"}
   end
+
+  def delete_participant(_, %{participant_email: email}, %{
+        context: %{organization_id: organization_id}
+      }) do
+    deleted_participant = Voting.get_participant_by_email!(email, organization_id) |> Voting.delete_participant!()
+
+    {:ok, deleted_participant}
+  rescue
+    Ecto.NoResultsError -> {:error, message: "No participant found to delete"}
+  end
 end

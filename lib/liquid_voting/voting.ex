@@ -324,6 +324,20 @@ defmodule LiquidVoting.Voting do
   def delete_participant(%Participant{} = participant), do: Repo.delete(participant)
 
   @doc """
+  Deletes a Participant.
+
+  ## Examples
+
+      iex> delete_participant(participant)
+      {:ok, %Participant{}}
+
+      iex> delete_participant(participant)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_participant!(%Participant{} = participant), do: Repo.delete!(participant)
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking participant changes.
 
   ## Examples
