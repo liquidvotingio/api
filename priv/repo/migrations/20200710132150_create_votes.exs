@@ -5,7 +5,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateVotes do
     create table(:votes) do
       add :yes, :boolean, default: false, null: false
       add :weight, :integer, default: 1
-      add :participant_id, references(:participants, on_delete: :nothing)
+      add :participant_id, references(:participants, on_delete: :delete_all)
       add :proposal_url, :text, default: false, null: false
       add :organization_id, :uuid, null: false
 
