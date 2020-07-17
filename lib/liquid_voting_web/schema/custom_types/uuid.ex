@@ -20,7 +20,6 @@ defmodule LiquidVotingWeb.Schema.CustomTypes.UUID do
 
   @spec decode(Absinthe.Blueprint.Input.String.t()) :: {:ok, term()} | :error
   @spec decode(Absinthe.Blueprint.Input.Null.t()) :: {:ok, nil}
-
   defp decode(%Absinthe.Blueprint.Input.String{value: value}), do: UUID.cast(value)
   defp decode(%Absinthe.Blueprint.Input.Null{}), do: {:ok, nil}
   defp decode(_), do: :error
