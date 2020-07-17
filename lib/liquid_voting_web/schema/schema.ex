@@ -3,6 +3,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   alias LiquidVoting.{Voting, VotingResults}
 
   import_types(Absinthe.Type.Custom)
+  import_types(LiquidVotingWeb.Schema.CustomTypes.UUID)
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
   alias LiquidVotingWeb.Resolvers
@@ -21,7 +22,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Get a participant by its id"
     field :participant, :participant do
-      arg(:id, non_null(:string))
+      arg(:id, non_null(:uuid))
       resolve(&Resolvers.Voting.participant/3)
     end
 
@@ -32,7 +33,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Get a vote by its id"
     field :vote, :vote do
-      arg(:id, non_null(:string))
+      arg(:id, non_null(:uuid))
       resolve(&Resolvers.Voting.vote/3)
     end
 
@@ -43,7 +44,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Get a delegation by its id"
     field :delegation, :delegation do
-      arg(:id, non_null(:string))
+      arg(:id, non_null(:uuid))
       resolve(&Resolvers.Delegations.delegation/3)
     end
   end
@@ -59,7 +60,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     @desc "Create a vote for a proposal"
     field :create_vote, :vote do
       arg(:proposal_url, non_null(:string))
-      arg(:participant_id, :string)
+      arg(:participant_id, :uuid)
       arg(:participant_email, :string)
       arg(:yes, non_null(:boolean))
       resolve(&Resolvers.Voting.create_vote/3)
@@ -68,15 +69,15 @@ defmodule LiquidVotingWeb.Schema.Schema do
     @desc "Delete a vote for a proposal"
     field :delete_vote, :vote do
       arg(:proposal_url, non_null(:string))
-      arg(:participant_id, :string)
+      arg(:participant_id, :uuid)
       arg(:participant_email, :string)
       resolve(&Resolvers.Voting.delete_vote/3)
     end
 
     @desc "Create a delegation"
     field :create_delegation, :delegation do
-      arg(:delegator_id, :string)
-      arg(:delegate_id, :string)
+      arg(:delegator_id, :uuid)
+      arg(:delegate_id, :uuid)
       arg(:delegator_email, :string)
       arg(:delegate_email, :string)
       arg(:proposal_url, :string)
@@ -85,8 +86,8 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     @desc "Delete a delegation"
     field :delete_delegation, :delegation do
-      arg(:delegator_id, :string)
-      arg(:delegate_id, :string)
+      arg(:delegator_id, :uuid)
+      arg(:delegate_id, :uuid)
       arg(:delegator_email, :string)
       arg(:delegate_email, :string)
       arg(:proposal_url, :string)
@@ -106,7 +107,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   end
 
   object :participant do
-    field :id, non_null(:string)
+    field :id, non_null(:uuid)
     field :name, :string
     field :email, non_null(:string)
 
@@ -118,7 +119,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   end
 
   object :vote do
-    field :id, non_null(:string)
+    field :id, non_null(:uuid)
     field :yes, non_null(:boolean)
     field :weight, non_null(:integer)
     field :proposal_url, non_null(:string)
@@ -131,7 +132,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   end
 
   object :delegation do
-    field :id, non_null(:string)
+    field :id, non_null(:uuid)
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
     field :proposal_url, :string
@@ -151,7 +152,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   end
 
   object :result do
-    field :id, non_null(:string)
+    field :id, non_null(:uuid)
     field :in_favor, non_null(:integer)
     field :against, non_null(:integer)
     field :proposal_url, non_null(:string)
