@@ -92,7 +92,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def delete_participant(_, %{participant_email: email}, %{
         context: %{organization_id: organization_id}
       }) do
-    deleted_participant = Voting.get_participant_by_email!(email, organization_id) |> Voting.delete_participant!()
+    deleted_participant =
+      Voting.get_participant_by_email!(email, organization_id) |> Voting.delete_participant!()
 
     {:ok, deleted_participant}
   rescue

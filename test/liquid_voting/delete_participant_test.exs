@@ -16,13 +16,13 @@ defmodule LiquidVoting.DeleteParticipantTest do
       email: "some@email.com",
       organization_id: @valid_org_id
     }
-    
+
     test "delete participant who has an associated vote" do
       # do some stuff
 
       Voting.create_participant(@valid_participant_attrs)
       participant = Voting.get_participant_by_email("some@email.com", @valid_org_id)
-      
+
       valid_vote_attrs = %{
         yes: true,
         weight: 1,
@@ -36,16 +36,16 @@ defmodule LiquidVoting.DeleteParticipantTest do
       Voting.delete_participant!(participant)
 
       # => ** (Ecto.ConstraintError) constraint error when attempting to delete struct:
-     
+
       #   * votes_participant_id_fkey (foreign_key_constraint)
-     
+
       #   If you would like to stop this constraint violation from raising an
       #   exception and instead add it as an error to your changeset, please
       #   call `foreign_key_constraint/3` on your changeset with the constraint
       #   `:name` as an option.
-         
+
       #   The changeset has not defined any constraint.
-         
+
       #   code: Voting.delete_participant!(participant)
       #   stacktrace:
       #     (ecto 3.4.5) lib/ecto/repo/schema.ex:700: anonymous fn/4 in Ecto.Repo.Schema.constraints_to_errors/3
@@ -59,5 +59,4 @@ defmodule LiquidVoting.DeleteParticipantTest do
       assert 1 == 1
     end
   end
-
 end
