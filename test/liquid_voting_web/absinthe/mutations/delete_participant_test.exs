@@ -4,7 +4,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteParticipantTest do
 
   alias LiquidVotingWeb.Schema.Schema
 
-  describe "delete vote" do
+  describe "delete participant" do
     setup do
       participant = insert(:participant)
 
@@ -14,7 +14,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteParticipantTest do
       ]
     end
 
-    @nonexistant_participant_email 'nonexistent@email.com'
+    @nonexistent_participant_email 'nonexistent@email.com'
 
     test "with a participant's email", context do
       query = """
@@ -34,7 +34,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteParticipantTest do
     test "when participantEmail doesn't exist", context do
       query = """
       mutation {
-        deleteParticipant(participantEmail: "#{@nonexistant_participant_email}"){
+        deleteParticipant(participantEmail: "#{@nonexistent_participant_email}"){
           email
         }
       }
