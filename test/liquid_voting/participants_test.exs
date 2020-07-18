@@ -2,7 +2,7 @@ defmodule LiquidVoting.ParticipantsTest do
   use LiquidVoting.DataCase
   import LiquidVoting.Factory
 
-  alias LiquidVoting.Voting
+  alias LiquidVoting.{Voting, Delegations}
   alias LiquidVoting.Voting.Participant
 
   describe "participants" do
@@ -118,6 +118,62 @@ defmodule LiquidVoting.ParticipantsTest do
 
       assert_raise Ecto.NoResultsError, fn ->
         Voting.get_participant!(participant.id, participant.organization_id)
+      end
+    end
+
+    test "delete_participant/1 deletes associated vote" do
+      participant = insert(:participant)
+
+      {:ok, vote} =
+        Voting.create_vote(%{
+          participant_id: participant.id,
+          organization_id: participant.organization_id,
+          proposal_url: "https://proposals.com/1",
+          yes: true
+        })
+
+      assert {:ok, %Participant{}} = Voting.delete_participant(participant)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Voting.get_vote!(vote.id, participant.organization_id)
+      end
+    end
+
+    test "delete_participant/1 deletes associated delegation when participant is delegate" do
+      delegate = insert(:participant)
+      delegator = insert(:participant, organization_id: delegate.organization_id)
+
+      {:ok, delegation} =
+        Delegations.create_delegation(%{
+          delegate_id: delegate.id,
+          delegator_id: delegator.id,
+          organization_id: delegate.organization_id,
+          proposal_url: "https://proposals.com/1"
+        })
+
+      assert {:ok, %Participant{}} = Voting.delete_participant(delegate)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Delegations.get_delegation!(delegation.id, delegate.organization_id)
+      end
+    end
+
+    test "delete_participant/1 deletes associated delegation when participant is delegator" do
+      delegate = insert(:participant)
+      delegator = insert(:participant, organization_id: delegate.organization_id)
+
+      {:ok, delegation} =
+        Delegations.create_delegation(%{
+          delegate_id: delegate.id,
+          delegator_id: delegator.id,
+          organization_id: delegate.organization_id,
+          proposal_url: "https://proposals.com/1"
+        })
+
+      assert {:ok, %Participant{}} = Voting.delete_participant(delegator)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Delegations.get_delegation!(delegation.id, delegate.organization_id)
       end
     end
 
