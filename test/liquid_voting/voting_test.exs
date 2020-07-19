@@ -91,7 +91,8 @@ defmodule LiquidVoting.VotingTest do
       vote = insert(:vote, participant: participant)
       insert(:vote, proposal_url: "https://different.org/proposal")
 
-      # Test fields seperately, since vote in list has participant association loaded
+      # Test fields seperately, since vote in list has participant association loaded,
+      # thus cannot simply assert the returned vote == [vote]
       [
         %Vote{
           id: listed_vote_id,
