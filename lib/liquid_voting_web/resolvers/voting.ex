@@ -92,8 +92,17 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def delete_participant(_, %{participant_email: email}, %{
         context: %{organization_id: organization_id}
       }) do
-    deleted_participant =
-      Voting.get_participant_by_email!(email, organization_id) |> Voting.delete_participant!()
+    participant = Voting.get_participant_by_email!(email, organization_id)
+
+    {:ok, participant}
+
+    associated_votes = Voting.list_votes_of_participant(participant.id, organization_id)
+
+    deleted_participant = participant |> Voting.delete_participant!()
+
+    Enum.each(associated_votes, fn vote ->
+      VotingResults.publish_voting_result_change(vote.proposal_url, organization_id)
+    end)
 
     {:ok, deleted_participant}
   rescue

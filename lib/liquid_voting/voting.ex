@@ -83,6 +83,21 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
+  Returns the list of votes for a participant id and organization id
+
+  ## Examples
+
+      iex> list_votes_of_participant("483b3f84-16a0-4feb-8525-ce1427fd1f57", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      [%Vote{}, ...]
+
+  """
+  def list_votes_of_participant(participant_id, organization_id) do
+    Vote
+    |> where(participant_id: ^participant_id, organization_id: ^organization_id)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single vote by id and organization id
 
   Raises `Ecto.NoResultsError` if the Vote does not exist.

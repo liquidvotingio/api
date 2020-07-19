@@ -12,7 +12,7 @@ defmodule LiquidVotingWeb.Router do
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: LiquidVotingWeb.Schema.Schema,
       socket: LiquidVotingWeb.UserSocket,
-      interface: :simple
+      interface: :advanced
 
     forward "/", Absinthe.Plug, schema: LiquidVotingWeb.Schema.Schema
   end
