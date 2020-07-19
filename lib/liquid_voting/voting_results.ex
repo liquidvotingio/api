@@ -102,7 +102,7 @@ defmodule LiquidVoting.VotingResults do
   @doc """
   Gets a single result by its proposal url and organization_id
 
-  Raises `nil` if the Result does not exist.
+  Returns `nil` if the Result does not exist.
 
   ## Examples
 
