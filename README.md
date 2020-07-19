@@ -65,7 +65,7 @@ docker run -it --rm \
 
 ### Once you're up and running
 
-Point a [GraphiQL app](https://www.electronjs.org/apps/graphiql) to http://localhost:4000/, then configure a `Org-UUID` header:
+Open a GraphiQL window in your browser at http://localhost:4000/graphiql, then configure a `Org-UUID` header:
 
 ```json
 { "Org-UUID": "b7a9cae5-6e3a-48b1-8730-8b5c8d6c9b5a"}
@@ -212,6 +212,6 @@ subscription {
 }
 ```
 
-To see this in action, open a second graphiql window and run `createVote` mutations there, and watch the subscription responses come through on the first one.
+To see this in action, open a second graphiql window in your browser and run `createVote` mutations there, and watch the subscription responses come through on the first one.
 
 With the examples above, the `inFavor` count should be `1`, and `against` should be `2` since `liz@somedomain.com` had a delegation from `nelson@somedomain.com`.
