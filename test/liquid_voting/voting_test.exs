@@ -86,6 +86,26 @@ defmodule LiquidVoting.VotingTest do
       assert Voting.list_votes(vote.proposal_url, vote.organization_id) == [vote]
     end
 
+    test "list_votes_of_participant/2 returns all votes for a participant_id and an organization_id" do
+      participant = insert(:participant)
+      vote = insert(:vote, participant: participant)
+      insert(:vote, proposal_url: "https://different.org/proposal")
+
+      # Test fields seperately, since vote in list has participant association loaded
+      [
+        %Vote{
+          id: listed_vote_id,
+          participant_id: listed_vote_participant_id,
+          yes: listed_vote_yes
+        }
+        | _tl
+      ] = Voting.list_votes_of_participant(vote.participant_id, vote.organization_id)
+
+      assert listed_vote_id == vote.id
+      assert listed_vote_participant_id == vote.participant_id
+      assert listed_vote_yes == vote.yes
+    end
+
     test "get_vote!/2 returns the vote for given id and organization_id" do
       vote = insert(:vote)
       assert Voting.get_vote!(vote.id, vote.organization_id) == vote
