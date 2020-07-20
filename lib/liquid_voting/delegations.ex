@@ -115,10 +115,22 @@ defmodule LiquidVoting.Delegations do
     |> Repo.insert()
   end
 
+  @doc """
+  Creates a delegation.
+
+  ## Examples
+
+      iex> create_delegation(%{field: value})
+      %Delegation{}
+
+      iex> create_delegation(%{field: bad_value})
+      Ecto.*Error
+
+  """
   def create_delegation!(attrs \\ %{}) do
     %Delegation{}
     |> Delegation.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert!()
   end
 
   @doc """
