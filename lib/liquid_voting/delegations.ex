@@ -130,7 +130,7 @@ defmodule LiquidVoting.Delegations do
   def create_delegation!(attrs \\ %{}) do
     %Delegation{}
     |> Delegation.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert!()
   end
 
   @doc """

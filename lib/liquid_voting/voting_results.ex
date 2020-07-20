@@ -135,7 +135,7 @@ defmodule LiquidVoting.VotingResults do
   end
 
   @doc """
-  Creates a delegation.
+  Creates a result.
 
   ## Examples
 
