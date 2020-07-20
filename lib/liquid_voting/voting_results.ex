@@ -89,10 +89,10 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> get_result!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result!("ec15b5d3-bfff-4ca6-a56a-78a460b2d38f", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Result{}
 
-      iex> get_result!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result!("1a1d0de6-1706-4a8e-8e34-d6aea3fa9e19", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
@@ -102,7 +102,7 @@ defmodule LiquidVoting.VotingResults do
   @doc """
   Gets a single result by its proposal url and organization_id
 
-  Raises `Ecto.NoResultsError` if the Result does not exist.
+  Returns `nil` if the Result does not exist.
 
   ## Examples
 
@@ -134,6 +134,18 @@ defmodule LiquidVoting.VotingResults do
     |> Repo.insert()
   end
 
+  @doc """
+  Creates a result.
+
+  ## Examples
+
+      iex> create_result(%{field: value})
+      %Result{}
+
+      iex> create_result(%{field: bad_value})
+      Ecto.*Error
+
+  """
   def create_result!(attrs \\ %{}) do
     %Result{}
     |> Result.changeset(attrs)
