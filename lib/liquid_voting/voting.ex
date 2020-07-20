@@ -89,7 +89,7 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_vote!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!("61dbd65c-2c1f-4c29-819c-bbd27112a868", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Vote{}
 
       iex> get_vote!(456)
@@ -107,7 +107,7 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_vote!("alice@email.com, "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!("alice@email.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Vote{}
 
       iex> get_vote!("hasno@votes.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
@@ -213,10 +213,10 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant!("c508af54-a6dc-44da-ab8d-ef335bfd3cec", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Participant{}
 
-      iex> get_participant!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant!("076a5a58-1bfa-4139-8d12-5e2ae0309866", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
@@ -275,12 +275,35 @@ defmodule LiquidVoting.Voting do
     |> Repo.insert()
   end
 
+  @doc """
+  Creates a participant.
+
+  ## Examples
+
+      iex> create_participant(%{field: value})
+      %Participant{}
+
+      iex> create_participant(%{field: bad_value})
+      Ecto.*Error
+
+  """
   def create_participant!(attrs \\ %{}) do
     %Participant{}
     |> Participant.changeset(attrs)
     |> Repo.insert!()
   end
 
+  @doc """
+  Upserts a participant (updates or inserts).
+
+  ## Examples
+
+      iex> upsert_participant(%{field: value})
+      {:ok, %Participant{}}
+
+      iex> upsert_participant(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
   def upsert_participant(attrs \\ %{}) do
     %Participant{}
     |> Participant.changeset(attrs)
