@@ -46,7 +46,7 @@ defmodule LiquidVoting.MixProject do
       {:absinthe_plug, "~> 1.5.0-alpha.0"},
       {:absinthe_phoenix, "~> 1.5.0-alpha.0"},
       {:dataloader, "~> 1.0.6"},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:telemetry, "~> 0.4.0"},
       {:prometheus_ex, "~> 3.0.5"},
       {:prometheus_ecto, "~> 1.4.3"},
