@@ -33,8 +33,8 @@ defmodule LiquidVoting.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.10"},
-      {:phoenix_pubsub, "~> 1.1"},
+      {:phoenix, "~> 1.5.0"},
+      {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.1"},
       {:postgrex, "~> 0.15.0"},
@@ -42,9 +42,9 @@ defmodule LiquidVoting.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:corsica, "~> 1.0"},
-      {:absinthe, "~> 1.5.0-beta.2"},
-      {:absinthe_plug, "~> 1.5.0-alpha.0"},
-      {:absinthe_phoenix, "~> 1.5.0-alpha.0"},
+      {:absinthe, "~> 1.5"},
+      {:absinthe_plug, "~> 1.5"},
+      {:absinthe_phoenix, "~> 2.0"},
       {:dataloader, "~> 1.0.6"},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:telemetry, "~> 0.4.0"},
