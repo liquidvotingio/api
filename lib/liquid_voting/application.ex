@@ -11,6 +11,7 @@ defmodule LiquidVoting.Application do
     # List all child processes to be supervised
     children = [
       LiquidVoting.Repo,
+      {Phoenix.PubSub, name: LiquidVoting.PubSub},
       LiquidVotingWeb.Endpoint,
       supervisor(Absinthe.Subscription, [LiquidVotingWeb.Endpoint])
     ]
