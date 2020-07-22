@@ -10,8 +10,7 @@ config :liquid_voting, LiquidVotingWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "JnwIS2wvbN45zqsUjKCgZ1kq8ifWd4lsP08y89uFS5w3uHoFJ9UmdcgiFI3GcKBl",
   render_errors: [view: LiquidVotingWeb.ErrorView, accepts: ~w(json)],
-  pubsub_server: LiquidVoting.PubSub,
-  instrumenters: [LiquidVoting.Metrics.PhoenixInstrumenter]
+  pubsub_server: LiquidVoting.PubSub
 
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
