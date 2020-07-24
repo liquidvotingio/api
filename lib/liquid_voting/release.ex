@@ -2,6 +2,7 @@ defmodule LiquidVoting.Release do
   @app :liquid_voting
 
   alias LiquidVoting.{Delegations, Voting}
+  alias LiquidVoting.Voting.Participant
 
   def migrate do
     for repo <- repos() do
@@ -17,14 +18,15 @@ defmodule LiquidVoting.Release do
   Deletes votes, participants and delegations data created by smoke tests.
   For use before and after running smoke tests.
   """
-  def teardown() do
-    organization_id = "bc7eeccb-5e10-4004-8bfb-7fc68536bbd7"
-
+  def teardown(organization_id) do
     votes = Voting.list_votes(organization_id)
     Enum.each(votes, fn vote -> Voting.delete_vote!(vote) end)
 
     participants = Voting.list_participants(organization_id)
-    Enum.each(participants, fn participant -> Voting.delete_participant(participant) end)
+
+    Enum.each(participants, fn %Participant{} = participant ->
+      Voting.delete_participant(participant)
+    end)
 
     delegations = Delegations.list_delegations(organization_id)
     Enum.each(delegations, fn delegation -> Delegations.delete_delegation!(delegation) end)
