@@ -17,7 +17,6 @@ defmodule LiquidVoting.Release do
   Deletes votes, participants and delegations for a smoke tests organization_id.
   For use before and after running smoke tests.
   """
-
   def teardown() do
     organization_id = "bc7eeccb-5e10-4004-8bfb-7fc68536bbd7"
 
