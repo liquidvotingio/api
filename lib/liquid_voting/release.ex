@@ -2,7 +2,6 @@ defmodule LiquidVoting.Release do
   @app :liquid_voting
 
   alias LiquidVoting.{Delegations, Voting}
-  alias LiquidVoting.Voting.Participant
 
   def migrate do
     for repo <- repos() do
@@ -24,8 +23,8 @@ defmodule LiquidVoting.Release do
 
     participants = Voting.list_participants(organization_id)
 
-    Enum.each(participants, fn %Participant{} = participant ->
-      Voting.delete_participant(participant)
+    Enum.each(participants, fn participant ->
+      {:ok, participant} = Voting.delete_participant(participant)
     end)
 
     delegations = Delegations.list_delegations(organization_id)
