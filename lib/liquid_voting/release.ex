@@ -19,17 +19,19 @@ defmodule LiquidVoting.Release do
   For use before and after running smoke tests.
   """
   def smoke_test_teardown() do
-    votes = Voting.list_votes(@test_organization_id)
-    Enum.each(votes, fn vote -> Voting.delete_vote!(vote) end)
+    @test_organization_id
+    |> Voting.list_votes()
+    |> Enum.each(fn vote -> Voting.delete_vote!(vote) end)
 
-    participants = Voting.list_participants(@test_organization_id)
-
-    Enum.each(participants, fn participant ->
+    @test_organization_id
+    |> Voting.list_participants()
+    |> Enum.each(fn participant ->
       {:ok, _participant} = Voting.delete_participant(participant)
     end)
 
-    delegations = Delegations.list_delegations(@test_organization_id)
-    Enum.each(delegations, fn delegation -> Delegations.delete_delegation!(delegation) end)
+    @test_organization_id
+    |> Delegations.list_delegations()
+    |> Enum.each(fn delegation -> Delegations.delete_delegation!(delegation) end)
   end
 
   defp repos do
