@@ -17,14 +17,10 @@ defmodule LiquidVoting.Release do
   Deletes votes, participants and delegations for a smoke tests organization_id.
   For use before and after running smoke tests.
   """
-  def teardown_smoke_test_data(), do: teardown("bc7eeccb-5e10-4004-8bfb-7fc68536bbd7")
 
-  @doc """
-  Deletes votes, participants and delegations for demo organization_id.
-  """
-  def teardown_demo_data(), do: teardown("62309201-d2f0-407f-875b-9f836f94f2ca")
+  def teardown() do
+    organization_id = "bc7eeccb-5e10-4004-8bfb-7fc68536bbd7"
 
-  defp teardown(organization_id) do
     votes = Voting.list_votes(organization_id)
     Enum.each(votes, fn vote -> Voting.delete_vote!(vote) end)
 
