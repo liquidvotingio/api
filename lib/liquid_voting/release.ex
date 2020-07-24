@@ -14,7 +14,7 @@ defmodule LiquidVoting.Release do
   end
 
   @doc """
-  Deletes votes, participants and delegations data created by smoke tests.
+  Deletes votes, participants and delegations for a specific organization_id.
   For use before and after running smoke tests.
   """
   def teardown(organization_id) do
