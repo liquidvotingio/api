@@ -24,7 +24,36 @@ defmodule LiquidVoting.Release do
     end
   end
 
+  defp print_teardown_resources_counts() do
+    votes_count = fn ->
+      @test_organization_id
+      |> Voting.list_votes()
+      |> Enum.count()
+    end
+
+    participants_count = fn ->
+      @test_organization_id
+      |> Voting.list_participants()
+      |> Enum.count()
+    end
+
+    delegations_count = fn ->
+      @test_organization_id
+      |> Delegations.list_delegations()
+      |> Enum.count()
+    end
+
+    IO.puts(
+      "#{participants_count.()} Participants, #{votes_count.()} Votes, #{delegations_count.()} Delegations"
+    )
+  end
+
   defp run_teardown() do
+    IO.puts("## About to run smoke test teardown")
+    IO.puts("Current resource counts:")
+    print_teardown_resources_counts()
+    IO.puts("## Running smoke test teardown on test organization data")
+
     @test_organization_id
     |> Voting.list_votes()
     |> Enum.each(fn vote -> Voting.delete_vote!(vote) end)
@@ -38,6 +67,11 @@ defmodule LiquidVoting.Release do
     @test_organization_id
     |> Delegations.list_delegations()
     |> Enum.each(fn delegation -> Delegations.delete_delegation!(delegation) end)
+
+    IO.puts("## Teardown ran successfully")
+    IO.puts("End resource counts:")
+    print_teardown_resources_counts()
+    IO.puts("## Have a nice day!")
   end
 
   defp repos do
