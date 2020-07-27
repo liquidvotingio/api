@@ -20,11 +20,7 @@ defmodule LiquidVoting.Release do
   """
   def smoke_test_teardown() do
     for repo <- repos() do
-      {:ok, _, _} =
-        Ecto.Migrator.with_repo(repo, fn repo ->
-          Ecto.Migrator.run(repo, :up, all: true)
-          run_teardown()
-        end)
+      {:ok, _, _} = Ecto.Migrator.with_repo(repo, fn _repo -> run_teardown() end)
     end
   end
 
