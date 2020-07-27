@@ -4,11 +4,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
   alias LiquidVotingWeb.Schema.Schema
 
-  describe "create delegation with new participants" do
-    @new_delegator_email "new-delegator@email.com"
-    @new_delegate_email "new-delegate@email.com"
-    @proposal_url "https://www.proposal.com/my"
+  @new_delegator_email "new-delegator@email.com"
+  @new_delegate_email "new-delegate@email.com"
+  @proposal_url "https://www.proposal.com/my"
 
+  describe "create delegation with new participants" do
     test "with emails" do
       query = """
       mutation {
@@ -87,6 +87,29 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       assert delegation["votingResult"]["in_favor"] == 0
       assert delegation["votingResult"]["against"] == 0
+    end
+
+    test "with missing fields" do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}") {
+          delegator {
+            email
+            name
+          }
+          delegate {
+            email
+            name
+          }
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
+
+      assert message == "Could not create delegation"
+      assert details == %{delegate_id: ["can't be blank"], delegator_id: ["can't be blank"]}
     end
   end
 

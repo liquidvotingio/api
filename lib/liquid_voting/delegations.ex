@@ -7,6 +7,7 @@ defmodule LiquidVoting.Delegations do
 
   alias __MODULE__.Delegation
   alias LiquidVoting.{Repo, Voting}
+  alias Ecto.Multi
 
   @doc """
   Returns the list of delegations for an organization id
@@ -100,6 +101,9 @@ defmodule LiquidVoting.Delegations do
   @doc """
   Creates a delegation.
 
+  The delegation will be global if no `proposal_url` is passed in. 
+  The delegation can be created by ID or by email. 
+
   ## Examples
 
       iex> create_delegation(%{field: value})
@@ -109,28 +113,33 @@ defmodule LiquidVoting.Delegations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_delegation(attrs \\ %{}) do
+  def create_delegation(attrs \\ %{})
+
+  def create_delegation(%{delegator_email: _, delegate_email: _} = args) do
+    delegator_attrs = %{email: args.delegator_email, organization_id: args.organization_id}
+    delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
+    attrs = Map.take(args, [:organization_id, :proposal_url])
+
+    Multi.new()
+    |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_attrs) end)
+    |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_attrs) end)
+    |> Multi.run(:delegation, fn _repo, changes ->
+      attrs
+      |> Map.put(:delegator_id, changes.delegator.id)
+      |> Map.put(:delegate_id, changes.delegate.id)
+      |> create_delegation()
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, resources} -> {:ok, resources.delegation}
+      error -> error
+    end
+  end
+
+  def create_delegation(attrs) do
     %Delegation{}
     |> Delegation.changeset(attrs)
     |> Repo.insert()
-  end
-
-  @doc """
-  Creates a delegation.
-
-  ## Examples
-
-      iex> create_delegation(%{field: value})
-      %Delegation{}
-
-      iex> create_delegation(%{field: bad_value})
-      Ecto.*Error
-
-  """
-  def create_delegation!(attrs \\ %{}) do
-    %Delegation{}
-    |> Delegation.changeset(attrs)
-    |> Repo.insert!()
   end
 
   @doc """
