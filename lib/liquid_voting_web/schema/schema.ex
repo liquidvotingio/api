@@ -1,11 +1,11 @@
 defmodule LiquidVotingWeb.Schema.Schema do
   use Absinthe.Schema
-  alias LiquidVoting.{Voting, VotingResults}
 
   import_types(Absinthe.Type.Custom)
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
   alias LiquidVotingWeb.Resolvers
+  alias LiquidVoting.{Voting, VotingResults}
 
   query do
     @desc "Get a voting result by its proposal url"
