@@ -19,6 +19,16 @@ defmodule LiquidVoting.Release do
   For use before and after running smoke tests.
   """
   def smoke_test_teardown() do
+    for repo <- repos() do
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, fn repo ->
+          Ecto.Migrator.run(repo, :up, all: true)
+          run_teardown()
+        end)
+    end
+  end
+
+  defp run_teardown() do
     @test_organization_id
     |> Voting.list_votes()
     |> Enum.each(fn vote -> Voting.delete_vote!(vote) end)
