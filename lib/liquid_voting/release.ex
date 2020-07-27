@@ -1,6 +1,6 @@
 defmodule LiquidVoting.Release do
   @app :liquid_voting
-  @test_organization_id "bc7eeccb-5e10-4004-8bfb-7fc68536bbd7"
+  @test_organization_id "f30bfc59-d699-4a91-8950-6c6e0169d44a"
 
   alias LiquidVoting.{Delegations, Voting}
 
