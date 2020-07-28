@@ -106,4 +106,10 @@ jobs:
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.migrate"
 
-# comment added to create git commit for initial PR
+# develop smoke test stuff here (as sandbox using PRs), then move to on_pull_request.yml
+
+# 1. call teardown
+# 2. run smoke tests (and confirm passed or not)
+# 3. call teardown again? (necessary?)
+
+# start by getting #2 to work
