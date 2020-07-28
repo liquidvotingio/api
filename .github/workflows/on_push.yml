@@ -105,3 +105,5 @@ jobs:
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.migrate"
+
+# comment added to create git commit for initial PR
