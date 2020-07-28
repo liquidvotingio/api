@@ -113,3 +113,18 @@ jobs:
 # 3. call teardown again? (necessary?)
 
 # start by getting #2 to work
+
+# .github/workflows/load-test.yml
+
+  smoke_tests:
+    name: k6 Smoke Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Run k6 smoke tests against newly deployed api
+        uses: k6io/action@v0.1
+        with:
+          filename: smoke_tests/delegations_test.js
