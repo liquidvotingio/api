@@ -67,14 +67,21 @@ jobs:
 # .github/workflows/load-test.yml
 
   smoke_tests:
-    name: k6 Smoke Tests
+    name: Smoke Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Run local k6 test
+      - name: Run k6 votes smoke test
+            uses: k6io/action@v0.1
+            with:
+              filename: smoke_tests/votes_test.js
+
+      - name: Run k6 delegations smoke test
         uses: k6io/action@v0.1
         with:
           filename: smoke_tests/delegations_test.js
+
+      
