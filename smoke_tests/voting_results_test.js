@@ -6,6 +6,7 @@ import { check, group, sleep, fail } from 'k6';
 export let options = {
   thresholds: {
     failedTestCases: [{ threshold: 'count==0' }], // add "abortOnFail: true" to exit immediately
+    'checks': ['rate>0.99'] // the rate of successful checks should be higher than 99%
   },
   iterations: 1
 };
@@ -13,7 +14,6 @@ export let options = {
 const BASE_URL = 'https://api.liquidvoting.io';
 const AUTH_KEY = 'bc7eeccb-5e10-4004-8bfb-7fc68536bbd7';
 const HEADERS = {
-  // Change header name in future
   "Authorization": `Bearer ${AUTH_KEY}`,
   "Content-Type": "application/json"
 };
