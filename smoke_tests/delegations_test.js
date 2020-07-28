@@ -14,7 +14,6 @@ export let options = {
 const BASE_URL = 'https://api.liquidvoting.io';
 const AUTH_KEY = 'bc7eeccb-5e10-4004-8bfb-7fc68536bbd7';
 const HEADERS = {
-  // Change header name in future
   "Authorization": `Bearer ${AUTH_KEY}`,
   "Content-Type": "application/json"
 };
@@ -44,7 +43,7 @@ export default () => {
       const body = JSON.parse(res.body);
 
       // includes check for delegate email to ensure test fails if cannot create delegate,
-      // as otherwise test will throw ann exception when trying to set DELGATION_ID,
+      // as otherwise test will throw an exception when trying to set DELGATION_ID,
       // with all checks (till here) passed.
       check(res, {
         "returns status 200": (r) => r.status === 200,
@@ -111,7 +110,7 @@ export default () => {
       const body = JSON.parse(res.body);
 
       // includes check for delegate email to ensure test fails if cannot create delegate,
-      // as otherwise test will throw ann exception when trying to set DELGATION_ID,
+      // as otherwise test will throw an exception when trying to set DELGATION_ID,
       // with all checks (till here) passed.
       check(res, {
         "returns status 200": (r) => r.status === 200,
