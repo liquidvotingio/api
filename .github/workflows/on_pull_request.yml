@@ -43,7 +43,6 @@ jobs:
 
   linting:
     name: Linting
-    needs: [tests]
     runs-on: ubuntu-latest
     container:
       image: elixir:1.10.2-slim
@@ -69,7 +68,6 @@ jobs:
 
   teardown:
     name: Teardown smoke test data
-    needs: [linting]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
