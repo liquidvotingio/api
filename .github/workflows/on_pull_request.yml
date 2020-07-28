@@ -75,9 +75,9 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Run k6 votes smoke test
-            uses: k6io/action@v0.1
-            with:
-              filename: smoke_tests/votes_test.js
+        uses: k6io/action@v0.1
+        with:
+          filename: smoke_tests/votes_test.js
 
       - name: Run k6 delegations smoke test
         uses: k6io/action@v0.1
