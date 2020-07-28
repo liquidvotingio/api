@@ -85,6 +85,7 @@ jobs:
         GKE_ZONE: ${{ secrets.GKE_ZONE }}
         GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
       run: |
+        gcloud container clusters list
         kubectl config current-context
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
         pod=$(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1)
