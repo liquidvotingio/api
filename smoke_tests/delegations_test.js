@@ -20,7 +20,7 @@ const HEADERS = {
 
 export default () => {
   group("Global delegations", () => {
-    var r = `${__ENV.API_AUTH_KEYXX}`;
+    var r = `${__ENV.TEST_API_AUTH_KEY}`;
     console.log(`auth key env var: ${r}`);
 
 
