@@ -60,7 +60,7 @@ jobs:
     - name: Run Formatter
       run: mix format --check-formatted
 
-  teardown:
+  teardown1:
     name: Teardown data before smoke test
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +89,7 @@ jobs:
 
   smoke_tests:
     name: Smoke Tests
-    needs: [deploy]
+    needs: [teardown1]
     runs-on: ubuntu-latest
 
     steps:
@@ -106,8 +106,9 @@ jobs:
         with:
           filename: smoke_tests/delegations_test.js
 
-  teardown:
+  teardown2:
     name: Teardown data after smoke test
+    needs: [smoke_tests]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
