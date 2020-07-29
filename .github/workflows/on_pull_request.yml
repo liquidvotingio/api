@@ -77,7 +77,6 @@ jobs:
         uses: k6io/action@v0.1
         env:
           API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
-          GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
         with:
           filename: smoke_tests/delegations_test.js
 

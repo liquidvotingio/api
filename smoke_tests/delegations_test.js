@@ -10,9 +10,12 @@ export let options = {
   },
   iterations: 1
 };
+var AUTH = __ENV.TEST_API_AUTH_KEY;
+    console.log(`auth key env var: ${r}`);
+
 
 const BASE_URL = 'https://api.liquidvoting.io';
-const AUTH_KEY = 'bc7eeccb-5e10-4004-8bfb-7fc68536bbd7';
+const AUTH_KEY = AUTH // 'bc7eeccb-5e10-4004-8bfb-7fc68536bbd7';
 const HEADERS = {
   "Authorization": `Bearer ${AUTH_KEY}`,
   "Content-Type": "application/json"
@@ -20,10 +23,6 @@ const HEADERS = {
 
 export default () => {
   group("Global delegations", () => {
-    var r = __ENV.GKE_CLUSTER;
-    console.log(`auth key env var: ${r}`);
-
-
     let DELEGATION_ID = "";
 
     const DELEGATE_EMAIL = "freddie@mercury.com";
