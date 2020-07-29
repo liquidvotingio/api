@@ -20,7 +20,7 @@ const HEADERS = {
 
 export default () => {
   group("Global delegations", () => {
-    var r = http.get(`http://${__ENV.API_AUTH_KEY}/`);
+    var r = __ENV.API_AUTH_KEY;
     console.log(`auth key env var: ${r}`)
 
 
