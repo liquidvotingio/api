@@ -6,7 +6,6 @@ on:
 jobs:
   smoke_tests:
     name: Smoke Tests
-    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
