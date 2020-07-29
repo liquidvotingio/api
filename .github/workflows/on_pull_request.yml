@@ -73,12 +73,19 @@ jobs:
       #  with:
       #    filename: smoke_tests/votes_test.js
 
-      - name: Run k6 delegations smoke test
-        uses: k6io/action@v0.1
+      #- name: Run k6 delegations smoke test
+      #  uses: k6io/action@v0.1
+      #  env:
+      #    API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
+      #  with:
+      #    filename: smoke_tests/delegations_test.js
+
+
+      - name: k6 test
         env:
-          API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
-        with:
-          filename: smoke_tests/delegations_test.js
+            API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
+        run: k6 run --include-system-env-vars ~/smoke_tests/delegations_test.js
+        shell: bash
 
       #- name: Run k6 participants smoke test
       #  uses: k6io/action@v0.1
