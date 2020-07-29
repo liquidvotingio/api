@@ -11,7 +11,7 @@ export let options = {
   iterations: 1
 };
 var AUTH = __ENV.TEST_API_AUTH_KEY;
-    console.log(`auth key env var: ${r}`);
+    //console.log(`auth key env var: ${r}`);
 
 
 const BASE_URL = 'https://api.liquidvoting.io';
