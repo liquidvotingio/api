@@ -78,7 +78,7 @@ jobs:
         env:
           API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
         with:
-          filename: --include-system-env-vars smoke_tests/delegations_test.js
+          filename: smoke_tests/delegations_test.js
 
       #- name: Run k6 participants smoke test
       #  uses: k6io/action@v0.1
