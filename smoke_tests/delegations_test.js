@@ -20,6 +20,10 @@ const HEADERS = {
 
 export default () => {
   group("Global delegations", () => {
+    var r = http.get(`http://${__ENV.API_AUTH_KEY}/`);
+    console.log(`auth key env var: ${r}`)
+
+
     let DELEGATION_ID = "";
 
     const DELEGATE_EMAIL = "freddie@mercury.com";
