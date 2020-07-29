@@ -105,7 +105,6 @@ jobs:
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.migrate"
-        eval "LiquidVoting.Release.smoke_test_teardown"
 
   smoke_tests:
     name: Smoke Tests

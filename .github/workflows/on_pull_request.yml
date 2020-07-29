@@ -55,3 +55,28 @@ jobs:
         mix deps.get
     - name: Run Formatter
       run: mix format --check-formatted
+
+  teardown:
+    name: Teardown smoke test data
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Login to gcloud
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GKE_EMAIL }}
+        service_account_key: ${{ secrets.GKE_KEY }}
+    - name: Teardown smoke test data
+      env:
+        GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+        GKE_ZONE: ${{ secrets.GKE_ZONE }}
+        GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        pod=$(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1)
+        kubectl wait --timeout=120s --for=condition=Ready pod/$pod
+        kubectl exec -ti pod/$pod \
+        --container api-container \
+        -- /opt/app/bin/liquid_voting \
+        eval "LiquidVoting.Release.smoke_test_teardown"
