@@ -6,15 +6,20 @@ import { check, group, sleep, fail } from 'k6';
 export let options = {
   thresholds: {
     failedTestCases: [{ threshold: 'count==0' }], // add "abortOnFail: true" to exit immediately
-    'checks': ['rate>0.99'] // the rate of successful checks should be higher than 99%
+    'checks': ['rate==1.0'] // the rate of successful checks should be 100%
   },
   iterations: 1
 };
 
-const BASE_URL = 'https://api.liquidvoting.io';
-const AUTH_KEY = __ENV.TEST_API_AUTH_KEY;
+// const BASE_URL = 'http://localhost:4000/'; // url for for local test of dev api
+const BASE_URL = 'https://api.liquidvoting.io'; // url for remote test of deployed api
+
+// env var for remote test of deployed api || value for default UUID for local dev use
+const AUTH_KEY = __ENV.TEST_API_AUTH_KEY || "cb7f2423-f47b-45c6-8c52-63f499744573";
+
 const HEADERS = {
-  "Authorization": `Bearer ${AUTH_KEY}`,
+  // "Org-UUID": `${AUTH_KEY}`, // header for local test of dev api
+  "Authorization": `Bearer ${AUTH_KEY}`, // header for remote test of deployed api
   "Content-Type": "application/json"
 };
 
@@ -43,7 +48,7 @@ export default () => {
 
     // includes check for participant email to ensure test fails if cannot
     // create participant,as otherwise test will throw ann exception when
-    // trying to set DELGATION_ID, with all checks (till here) passed.
+    // trying to set PARTICIPANT_ID, with all checks (till here) passed.
     check(res, {
       "returns status 200": (r) => r.status === 200,
       "returns email": () => body.data.createParticipant.email === PARTICIPANT_EMAIL
