@@ -76,7 +76,7 @@ jobs:
       - name: Run k6 delegations smoke test
         uses: k6io/action@v0.1
         env:
-          API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
+          TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
         with:
           filename: smoke_tests/delegations_test.js
 

@@ -10,12 +10,9 @@ export let options = {
   },
   iterations: 1
 };
-var AUTH = __ENV.API_AUTH_KEY;
-    console.log(`auth key env var: ${AUTH}`);
-
 
 const BASE_URL = 'https://api.liquidvoting.io';
-const AUTH_KEY = AUTH // 'bc7eeccb-5e10-4004-8bfb-7fc68536bbd7';
+const AUTH_KEY = __ENV.TEST_API_AUTH_KEY; // 'bc7eeccb-5e10-4004-8bfb-7fc68536bbd7';
 const HEADERS = {
   "Authorization": `Bearer ${AUTH_KEY}`,
   "Content-Type": "application/json"
