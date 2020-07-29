@@ -29,7 +29,6 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v1
-
     - name: Install Dependencies
       run: |
         mix local.rebar --force
@@ -49,7 +48,6 @@ jobs:
       image: elixir:1.10.2-slim
     steps:
     - uses: actions/checkout@v1
-
     - name: Install Dependencies
       run: |
         mix local.rebar --force
@@ -67,12 +65,10 @@ jobs:
       TAG: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v1
-
     - name: Build Image
       run: |
         docker build -t $IMAGE_NAME:$TAG .
         docker tag $IMAGE_NAME:$TAG $IMAGE_NAME:latest
-
     - name: Login to Github Registry
       uses: azure/docker-login@v1
       with:
@@ -89,14 +85,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-
     - name: Login to gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
         version: '270.0.0'
         service_account_email: ${{ secrets.GKE_EMAIL }}
         service_account_key: ${{ secrets.GKE_KEY }}
-
     - name: Deploy
       env:
         GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
