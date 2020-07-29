@@ -106,6 +106,16 @@ jobs:
         with:
           filename: smoke_tests/delegations_test.js
 
+      - name: Run k6 participants smoke test
+        uses: k6io/action@v0.1
+        with:
+          filename: smoke_tests/participants_test.js
+
+      - name: Run k6 voting results smoke test
+        uses: k6io/action@v0.1
+        with:
+          filename: smoke_tests/voting_results_test.js
+
   teardown2:
     name: Teardown data after smoke test
     needs: [smoke_tests]
