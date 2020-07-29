@@ -29,13 +29,11 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v1
-
     - name: Install Dependencies
       run: |
         mix local.rebar --force
         mix local.hex --force
         mix deps.get
-
     - name: Run Tests
       run: mix test
       env:
@@ -50,53 +48,50 @@ jobs:
       image: elixir:1.10.2-slim
     steps:
     - uses: actions/checkout@v1
-
     - name: Install Dependencies
       run: |
         mix local.rebar --force
         mix local.hex --force
         mix deps.get
-
     - name: Run Formatter
       run: mix format --check-formatted
 
   smoke_tests:
     name: Smoke Tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-
-      #- name: Run k6 votes smoke test
-      #  uses: k6io/action@v0.1
-      #  with:
-      #    filename: smoke_tests/votes_test.js
-
+      - name: Run k6 votes smoke test
+        uses: k6io/action@v0.1
+        env:
+          TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
+        with:
+          filename: smoke_tests/votes_test.js
       - name: Run k6 delegations smoke test
         uses: k6io/action@v0.1
         env:
           TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
         with:
           filename: smoke_tests/delegations_test.js
-
-      #- name: Run k6 participants smoke test
-      #  uses: k6io/action@v0.1
-      #  with:
-      #    filename: smoke_tests/participants_test.js
-
-      #- name: Run k6 voting results smoke test
-      #  uses: k6io/action@v0.1
-      #  with:
-      #    filename: smoke_tests/voting_results_test.js
-
+      - name: Run k6 participants smoke test
+        uses: k6io/action@v0.1
+        env:
+          TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
+        with:
+          filename: smoke_tests/participants_test.js
+      - name: Run k6 voting results smoke test
+        uses: k6io/action@v0.1
+        env:
+          TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
+        with:
+          filename: smoke_tests/voting_results_test.js
       - name: Login to gcloud
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '270.0.0'
           service_account_email: ${{ secrets.GKE_EMAIL }}
           service_account_key: ${{ secrets.GKE_KEY }}
-
       - name: Teardown smoke test data
         env:
           GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
