@@ -112,31 +112,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
-    - name: Run k6 votes smoke test
+      uses: actions/checkout@v2
+      with:
+        repository: liquidvotingio/deployment
+        token: ${{ secrets.DEPLOYMENT_PAT }}
+        path: deployment
+    - name: Run k6 smoke tests
       uses: k6io/action@v0.1
       env:
         TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
       with:
-        filename: smoke_tests/votes_test.js
-    - name: Run k6 delegations smoke test
-      uses: k6io/action@v0.1
-      env:
-        TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
-      with:
-        filename: smoke_tests/delegations_test.js
-    - name: Run k6 participants smoke test
-      uses: k6io/action@v0.1
-      env:
-        TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
-      with:
-        filename: smoke_tests/participants_test.js
-    - name: Run k6 voting results smoke test
-      uses: k6io/action@v0.1
-      env:
-        TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
-      with:
-        filename: smoke_tests/voting_results_test.js
+        filename: deployment/smoke_tests/smoke_tests.js
     - name: Login to gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
