@@ -60,6 +60,7 @@ jobs:
     name: Smoke Tests
     runs-on: ubuntu-latest
     steps:
+    steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -71,7 +72,7 @@ jobs:
         TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
       with:
         path: deployment
-        filename: deployment/smoke_tests/smoke_tests.js
+        filename: smoke_tests/smoke_tests.js
     - name: Login to gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
