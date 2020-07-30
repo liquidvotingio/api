@@ -71,8 +71,8 @@ jobs:
       env:
         TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
       with:
-        path: deployment
-        filename: smoke_tests/smoke_tests.js
+        path: deployment/smoke_tests
+        filename: smoke_tests.js
     - name: Login to gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
