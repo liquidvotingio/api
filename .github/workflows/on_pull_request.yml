@@ -67,7 +67,7 @@ jobs:
         token: ${{ secrets.DEPLOYMENT_PAT }}
         path: deployment
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v1
     - name: Run k6 smoke tests
       uses: k6io/action@v0.1
       env:
