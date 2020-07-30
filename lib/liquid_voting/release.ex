@@ -49,7 +49,7 @@ defmodule LiquidVoting.Release do
   end
 
   defp run_teardown() do
-    IO.puts("## About to run smoke test teardown")
+    IO.puts("\n## About to run smoke test teardown")
     IO.puts("Current resource counts:")
     print_teardown_resources_counts()
     IO.puts("## Running smoke test teardown on test organization data")
@@ -71,7 +71,7 @@ defmodule LiquidVoting.Release do
     IO.puts("## Teardown ran successfully")
     IO.puts("End resource counts:")
     print_teardown_resources_counts()
-    IO.puts("## Have a nice day!")
+    IO.puts("## Have a nice day!\n")
   end
 
   defp repos do
