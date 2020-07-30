@@ -63,15 +63,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        repository: liquidvotingio/deployment
+        repository: liquidvotingio/deployment/smoke_tests
         token: ${{ secrets.DEPLOYMENT_PAT }}
-        path: deployment/smoke_tests/smoke_tests.js
+        path: smoke_tests
     - name: Run k6 smoke tests
       uses: k6io/action@v0.1
       env:
         TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
       with:
-        filename: smoke_tests.js
+        filename: smoke_tests/smoke_tests.js
     - name: Login to gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
