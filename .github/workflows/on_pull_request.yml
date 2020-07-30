@@ -91,3 +91,4 @@ jobs:
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.smoke_test_teardown"
+        
