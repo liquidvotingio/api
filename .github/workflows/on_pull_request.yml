@@ -65,14 +65,13 @@ jobs:
       with:
         repository: liquidvotingio/deployment
         token: ${{ secrets.DEPLOYMENT_PAT }}
-        path: deployment
+        path: deployment/smoke_tests/smoke_tests.js
     - name: Run k6 smoke tests
       uses: k6io/action@v0.1
       env:
         TEST_API_AUTH_KEY: ${{ secrets.TEST_API_AUTH_KEY }}
       with:
-        #path: deployment
-        filename: deployment/smoke_tests/smoke_tests.js
+        filename: smoke_tests.js
     - name: Login to gcloud
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
