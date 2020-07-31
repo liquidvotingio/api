@@ -65,10 +65,10 @@ docker run -it --rm \
 
 ### Once you're up and running
 
-Open a GraphiQL window in your browser at http://localhost:4000/graphiql, then configure a `Org-UUID` header:
+Open a GraphiQL window in your browser at http://localhost:4000/graphiql, then configure an `Org-ID` header:
 
 ```json
-{ "Org-UUID": "b7a9cae5-6e3a-48b1-8730-8b5c8d6c9b5a"}
+{ "Org-ID": "b7a9cae5-6e3a-48b1-8730-8b5c8d6c9b5a"}
 ```
 
 You can then use the queries below to interact with the API.
