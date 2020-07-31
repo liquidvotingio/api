@@ -12,10 +12,10 @@ defmodule LiquidVotingWeb.Plugs.Context do
   end
 
   @doc """
-  Return the organization id context based on the org-uuid header
+  Return the organization id context based on the Org-ID header
   """
   def build_context(conn) do
-    with [organization_id] <- get_req_header(conn, "org-uuid") do
+    with [organization_id] <- get_req_header(conn, "Org-ID") do
       %{organization_id: organization_id}
     else
       _ -> %{}
