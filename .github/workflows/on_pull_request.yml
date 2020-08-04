@@ -28,6 +28,9 @@ jobs:
         result=$(mix sobelow)
         echo "$result"
         echo ::set-env name=SCAN_COUNTER::$(echo "$result" | grep -o 'Confidence' | wc -l)
+    - name: Fail if scan returns any concern
+      if: ${{ env.SCAN_COUNTER != 0 }}
+      run: exit 1
 
   tests:
     name: Tests
