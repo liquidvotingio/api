@@ -1,5 +1,5 @@
 [
-  verbose: false,
+  verbose: true,
   private: false,
   skip: false,
   router: "",
@@ -7,6 +7,6 @@
   format: "txt",
   out: "",
   threshold: "low",
-  ignore: [""],
+  ignore: ["Config.HTTPS"], # we are using a deployed container to provide https
   ignore_files: [""]
 ]

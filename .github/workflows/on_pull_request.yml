@@ -12,7 +12,7 @@ on:
 
 jobs:
   scan:
-    name: Static security Scan
+    name: Static Security Scan
     runs-on: ubuntu-latest
     container:
       image: elixir:1.10.2-slim
@@ -24,7 +24,9 @@ jobs:
         mix local.hex --force
         mix deps.get
     - name: Run Scan
-      run: mix sobelow
+      run: |
+        msg=$(mix sobelow)
+        echo "$msg"
 
   tests:
     name: Tests
