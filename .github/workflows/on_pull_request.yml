@@ -25,9 +25,9 @@ jobs:
         mix deps.get
     - name: Run Scan
       run: |
-        echo Scroll to bottom of this log for details, if CI fails this job.
-        echo
-        result=$(mix sobelow --config --verbose)
+        echo "\n\e#\e# Scroll to bottom of this log for details,\n"
+        echo "\e#\e# if CI fails this job.\n\n"
+        result=$(mix sobelow --verbose)
         echo "$result"
         echo ::set-env name=SCAN_COUNTER::$(echo "$result" | grep -o 'Confidence' | wc -l)
     - name: Evaluate Scan Results
