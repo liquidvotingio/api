@@ -25,7 +25,8 @@ jobs:
         mix deps.get
     - name: Run Scan
       run: |
-        echo "\e#\e# Scroll to bottom of this log for details,\n"
+        echo
+        echo "\e#\e# Scroll to bottom of this log for details,"
         echo "\e#\e# if CI fails this job.\n\n"
         result=$(mix sobelow --config --verbose)
         echo "$result"
