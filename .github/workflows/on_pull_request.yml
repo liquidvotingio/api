@@ -31,7 +31,7 @@ jobs:
         result=$(mix sobelow --config --verbose)
         echo "$result"
         echo ::set-env name=SCAN_COUNTER::$(echo "$result" | grep -o 'Confidence' | wc -l)
-    - name: Evaluate Scan Results
+    - name: Fail CI job if scan reports issues
       if: ${{ env.SCAN_COUNTER != 0 }}
       run: exit 1
 
