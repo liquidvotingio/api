@@ -15,7 +15,7 @@ jobs:
     name: Static Security Scan
     runs-on: ubuntu-latest
     container:
-      image: elixir:1.10.2-slim
+      image: elixir:1.10.3-slim
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
@@ -27,7 +27,7 @@ jobs:
       run: |
         echo Scroll to bottom of this log for details, if CI fails this job.
         echo
-        result=$(mix sobelow)
+        result=$(mix sobelow --config --verbose)
         echo "$result"
         echo ::set-env name=SCAN_COUNTER::$(echo "$result" | grep -o 'Confidence' | wc -l)
     - name: Evaluate Scan Results
