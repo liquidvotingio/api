@@ -25,9 +25,12 @@ jobs:
         mix deps.get
     - name: Run Scan
       run: |
+        echo Scroll to bottom of this log for details, if CI fails this job.
+        echo
         result=$(mix sobelow)
         echo "$result"
         echo ::set-env name=SCAN_COUNTER::$(echo "$result" | grep -o 'Confidence' | wc -l)
+    - name: Evaluate Scan Results
       if: ${{ env.SCAN_COUNTER != 0 }}
       run: exit 1
 
