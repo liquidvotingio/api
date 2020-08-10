@@ -124,12 +124,14 @@ jobs:
       with:
         filename: deployment/smoke_tests/smoke_tests.js
     - name: Login to gcloud
+      if: always()
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
         version: '270.0.0'
         service_account_email: ${{ secrets.GKE_EMAIL }}
         service_account_key: ${{ secrets.GKE_KEY }}
     - name: Teardown smoke test data
+      if: always()
       env:
         GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
         GKE_ZONE: ${{ secrets.GKE_ZONE }}
