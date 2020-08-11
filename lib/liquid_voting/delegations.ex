@@ -139,7 +139,11 @@ defmodule LiquidVoting.Delegations do
   def create_delegation(attrs) do
     %Delegation{}
     |> Delegation.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert(
+      # this needs to raise an error?
+      # on_conflict: :raise,
+      # conflict_target: [:organization_id, :delegator_id, :proposal_url]
+    )
   end
 
   @doc """

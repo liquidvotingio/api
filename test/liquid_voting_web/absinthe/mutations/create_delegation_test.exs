@@ -193,7 +193,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     end
   end
 
-  describe "create global delegation for delegator" do
+  describe "create delegation" do
     setup do
       delegator = insert(:participant)
       delegate1 = insert(:participant)
@@ -206,7 +206,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       ]
     end
 
-    test "who is delegator in pre-exisiting global delegation returns error", context do
+    test "(global) for delegator who is delegator in pre-exisiting global delegation returns error",
+         context do
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{context[:delegator].email}", delegateEmail: "#{
@@ -242,7 +243,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       {:ok, %{data: %{"createDelegation" => _delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
-      
+
       # TODO: remove final step, below, and replace with assertion that specific
       # error message is returned by 2nd createDelegation mutation, above,
       # when we are clear exactly what that error message is/should be.
@@ -259,9 +260,66 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       IO.inspect(delegations)
       IO.inspect(Enum.count(delegations))
-      
+
       assert Enum.count(delegations) < 2
     end
 
+    test "(proposal) for delegator who is delegator in pre-exisiting proposal delegation returns error",
+         context do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{context[:delegator].email}", delegateEmail: "#{
+        context[:delegate1].email
+      }", proposal_url: "#{@proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => _delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{context[:delegator].email}", delegateEmail: "#{
+        context[:delegate2].email
+      }", , proposal_url: "#{@proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => _delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      # TODO: remove final step, below, and replace with assertion that specific
+      # error message is returned by 2nd createDelegation mutation, above,
+      # when we are clear exactly what that error message is/should be.
+      query = """
+      query {
+        delegations {
+          id
+        }
+      }
+      """
+
+      {:ok, %{data: %{"delegations" => delegations}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      IO.inspect(delegations)
+      IO.inspect(Enum.count(delegations))
+
+      assert Enum.count(delegations) < 2
+    end
   end
 end
