@@ -10,17 +10,18 @@ defmodule LiquidVoting.DelegationsTest do
       delegator = insert(:participant)
       delegate = insert(:participant)
       another_delegate = insert(:participant)
+      organization_id = Ecto.UUID.generate()
 
       [
         valid_attrs: %{
           delegator_id: delegator.id,
           delegate_id: delegate.id,
-          organization_id: Ecto.UUID.generate()
+          organization_id: organization_id
         },
         update_attrs: %{
           delegator_id: delegator.id,
           delegate_id: another_delegate.id,
-          organization_id: Ecto.UUID.generate()
+          organization_id: organization_id
         },
         invalid_attrs: %{
           delegator_id: delegator.id,
@@ -64,6 +65,15 @@ defmodule LiquidVoting.DelegationsTest do
     test "create_delegation/1 with duplicate data returns error changeset", context do
       Delegations.create_delegation(context[:valid_attrs])
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
+    end
+
+    test "create global delegation for delegator who is delegator in pre-exisiting global delegation returns error changeset", context do
+      Delegations.create_delegation(context[:valid_attrs])
+    
+      IO.inspect(context[:valid_attrs].organization_id)
+      IO.inspect(context[:update_attrs].organization_id)
+    
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:update_attrs])
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
