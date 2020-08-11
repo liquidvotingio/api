@@ -298,28 +298,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
         }
       }
       """
-
-      {:ok, %{data: %{"createDelegation" => _delegation}}} =
+      
+      {:ok, %{errors: [%{message: message, details: details}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
-      # TODO: remove final step, below, and replace with assertion that specific
-      # error message is returned by 2nd createDelegation mutation, above,
-      # when we are clear exactly what that error message is/should be.
-      query = """
-      query {
-        delegations {
-          id
-        }
-      }
-      """
-
-      {:ok, %{data: %{"delegations" => delegations}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
-
-      IO.inspect(delegations)
-      IO.inspect(Enum.count(delegations))
-
-      assert Enum.count(delegations) < 2
+      assert message == "Could not create delegation"
+      assert details == %{org_delegator_proposal: ["has already been taken"]}
     end
   end
 end
