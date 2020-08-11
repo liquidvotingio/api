@@ -87,7 +87,7 @@ defmodule LiquidVoting.DelegationsTest do
       IO.inspect(context[:update_attrs].organization_id)
 
       Delegations.create_delegation(args)
-      
+
       args = Map.merge(context[:update_attrs], %{proposal_url: proposal_url})
 
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)

@@ -3,7 +3,7 @@ defmodule LiquidVoting.Repo.Migrations.AddDelegationsUniqIndexOrgDelegatorPropos
 
   def change do
     create unique_index(:delegations, [:organization_id, :delegator_id, :proposal_url],
-               name: :uniq_index_org_delegator_proposal
-             )
+             name: :uniq_index_org_delegator_proposal
+           )
   end
 end

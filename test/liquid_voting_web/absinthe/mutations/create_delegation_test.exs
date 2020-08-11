@@ -298,7 +298,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
         }
       }
       """
-      
+
       {:ok, %{errors: [%{message: message, details: details}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
