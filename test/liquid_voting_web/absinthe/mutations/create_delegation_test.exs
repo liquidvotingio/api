@@ -7,6 +7,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
   @new_delegator_email "new-delegator@email.com"
   @new_delegate_email "new-delegate@email.com"
   @proposal_url "https://www.proposal.com/my"
+  @organization_id Ecto.UUID.generate()
 
   describe "create delegation with new participants" do
     test "with emails" do
@@ -190,5 +191,77 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert message == "Could not create delegation"
       assert details == %{delegate_id: ["can't be blank"]}
     end
+  end
+
+  describe "create global delegation for delegator" do
+    setup do
+      delegator = insert(:participant)
+      delegate1 = insert(:participant)
+      delegate2 = insert(:participant)
+
+      [
+        delegator: delegator,
+        delegate1: delegate1,
+        delegate2: delegate2
+      ]
+    end
+
+    test "who is delegator in pre-exisiting global delegation returns error", context do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{context[:delegator].email}", delegateEmail: "#{
+        context[:delegate1].email
+      }") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => _delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{context[:delegator].email}", delegateEmail: "#{
+        context[:delegate2].email
+      }") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => _delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+      
+      # TODO: remove final step, below, and replace with assertion that specific
+      # error message is returned by 2nd createDelegation mutation, above,
+      # when we are clear exactly what that error message is/should be.
+      query = """
+      query {
+        delegations {
+          id
+        }
+      }
+      """
+
+      {:ok, %{data: %{"delegations" => delegations}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      IO.inspect(delegations)
+      IO.inspect(Enum.count(delegations))
+      
+      assert Enum.count(delegations) < 2
+    end
+
   end
 end

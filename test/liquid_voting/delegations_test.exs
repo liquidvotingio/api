@@ -67,12 +67,13 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
     end
 
-    test "create global delegation for delegator who is delegator in pre-exisiting global delegation returns error changeset", context do
+    test "create global delegation for delegator who is delegator in pre-exisiting global delegation returns error changeset",
+         context do
       Delegations.create_delegation(context[:valid_attrs])
-    
+
       IO.inspect(context[:valid_attrs].organization_id)
       IO.inspect(context[:update_attrs].organization_id)
-    
+
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:update_attrs])
     end
 
