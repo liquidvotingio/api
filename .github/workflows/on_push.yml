@@ -101,7 +101,7 @@ jobs:
         kubectl rollout restart deployment/api-deployment
         pod=$(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1)
         kubectl wait --timeout=120s --for=condition=Ready pod/$pod
-        kubectl exec -ti pod/$pod \
+        kubectl exec -i pod/$pod \
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.migrate"
@@ -140,7 +140,7 @@ jobs:
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
         pod=$(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1)
         kubectl wait --timeout=120s --for=condition=Ready pod/$pod
-        kubectl exec -ti pod/$pod \
+        kubectl exec -i pod/$pod \
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.smoke_test_teardown"
