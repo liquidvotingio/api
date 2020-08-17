@@ -101,8 +101,8 @@ defmodule LiquidVoting.Delegations do
   @doc """
   Creates a delegation.
 
-  The delegation will be global if no `proposal_url` is passed in. 
-  The delegation can be created by ID or by email. 
+  The delegation will be global if no `proposal_url` is passed in.
+  The delegation can be created by ID or by email.
 
   ## Examples
 

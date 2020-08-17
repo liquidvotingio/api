@@ -51,7 +51,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:invalid_attrs])
     end
 
-    test "create_delegation/1 with proposal urls creates a delegation", context do
+    test "create_delegation/1 with proposal url creates a delegation", context do
       # Test long urls while at it
       proposal_url = """
       https://www.bigassstring.com/search?ei=WdznXfzyIoeT1fAP79yWqAc&q=chrome+extension+popup+js+xhr+onload+document.body&oq=chrome+extension+popup+js+xhr+onload+document.body&gs_l=psy-ab.3...309222.313422..314027...0.0..1.201.1696.5j9j1....2..0....1..gws-wiz.2OvPoKSwZ_I&ved=0ahUKEwi8g5fQspzmAhWHSRUIHW-uBXUQ4dUDCAs&uact=5"
@@ -59,6 +59,21 @@ defmodule LiquidVoting.DelegationsTest do
 
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+    end
+
+    test "create_delegation/1 with proposal url sets global boolean to false", context do
+      proposal_url = "https://www.someorg/proposalX"
+
+      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
+      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+
+      assert delegation.global == false
+    end
+
+    test "create_delegation/1 without proposal url sets global boolean to true", context do
+      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(context[:valid_attrs])
+
+      assert delegation.global == true
     end
 
     test "create_delegation/1 with duplicate data returns error changeset", context do
