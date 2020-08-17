@@ -86,17 +86,27 @@ defmodule LiquidVoting.DelegationsTest do
       proposal_url = "https://www.someorg/proposalX"
 
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
-      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+      {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(args)
 
-      IO.inspect(delegation.id)
-      old_delegation_id = delegation.id
+      IO.inspect(delegation1.global)
 
       args = Map.merge(context[:update_attrs], %{proposal_url: proposal_url})
 
-      assert {:ok, %Delegation{} = delegation} =
+      assert {:ok, %Delegation{} = delegation2} =
                Delegations.upsert_delegation(args)
+      assert delegation1.id == delegation2.id
+      assert delegation1.delegate_id != delegation2.delegate_id
+    end
 
-      IO.inspect(delegation.id)
+    test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation", context do
+      {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(context[:valid_attrs])
+
+      IO.inspect(delegation1.global)
+
+      assert {:ok, %Delegation{} = delegation2} =
+               Delegations.upsert_delegation(context[:update_attrs])
+      assert delegation1.id == delegation2.id
+      assert delegation1.delegate_id != delegation2.delegate_id
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
