@@ -31,6 +31,9 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> set_global()
     |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
     |> unique_constraint(:org_delegator_proposal, name: :uniq_index_org_delegator_proposal)
+    |> unique_constraint(:org_delegator_global_where_global_true,
+      name: :uniq_index_org_delegator_global_where_global_true
+    )
   end
 
   defp set_global(changeset) do
