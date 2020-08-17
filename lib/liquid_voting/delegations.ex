@@ -160,6 +160,7 @@ defmodule LiquidVoting.Delegations do
         %Delegation{}
         |> Delegation.changeset(attrs)
         |> IO.inspect()
+        # this doesn't work (partial index using 'where')
         |> Repo.insert(
           on_conflict: {:replace_all_except, [:id]},
           conflict_target: [:organization_id, :delegator_id, :global],
@@ -171,6 +172,7 @@ defmodule LiquidVoting.Delegations do
         %Delegation{}
         |> Delegation.changeset(attrs)
         |> IO.inspect()
+        # this DOES work
         |> Repo.insert(
           on_conflict: {:replace_all_except, [:id]},
           conflict_target: [:organization_id, :delegator_id, :proposal_url],
