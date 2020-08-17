@@ -116,8 +116,6 @@ defmodule LiquidVoting.Delegations do
   def create_delegation(attrs \\ %{})
 
   def create_delegation(%{delegator_email: _, delegate_email: _} = args) do
-    require IEx
-    IEx.pry()
     delegator_attrs = %{email: args.delegator_email, organization_id: args.organization_id}
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
     attrs = Map.take(args, [:organization_id, :proposal_url])

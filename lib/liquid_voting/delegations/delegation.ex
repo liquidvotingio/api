@@ -10,6 +10,7 @@ defmodule LiquidVoting.Delegations.Delegation do
   schema "delegations" do
     field :proposal_url, EctoFields.URL
     field :organization_id, Ecto.UUID
+    field :global, :boolean
 
     belongs_to :delegator, Participant
     belongs_to :delegate, Participant
