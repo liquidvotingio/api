@@ -10,17 +10,18 @@ defmodule LiquidVoting.DelegationsTest do
       delegator = insert(:participant)
       delegate = insert(:participant)
       another_delegate = insert(:participant)
+      organization_id = Ecto.UUID.generate()
 
       [
         valid_attrs: %{
           delegator_id: delegator.id,
           delegate_id: delegate.id,
-          organization_id: Ecto.UUID.generate()
+          organization_id: organization_id
         },
         update_attrs: %{
           delegator_id: delegator.id,
           delegate_id: another_delegate.id,
-          organization_id: Ecto.UUID.generate()
+          organization_id: organization_id
         },
         invalid_attrs: %{
           delegator_id: delegator.id,
@@ -79,6 +80,23 @@ defmodule LiquidVoting.DelegationsTest do
     test "create_delegation/1 with duplicate data returns error changeset", context do
       Delegations.create_delegation(context[:valid_attrs])
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
+    end
+
+    test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation", context do
+      proposal_url = "https://www.someorg/proposalX"
+
+      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
+      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+
+      IO.inspect(delegation.id)
+      old_delegation_id = delegation.id
+
+      args = Map.merge(context[:update_attrs], %{proposal_url: proposal_url})
+
+      assert {:ok, %Delegation{} = delegation} =
+               Delegations.upsert_delegation(args)
+
+      IO.inspect(delegation.id)
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
