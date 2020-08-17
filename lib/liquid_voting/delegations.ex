@@ -143,6 +143,28 @@ defmodule LiquidVoting.Delegations do
   end
 
   @doc """
+  Upserts a delegation (updates or inserts).
+
+  ## Examples
+
+      iex> upsert_delegation(%{field: value})
+      {:ok, %Delegation{}}
+
+      iex> upsert_delegation(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
+  def upsert_delegation(attrs \\ %{}) do
+    %Delegation{}
+    |> Delegation.changeset(attrs)
+    # global== true case
+    |> Repo.insert(
+      on_conflict: {:replace_all_except, [:id]},
+      conflict_target: [:organization_id, :delegator_id, :proposal_url],
+      returning: true
+    )
+  end
+
+  @doc """
   Updates a delegation.
 
   ## Examples
