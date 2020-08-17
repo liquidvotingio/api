@@ -61,6 +61,21 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
     end
 
+    test "create_delegation/1 with proposal url sets global boolean to false", context do
+      proposal_url = "https://www.someorg/proposalX"
+
+      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
+      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+
+      assert delegation.global == false
+    end
+
+    test "create_delegation/1 without proposal url sets global boolean to true", context do
+      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(context[:valid_attrs])
+
+      assert delegation.global == true
+    end
+
     test "create_delegation/1 with duplicate data returns error changeset", context do
       Delegations.create_delegation(context[:valid_attrs])
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
