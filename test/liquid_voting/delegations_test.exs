@@ -119,6 +119,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation2} = Delegations.update_delegation(delegation1, args)
       assert delegation1.global == "is_global"
       assert delegation2.global == nil
+      assert delegation1.id == delegation2.id
     end
 
     test "delete_delegation/1 deletes the delegation" do
