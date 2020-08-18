@@ -28,13 +28,13 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> assoc_constraint(:delegator)
     |> assoc_constraint(:delegate)
     |> validate_required(required_fields)
-    |> set_if_global()
+    |> set_global()
     |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
     |> unique_constraint(:org_delegator_proposal, name: :uniq_index_org_delegator_proposal)
     |> unique_constraint(:org_delegator_global, name: :uniq_index_org_delegator_global)
   end
 
-  defp set_if_global(changeset) do
+  defp set_global(changeset) do
     case get_field(changeset, :proposal_url) do
       # If proposal_url is nil, delegation is global
       nil -> put_change(changeset, :global, "is_global")
