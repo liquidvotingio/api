@@ -31,6 +31,8 @@ defmodule LiquidVoting.DelegationsTest do
       ]
     end
 
+    @proposal_url "https://www.someorg/proposalX"
+
     test "list_delegations/1 returns all delegations for an organization_id" do
       delegation = insert(:delegation)
       assert Delegations.list_delegations(delegation.organization_id) == [delegation]
@@ -63,9 +65,7 @@ defmodule LiquidVoting.DelegationsTest do
     end
 
     test "create_delegation/1 with proposal url does not set global variable", context do
-      proposal_url = "https://www.someorg/proposalX"
-
-      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
+      args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
       {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
 
       assert delegation.global == nil
@@ -84,12 +84,10 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
          context do
-      proposal_url = "https://www.someorg/proposalX"
-
-      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
+      args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
       {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(args)
 
-      args = Map.merge(context[:update_attrs], %{proposal_url: proposal_url})
+      args = Map.merge(context[:update_attrs], %{proposal_url: @proposal_url})
 
       assert {:ok, %Delegation{} = delegation2} = Delegations.upsert_delegation(args)
       assert delegation1.id == delegation2.id
@@ -115,13 +113,10 @@ defmodule LiquidVoting.DelegationsTest do
     end
 
     test "update_delegation/2 with updates a proposal-specific to a global delegation", context do
-      proposal_url = "https://www.someorg/proposalX"
-      
       {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(context[:valid_attrs])
 
-      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
-      assert {:ok, %Delegation{} = delegation2} =
-               Delegations.update_delegation(delegation1, args)
+      args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
+      assert {:ok, %Delegation{} = delegation2} = Delegations.update_delegation(delegation1, args)
       assert delegation1.global == "is_global"
       assert delegation2.global == nil
     end
