@@ -4,6 +4,7 @@ defmodule LiquidVoting.Delegations do
   """
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset, only: [get_field: 2]
 
   alias __MODULE__.Delegation
   alias LiquidVoting.{Repo, Voting}
@@ -154,26 +155,22 @@ defmodule LiquidVoting.Delegations do
       {:error, %Ecto.Changeset{}}
   """
   def upsert_delegation(attrs \\ %{}) do
-    case Map.has_key?(attrs, :proposal_url) do
-      # If no proposal_url key, delegation is global
-      false ->
-        %Delegation{}
-        |> Delegation.changeset(attrs)
-        #|> IO.inspect()
-        # this doesn't work (partial index using 'where')
-        |> Repo.insert(
+    %Delegation{}
+    |> Delegation.changeset(attrs)
+    |> upsert()
+  end
+
+  defp upsert(changeset) do
+    case get_field(changeset, :global) do
+      "is_global" ->
+        Repo.insert(changeset,
           on_conflict: {:replace_all_except, [:id]},
           conflict_target: [:organization_id, :delegator_id, :global],
           returning: true
         )
 
-      # If proposal_url key present, delegation is not global
-      true ->
-        %Delegation{}
-        |> Delegation.changeset(attrs)
-        #|> IO.inspect()
-        # this DOES work
-        |> Repo.insert(
+      nil ->
+        Repo.insert(changeset,
           on_conflict: {:replace_all_except, [:id]},
           conflict_target: [:organization_id, :delegator_id, :proposal_url],
           returning: true
