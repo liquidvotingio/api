@@ -40,7 +40,7 @@ defmodule LiquidVoting.Delegations.Delegation do
       nil -> put_change(changeset, :global, "is_global")
       # If proposal_url is not nil, delegation is not global
       # TODO: explicitly set to nil? Maybe need to avoid update issues (need to test\)
-      _ -> changeset
+      _ -> put_change(changeset, :global, nil)
     end
   end
 end
