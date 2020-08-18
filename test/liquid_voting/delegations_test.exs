@@ -62,19 +62,19 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
     end
 
-    test "create_delegation/1 with proposal url sets global boolean to false", context do
+    test "create_delegation/1 with proposal url does not set global variable", context do
       proposal_url = "https://www.someorg/proposalX"
 
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
       {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
 
-      assert delegation.global == false
+      assert delegation.global == nil
     end
 
-    test "create_delegation/1 without proposal url sets global boolean to true", context do
+    test "create_delegation/1 without proposal url sets global to 'is_global'", context do
       {:ok, %Delegation{} = delegation} = Delegations.create_delegation(context[:valid_attrs])
 
-      assert delegation.global == true
+      assert delegation.global == "is_global"
     end
 
     test "create_delegation/1 with duplicate data returns error changeset", context do
@@ -89,8 +89,6 @@ defmodule LiquidVoting.DelegationsTest do
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
       {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(args)
 
-      IO.inspect(delegation1.global)
-
       args = Map.merge(context[:update_attrs], %{proposal_url: proposal_url})
 
       assert {:ok, %Delegation{} = delegation2} = Delegations.upsert_delegation(args)
@@ -101,8 +99,6 @@ defmodule LiquidVoting.DelegationsTest do
     test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
          context do
       {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(context[:valid_attrs])
-
-      IO.inspect(delegation1.global)
 
       assert {:ok, %Delegation{} = delegation2} =
                Delegations.upsert_delegation(context[:update_attrs])

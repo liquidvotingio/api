@@ -159,7 +159,7 @@ defmodule LiquidVoting.Delegations do
       false ->
         %Delegation{}
         |> Delegation.changeset(attrs)
-        |> IO.inspect()
+        #|> IO.inspect()
         # this doesn't work (partial index using 'where')
         |> Repo.insert(
           on_conflict: {:replace_all_except, [:id]},
@@ -171,7 +171,7 @@ defmodule LiquidVoting.Delegations do
       true ->
         %Delegation{}
         |> Delegation.changeset(attrs)
-        |> IO.inspect()
+        #|> IO.inspect()
         # this DOES work
         |> Repo.insert(
           on_conflict: {:replace_all_except, [:id]},

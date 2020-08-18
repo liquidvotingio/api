@@ -10,7 +10,7 @@ defmodule LiquidVoting.Delegations.Delegation do
   schema "delegations" do
     field :proposal_url, EctoFields.URL
     field :organization_id, Ecto.UUID
-    field :global, :boolean
+    field :global, :string
 
     belongs_to :delegator, Participant
     belongs_to :delegate, Participant
@@ -28,20 +28,19 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> assoc_constraint(:delegator)
     |> assoc_constraint(:delegate)
     |> validate_required(required_fields)
-    |> set_global()
+    |> set_if_global()
     |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
     |> unique_constraint(:org_delegator_proposal, name: :uniq_index_org_delegator_proposal)
-    |> unique_constraint(:org_delegator_global,
-      name: :uniq_index_org_delegator_global_where_global_true
-    )
+    |> unique_constraint(:org_delegator_global, name: :uniq_index_org_delegator_global)
   end
 
-  defp set_global(changeset) do
+  defp set_if_global(changeset) do
     case get_field(changeset, :proposal_url) do
       # If proposal_url is nil, delegation is global
-      nil -> put_change(changeset, :global, true)
+      nil -> put_change(changeset, :global, "is_global")
       # If proposal_url is not nil, delegation is not global
-      _ -> put_change(changeset, :global, false)
+      # TODO: explicitly set to nil? Maybe need to avoid update issues (need to test\)
+      _ -> changeset
     end
   end
 end
