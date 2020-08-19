@@ -118,7 +118,7 @@ defmodule LiquidVoting.DelegationsTest do
                Delegations.update_delegation(delegation, context[:update_attrs])
     end
 
-    test "update_delegation/2 updates a proposal-specific to a global delegation", context do
+    test "update_delegation/2 updates a global to a proposal-specific delegation", context do
       {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(context[:valid_attrs])
 
       args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
