@@ -130,7 +130,7 @@ defmodule LiquidVoting.Delegations do
       attrs
       |> Map.put(:delegator_id, changes.delegator.id)
       |> Map.put(:delegate_id, changes.delegate.id)
-      |> create_delegation()
+      |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
