@@ -6,7 +6,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
   @new_delegator_email "new-delegator@email.com"
   @new_delegate_email "new-delegate@email.com"
+  @new_other_delegate_email "new-other-delegate@email.com"
   @proposal_url "https://www.proposal.com/my"
+  @organization_id Ecto.UUID.generate()
 
   describe "create delegation with new participants" do
     test "with emails" do
@@ -189,6 +191,131 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       assert message == "Could not create delegation"
       assert details == %{delegate_id: ["can't be blank"]}
+    end
+  end
+
+  describe "create new global delegation for delegator with existing global delegation" do
+    test "overwrites existing global delegation" do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{
+        @new_delegate_email
+      }") {
+          delegator {
+            email
+            name
+          }
+          delegate {
+            email
+            name
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => delegation1}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      assert delegation1["delegator"]["email"] == @new_delegator_email
+      assert delegation1["delegate"]["email"] == @new_delegate_email
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{
+        @new_other_delegate_email
+      }") {
+          delegator {
+            email
+            name
+          }
+          delegate {
+            email
+            name
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => delegation2}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      assert delegation2["delegator"]["email"] == @new_delegator_email
+      assert delegation2["delegate"]["email"] == @new_other_delegate_email
+
+      query = """
+      query {
+        delegations {
+          id 
+        }
+      }
+      """
+
+      {:ok, %{data: %{"delegations" => delegations}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      assert Enum.count(delegations) == 1
+    end
+  end
+
+  describe "create new proposal-specific delegation for delegator with existing delegation for same proposal" do
+    test "overwrites existing proposal-specific delegation" do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{
+        @new_delegate_email
+      }", proposalUrl: "#{@proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+          proposalUrl
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => delegation1}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      assert delegation1["delegator"]["email"] == @new_delegator_email
+      assert delegation1["delegate"]["email"] == @new_delegate_email
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{@new_delegator_email}", delegateEmail: "#{
+        @new_other_delegate_email
+      }", proposalUrl: "#{@proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+          proposalUrl
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => delegation2}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      assert delegation2["delegator"]["email"] == @new_delegator_email
+      assert delegation2["delegate"]["email"] == @new_other_delegate_email
+      assert delegation1["proposalUrl"] == delegation2["proposalUrl"]
+
+      query = """
+      query {
+        delegations {
+          id 
+        }
+      }
+      """
+
+      {:ok, %{data: %{"delegations" => [delegations]}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+
+      assert Enum.count(delegations) == 1
     end
   end
 end
