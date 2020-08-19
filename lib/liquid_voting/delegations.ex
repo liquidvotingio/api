@@ -117,6 +117,8 @@ defmodule LiquidVoting.Delegations do
   def create_delegation(attrs \\ %{})
 
   def create_delegation(%{delegator_email: _, delegate_email: _} = args) do
+    IO.inspect("HELLO!!! from create_delegation #1")
+
     delegator_attrs = %{email: args.delegator_email, organization_id: args.organization_id}
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
     attrs = Map.take(args, [:organization_id, :proposal_url])
@@ -128,7 +130,7 @@ defmodule LiquidVoting.Delegations do
       attrs
       |> Map.put(:delegator_id, changes.delegator.id)
       |> Map.put(:delegate_id, changes.delegate.id)
-      |> create_delegation()
+      |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
@@ -138,6 +140,8 @@ defmodule LiquidVoting.Delegations do
   end
 
   def create_delegation(attrs) do
+    IO.inspect("HELLO!!! from create_delegation #2")
+
     %Delegation{}
     |> Delegation.changeset(attrs)
     |> Repo.insert()
@@ -164,16 +168,14 @@ defmodule LiquidVoting.Delegations do
     case get_field(changeset, :global) do
       "is_global" ->
         Repo.insert(changeset,
-          on_conflict: {:replace_all_except, [:id]},
-          conflict_target: [:organization_id, :delegator_id, :global],
-          returning: true
+          on_conflict: :replace_all,
+          conflict_target: [:organization_id, :delegator_id, :global]
         )
 
       nil ->
         Repo.insert(changeset,
-          on_conflict: {:replace_all_except, [:id]},
-          conflict_target: [:organization_id, :delegator_id, :proposal_url],
-          returning: true
+          on_conflict: :replace_all,
+          conflict_target: [:organization_id, :delegator_id, :proposal_url]
         )
     end
   end
