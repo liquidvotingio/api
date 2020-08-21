@@ -30,8 +30,6 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> validate_required(required_fields)
     |> set_global()
     |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
-    |> unique_constraint(:org_delegator_proposal, name: :uniq_index_org_delegator_proposal)
-    |> unique_constraint(:org_delegator_global, name: :uniq_index_org_delegator_global)
   end
 
   defp set_global(changeset) do
