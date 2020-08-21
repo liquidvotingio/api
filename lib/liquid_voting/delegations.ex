@@ -159,7 +159,7 @@ defmodule LiquidVoting.Delegations do
     query = from(Delegation, where: [delegator_id: ^delegator_id], select: [:id, :proposal_url])
     delegator_delegations = Repo.all(query)
 
-    proposal_url = get_proposal(attrs)
+    proposal_url = get_or_set_proposal(attrs)
 
     # get conflicting delegation for delegator, if exists
     conflicting_delegation =
@@ -171,9 +171,9 @@ defmodule LiquidVoting.Delegations do
     upsert(conflicting_delegation, attrs)
   end
 
-  defp get_proposal(%{proposal_url: proposal_url}), do: proposal_url
+  defp get_or_set_proposal(%{proposal_url: proposal_url}), do: proposal_url
 
-  defp get_proposal(_), do: nil
+  defp get_or_set_proposal(_), do: nil
 
   defp upsert(nil, attrs), do: create_delegation(attrs)
 
