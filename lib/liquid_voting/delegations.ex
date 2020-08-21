@@ -161,18 +161,12 @@ defmodule LiquidVoting.Delegations do
   end
 
   defp upsert(changeset) do
-    case get_field(changeset, :global) do
+    case get_field(changeset, :proposal_url) do
       "is_global" ->
-        Repo.insert(changeset,
-          on_conflict: :replace_all,
-          conflict_target: [:organization_id, :delegator_id, :global]
-        )
+        Repo.insert()
 
       nil ->
-        Repo.insert(changeset,
-          on_conflict: :replace_all,
-          conflict_target: [:organization_id, :delegator_id, :proposal_url]
-        )
+        Repo.insert()
     end
   end
 
