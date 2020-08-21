@@ -79,7 +79,6 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation2} = Delegations.upsert_delegation(args)
       assert delegation1.organization_id == delegation2.organization_id
       assert Enum.count(Delegations.list_delegations(delegation1.organization_id)) == 1
-      assert delegation1.id != delegation2.id
       assert delegation1.delegate_id != delegation2.delegate_id
       assert delegation1.delegator_id == delegation2.delegator_id
     end
@@ -93,7 +92,6 @@ defmodule LiquidVoting.DelegationsTest do
 
       assert delegation1.organization_id == delegation2.organization_id
       assert Enum.count(Delegations.list_delegations(delegation1.organization_id)) == 1
-      assert delegation1.id != delegation2.id
       assert delegation1.delegate_id != delegation2.delegate_id
       assert delegation1.delegator_id == delegation2.delegator_id
     end

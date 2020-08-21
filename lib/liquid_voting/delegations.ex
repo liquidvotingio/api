@@ -4,7 +4,6 @@ defmodule LiquidVoting.Delegations do
   """
 
   import Ecto.Query, warn: false
-  import Ecto.Changeset, only: [get_field: 2]
 
   alias __MODULE__.Delegation
   alias LiquidVoting.{Repo, Voting}
@@ -155,22 +154,30 @@ defmodule LiquidVoting.Delegations do
       {:error, %Ecto.Changeset{}}
   """
   def upsert_delegation(attrs \\ %{}) do
-    %Delegation{}
-    |> Delegation.changeset(attrs)
-    |> upsert()
+    delegator_id = attrs.delegator_id
+
+    query = from(Delegation, where: [delegator_id: ^delegator_id], select: [:id, :proposal_url])
+    delegator_delegations = Repo.all(query)
+
+    proposal_url = get_proposal(attrs)
+
+    # get conflicting delegation for delegator, if exists
+    conflicting_delegation =
+      Enum.find(
+        delegator_delegations,
+        fn d -> d.proposal_url == proposal_url end
+      )
+
+    upsert(conflicting_delegation, attrs)
   end
 
-  defp upsert(changeset) do
-    case get_field(changeset, :proposal_url) do
-      nil ->
-        IO.inspect("IS GLOBAL")
-        Repo.insert(changeset)
+  defp get_proposal(%{proposal_url: proposal_url}), do: proposal_url
 
-      _ ->
-        IO.inspect("NOT GLOBAL")
-        Repo.insert(changeset)
-    end
-  end
+  defp get_proposal(_), do: nil
+
+  defp upsert(nil, attrs), do: create_delegation(attrs)
+
+  defp upsert(delegation, attrs), do: update_delegation(delegation, attrs)
 
   @doc """
   Updates a delegation.
