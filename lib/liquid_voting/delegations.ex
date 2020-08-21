@@ -167,7 +167,7 @@ defmodule LiquidVoting.Delegations do
   end
 
   defp get_or_set_proposal(%{proposal_url: proposal_url}), do: proposal_url
-  defp get_or_set_proposal(_), do: nil
+  defp get_or_set_proposal(_attrs), do: nil
 
   defp where_proposal(query, _proposal_url = nil),
     do: query |> where([d], is_nil(d.proposal_url))
