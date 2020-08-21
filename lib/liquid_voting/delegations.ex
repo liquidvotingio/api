@@ -149,7 +149,7 @@ defmodule LiquidVoting.Delegations do
   if a new global delegation for the same delegator is passed in.
   Updates existing proposal-specific delegation for a specific delegator
   if a delegation for the same proposal and delegator is passed in.
-  Creates a new delegation, if neither aforementioned condition is true.
+  Creates a new delegation if neither aforementioned condition is true.
 
   ## Examples
 
