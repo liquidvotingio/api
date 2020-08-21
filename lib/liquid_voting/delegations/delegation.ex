@@ -28,16 +28,6 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> assoc_constraint(:delegator)
     |> assoc_constraint(:delegate)
     |> validate_required(required_fields)
-    |> set_global()
     |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
-  end
-
-  defp set_global(changeset) do
-    case get_field(changeset, :proposal_url) do
-      # If proposal_url is nil, delegation is global
-      nil -> put_change(changeset, :global, "is_global")
-      # If proposal_url is not nil, delegation is not global
-      _ -> put_change(changeset, :global, nil)
-    end
   end
 end
