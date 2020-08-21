@@ -154,7 +154,7 @@ defmodule LiquidVoting.Delegations do
       {:error, %Ecto.Changeset{}}
   """
   def upsert_delegation(attrs \\ %{}) do
-    delegator_id = attrs.delegator_id
+    %{delegator_id: delegator_id} = attrs
     proposal_url = get_or_set_proposal(attrs)
 
     conflicting_delegation =
