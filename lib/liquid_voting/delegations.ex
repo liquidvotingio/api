@@ -175,7 +175,7 @@ defmodule LiquidVoting.Delegations do
   defp where_proposal(query, proposal_url),
     do: query |> where([d], d.proposal_url == ^proposal_url)
 
-  defp upsert(nil, attrs), do: create_delegation(attrs)
+  defp upsert(_delegation = nil, attrs), do: create_delegation(attrs)
   defp upsert(delegation, attrs), do: update_delegation(delegation, attrs)
 
   @doc """
