@@ -105,31 +105,6 @@ defmodule LiquidVoting.DelegationsTest do
                Delegations.update_delegation(delegation, context[:update_attrs])
     end
 
-    test "update_delegation/2 updates a global to a proposal-specific delegation", context do
-      {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(context[:valid_attrs])
-
-      args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
-      assert {:ok, %Delegation{} = delegation2} = Delegations.update_delegation(delegation1, args)
-      assert delegation1.global == "is_global"
-      assert delegation2.global == nil
-      assert delegation1.id == delegation2.id
-    end
-
-    test "update_delegation/2 updates a proposal-specific to a global delegation", context do
-      args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
-
-      {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(args)
-
-      # :global will only be set to 'is_global' if proposal_url: nil is passed in args, in this case
-      args = Map.merge(context[:valid_attrs], %{proposal_url: nil})
-
-      assert {:ok, %Delegation{} = delegation2} = Delegations.update_delegation(delegation1, args)
-
-      assert delegation1.global == nil
-      assert delegation2.global == "is_global"
-      assert delegation1.id == delegation2.id
-    end
-
     test "delete_delegation/1 deletes the delegation" do
       delegation = insert(:delegation)
       assert {:ok, %Delegation{}} = Delegations.delete_delegation(delegation)
