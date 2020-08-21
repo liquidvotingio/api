@@ -145,6 +145,10 @@ defmodule LiquidVoting.Delegations do
   @doc """
   Upserts a delegation (updates or inserts).
 
+  Updates existing global delegation, if one exists for the given delegator.
+  Updates a proposal-specific delegation, if one exists for the specific proposal && delegator.
+  Creates a new delegation, if neither aforementioned condition is true.
+
   ## Examples
 
       iex> upsert_delegation(%{field: value})
