@@ -157,30 +157,26 @@ defmodule LiquidVoting.Delegations do
     delegator_id = attrs.delegator_id
     proposal_url = get_or_set_proposal(attrs)
 
-    query = set_query(delegator_id, proposal_url)
+    query =
+      Delegation
+      |> where([d], d.delegator_id == ^delegator_id)
+      |> where_proposal(proposal_url)
+
     conflicting_delegation = Repo.one(query)
 
     upsert(conflicting_delegation, attrs)
   end
 
   defp get_or_set_proposal(%{proposal_url: proposal_url}), do: proposal_url
-
   defp get_or_set_proposal(_), do: nil
-  
-  defp set_query(delegator_id, proposal_url = nil) do
-    Delegation
-    |> where([d], d.delegator_id == ^delegator_id)
-    |> where([d], is_nil(d.proposal_url))
-  end
 
-  defp set_query(delegator_id, proposal_url) do
-    Delegation
-    |> where([d], d.delegator_id == ^delegator_id)
-    |> where([d], d.proposal_url == ^proposal_url)
-  end
+  defp where_proposal(query, _proposal_url = nil),
+    do: query |> where([d], is_nil(d.proposal_url))
+
+  defp where_proposal(query, proposal_url),
+    do: query |> where([d], d.proposal_url == ^proposal_url)
 
   defp upsert(nil, attrs), do: create_delegation(attrs)
-
   defp upsert(delegation, attrs), do: update_delegation(delegation, attrs)
 
   @doc """
