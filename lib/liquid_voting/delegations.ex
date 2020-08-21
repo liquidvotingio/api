@@ -155,18 +155,10 @@ defmodule LiquidVoting.Delegations do
   """
   def upsert_delegation(attrs \\ %{}) do
     delegator_id = attrs.delegator_id
-
-    query = from(Delegation, where: [delegator_id: ^delegator_id], select: [:id, :proposal_url])
-    delegator_delegations = Repo.all(query)
-
     proposal_url = get_or_set_proposal(attrs)
 
-    # get conflicting delegation for delegator, if exists
-    conflicting_delegation =
-      Enum.find(
-        delegator_delegations,
-        fn d -> d.proposal_url == proposal_url end
-      )
+    query = set_query(delegator_id, proposal_url)
+    conflicting_delegation = Repo.one(query)
 
     upsert(conflicting_delegation, attrs)
   end
@@ -174,6 +166,18 @@ defmodule LiquidVoting.Delegations do
   defp get_or_set_proposal(%{proposal_url: proposal_url}), do: proposal_url
 
   defp get_or_set_proposal(_), do: nil
+  
+  defp set_query(delegator_id, proposal_url = nil) do
+    Delegation
+    |> where([d], d.delegator_id == ^delegator_id)
+    |> where([d], is_nil(d.proposal_url))
+  end
+
+  defp set_query(delegator_id, proposal_url) do
+    Delegation
+    |> where([d], d.delegator_id == ^delegator_id)
+    |> where([d], d.proposal_url == ^proposal_url)
+  end
 
   defp upsert(nil, attrs), do: create_delegation(attrs)
 
