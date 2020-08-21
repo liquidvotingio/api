@@ -128,7 +128,7 @@ defmodule LiquidVoting.Delegations do
       attrs
       |> Map.put(:delegator_id, changes.delegator.id)
       |> Map.put(:delegate_id, changes.delegate.id)
-      |> create_delegation()
+      |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
@@ -162,11 +162,13 @@ defmodule LiquidVoting.Delegations do
 
   defp upsert(changeset) do
     case get_field(changeset, :proposal_url) do
-      "is_global" ->
-        Repo.insert()
-
       nil ->
-        Repo.insert()
+        IO.inspect("IS GLOBAL")
+        Repo.insert(changeset)
+
+      _ ->
+        IO.inspect("NOT GLOBAL")
+        Repo.insert(changeset)
     end
   end
 
