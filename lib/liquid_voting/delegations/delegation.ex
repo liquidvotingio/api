@@ -10,7 +10,6 @@ defmodule LiquidVoting.Delegations.Delegation do
   schema "delegations" do
     field :proposal_url, EctoFields.URL
     field :organization_id, Ecto.UUID
-    field :global, :string
 
     belongs_to :delegator, Participant
     belongs_to :delegate, Participant
@@ -21,7 +20,7 @@ defmodule LiquidVoting.Delegations.Delegation do
   @doc false
   def changeset(delegation, attrs) do
     required_fields = [:delegator_id, :delegate_id, :organization_id]
-    all_fields = [:proposal_url, :global | required_fields]
+    all_fields = [:proposal_url | required_fields]
 
     delegation
     |> cast(attrs, all_fields)
