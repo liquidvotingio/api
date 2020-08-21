@@ -157,12 +157,11 @@ defmodule LiquidVoting.Delegations do
     delegator_id = attrs.delegator_id
     proposal_url = get_or_set_proposal(attrs)
 
-    query =
+    conflicting_delegation =
       Delegation
       |> where([d], d.delegator_id == ^delegator_id)
       |> where_proposal(proposal_url)
-
-    conflicting_delegation = Repo.one(query)
+      |> Repo.one()
 
     upsert(conflicting_delegation, attrs)
   end
