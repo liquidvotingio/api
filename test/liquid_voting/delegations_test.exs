@@ -78,22 +78,33 @@ defmodule LiquidVoting.DelegationsTest do
 
       assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
       assert original_delegation.organization_id == modified_delegation.organization_id
-      assert Enum.count(Delegations.list_delegations(original_delegation.organization_id)) == 1
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
+
+      assert(
+        Delegations.list_delegations(original_delegation.organization_id)
+        |> Enum.count() ==
+          1
+      )
     end
 
     test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
          context do
-      {:ok, %Delegation{} = original_delegation} = Delegations.create_delegation(context[:valid_attrs])
+      {:ok, %Delegation{} = original_delegation} =
+        Delegations.create_delegation(context[:valid_attrs])
 
       assert {:ok, %Delegation{} = modified_delegation} =
                Delegations.upsert_delegation(context[:update_attrs])
 
       assert original_delegation.organization_id == modified_delegation.organization_id
-      assert Enum.count(Delegations.list_delegations(original_delegation.organization_id)) == 1
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
+
+      assert(
+        Delegations.list_delegations(original_delegation.organization_id)
+        |> Enum.count() ==
+          1
+      )
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do

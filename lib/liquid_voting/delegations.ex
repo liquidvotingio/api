@@ -164,15 +164,17 @@ defmodule LiquidVoting.Delegations do
     proposal_url = Map.get(attrs, :proposal_url)
 
     Delegation
-      |> where([d], d.delegator_id == ^delegator_id)
-      |> where_proposal(proposal_url)
-      |> Repo.one()
-      |> case do
-        nil -> %Delegation{} # Delegation not found, we build one
-        delegation -> delegation # Delegation exists, let's use it
-      end
-       |> Delegation.changeset(attrs)
-       |> Repo.insert_or_update
+    |> where([d], d.delegator_id == ^delegator_id)
+    |> where_proposal(proposal_url)
+    |> Repo.one()
+    |> case do
+      # Delegation not found, we build one
+      nil -> %Delegation{}
+      # Delegation exists, let's use it
+      delegation -> delegation
+    end
+    |> Delegation.changeset(attrs)
+    |> Repo.insert_or_update()
   end
 
   defp where_proposal(query, _proposal_url = nil),
