@@ -213,11 +213,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => delegation1}}} =
+      {:ok, %{data: %{"createDelegation" => original_delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
-      assert delegation1["delegator"]["email"] == @new_delegator_email
-      assert delegation1["delegate"]["email"] == @new_delegate_email
+      assert original_delegation["delegator"]["email"] == @new_delegator_email
+      assert original_delegation["delegate"]["email"] == @new_delegate_email
 
       query = """
       mutation {
@@ -236,11 +236,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => delegation2}}} =
+      {:ok, %{data: %{"createDelegation" => modified_delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
-      assert delegation2["delegator"]["email"] == @new_delegator_email
-      assert delegation2["delegate"]["email"] == @new_other_delegate_email
+      assert modified_delegation["delegator"]["email"] == @new_delegator_email
+      assert modified_delegation["delegate"]["email"] == @new_other_delegate_email
 
       query = """
       query {
@@ -275,11 +275,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => delegation1}}} =
+      {:ok, %{data: %{"createDelegation" => original_delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
-      assert delegation1["delegator"]["email"] == @new_delegator_email
-      assert delegation1["delegate"]["email"] == @new_delegate_email
+      assert original_delegation["delegator"]["email"] == @new_delegator_email
+      assert original_delegation["delegate"]["email"] == @new_delegate_email
 
       query = """
       mutation {
@@ -297,12 +297,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => delegation2}}} =
+      {:ok, %{data: %{"createDelegation" => modified_delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
-      assert delegation2["delegator"]["email"] == @new_delegator_email
-      assert delegation2["delegate"]["email"] == @new_other_delegate_email
-      assert delegation1["proposalUrl"] == delegation2["proposalUrl"]
+      assert modified_delegation["delegator"]["email"] == @new_delegator_email
+      assert modified_delegation["delegate"]["email"] == @new_other_delegate_email
+      assert original_delegation["proposalUrl"] == modified_delegation["proposalUrl"]
 
       query = """
       query {

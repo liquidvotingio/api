@@ -72,28 +72,28 @@ defmodule LiquidVoting.DelegationsTest do
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
          context do
       args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
-      {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(args)
+      {:ok, %Delegation{} = original_delegation} = Delegations.create_delegation(args)
 
       args = Map.merge(context[:update_attrs], %{proposal_url: @proposal_url})
 
-      assert {:ok, %Delegation{} = delegation2} = Delegations.upsert_delegation(args)
-      assert delegation1.organization_id == delegation2.organization_id
-      assert Enum.count(Delegations.list_delegations(delegation1.organization_id)) == 1
-      assert delegation1.delegate_id != delegation2.delegate_id
-      assert delegation1.delegator_id == delegation2.delegator_id
+      assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
+      assert original_delegation.organization_id == modified_delegation.organization_id
+      assert Enum.count(Delegations.list_delegations(original_delegation.organization_id)) == 1
+      assert original_delegation.delegate_id != modified_delegation.delegate_id
+      assert original_delegation.delegator_id == modified_delegation.delegator_id
     end
 
     test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
          context do
-      {:ok, %Delegation{} = delegation1} = Delegations.create_delegation(context[:valid_attrs])
+      {:ok, %Delegation{} = original_delegation} = Delegations.create_delegation(context[:valid_attrs])
 
-      assert {:ok, %Delegation{} = delegation2} =
+      assert {:ok, %Delegation{} = modified_delegation} =
                Delegations.upsert_delegation(context[:update_attrs])
 
-      assert delegation1.organization_id == delegation2.organization_id
-      assert Enum.count(Delegations.list_delegations(delegation1.organization_id)) == 1
-      assert delegation1.delegate_id != delegation2.delegate_id
-      assert delegation1.delegator_id == delegation2.delegator_id
+      assert original_delegation.organization_id == modified_delegation.organization_id
+      assert Enum.count(Delegations.list_delegations(original_delegation.organization_id)) == 1
+      assert original_delegation.delegate_id != modified_delegation.delegate_id
+      assert original_delegation.delegator_id == modified_delegation.delegator_id
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do

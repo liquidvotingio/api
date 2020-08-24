@@ -168,13 +168,11 @@ defmodule LiquidVoting.Delegations do
       |> where_proposal(proposal_url)
       |> Repo.one()
       |> case do
-        nil -> %Delegation{}
-        delegation -> delegation
+        nil -> %Delegation{} # Delegation not found, we build one
+        delegation -> delegation # Delegation exists, let's use it
       end
        |> Delegation.changeset(attrs)
        |> Repo.insert_or_update
-    
-    #upsert(conflicting_delegation, attrs)
   end
 
   defp where_proposal(query, _proposal_url = nil),
