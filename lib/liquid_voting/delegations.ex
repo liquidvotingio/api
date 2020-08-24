@@ -161,7 +161,7 @@ defmodule LiquidVoting.Delegations do
   """
   def upsert_delegation(attrs \\ %{}) do
     %{delegator_id: delegator_id} = attrs
-    proposal_url = get_or_set_proposal(attrs)
+    proposal_url = Map.get(attrs, :proposal_url)
 
     conflicting_delegation =
       Delegation
@@ -171,9 +171,6 @@ defmodule LiquidVoting.Delegations do
 
     upsert(conflicting_delegation, attrs)
   end
-
-  defp get_or_set_proposal(%{proposal_url: proposal_url}), do: proposal_url
-  defp get_or_set_proposal(_attrs), do: nil
 
   defp where_proposal(query, _proposal_url = nil),
     do: query |> where([d], is_nil(d.proposal_url))
