@@ -163,13 +163,18 @@ defmodule LiquidVoting.Delegations do
     %{delegator_id: delegator_id} = attrs
     proposal_url = Map.get(attrs, :proposal_url)
 
-    conflicting_delegation =
-      Delegation
+    Delegation
       |> where([d], d.delegator_id == ^delegator_id)
       |> where_proposal(proposal_url)
       |> Repo.one()
-
-    upsert(conflicting_delegation, attrs)
+      |> case do
+        nil -> %Delegation{}
+        delegation -> delegation
+      end
+       |> Delegation.changeset(attrs)
+       |> Repo.insert_or_update
+    
+    #upsert(conflicting_delegation, attrs)
   end
 
   defp where_proposal(query, _proposal_url = nil),
@@ -177,9 +182,6 @@ defmodule LiquidVoting.Delegations do
 
   defp where_proposal(query, proposal_url),
     do: query |> where([d], d.proposal_url == ^proposal_url)
-
-  defp upsert(_delegation = nil, attrs), do: create_delegation(attrs)
-  defp upsert(delegation, attrs), do: update_delegation(delegation, attrs)
 
   @doc """
   Updates a delegation.
