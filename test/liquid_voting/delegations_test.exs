@@ -27,11 +27,21 @@ defmodule LiquidVoting.DelegationsTest do
           delegator_id: delegator.id,
           delegate_id: nil,
           organization_id: nil
+        },
+        valid_proposal_specific_attrs: %{
+          delegator_id: delegator.id,
+          delegate_id: delegate.id,
+          organization_id: organization_id,
+          proposal_url: "https://www.someorg/proposalX"
+        },
+        update_proposal_specific_attrs: %{
+          delegator_id: delegator.id,
+          delegate_id: another_delegate.id,
+          organization_id: organization_id,
+          proposal_url: "https://www.someorg/proposalX"
         }
       ]
     end
-
-    @proposal_url "https://www.someorg/proposalX"
 
     test "list_delegations/1 returns all delegations for an organization_id" do
       delegation = insert(:delegation)
@@ -71,12 +81,12 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
          context do
-      args = Map.merge(context[:valid_attrs], %{proposal_url: @proposal_url})
-      {:ok, %Delegation{} = original_delegation} = Delegations.create_delegation(args)
+      {:ok, %Delegation{} = original_delegation} =
+        Delegations.create_delegation(context[:valid_proposal_specific_attrs])
 
-      args = Map.merge(context[:update_attrs], %{proposal_url: @proposal_url})
+      assert {:ok, %Delegation{} = modified_delegation} =
+               Delegations.upsert_delegation(context[:update_proposal_specific_attrs])
 
-      assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
       assert original_delegation.organization_id == modified_delegation.organization_id
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id

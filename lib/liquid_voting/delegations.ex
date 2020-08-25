@@ -150,7 +150,7 @@ defmodule LiquidVoting.Delegations do
 
   Updates existing proposal-specific delegation for a specific delegator if
   attributes for a delegation for the same proposal and delegator are passed in.
-  
+
   Creates a new delegation if neither aforementioned condition is true.
 
   ## Examples

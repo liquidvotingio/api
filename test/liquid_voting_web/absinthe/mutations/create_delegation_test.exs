@@ -14,9 +14,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     test "with emails" do
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @delegate_email
-      }") {
+        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}") {
           delegator {
             email
             name
@@ -41,9 +39,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     test "including a proposal url" do
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @delegate_email
-      }", proposalUrl: "#{@proposal_url}") {
+        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}", proposalUrl: "#{
+        @proposal_url
+      }") {
           delegator {
             email
           }
@@ -66,9 +64,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @delegate_email
-      }", proposalUrl: "#{@proposal_url}") {
+        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}", proposalUrl: "#{
+        @proposal_url
+      }") {
           delegator {
             email
           }
@@ -198,9 +196,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     test "overwrites existing global delegation" do
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @delegate_email
-      }") {
+        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}") {
           delegator {
             email
             name
@@ -248,9 +244,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
     test "overwrites existing proposal-specific delegation" do
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @delegate_email
-      }", proposalUrl: "#{@proposal_url}") {
+        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}", proposalUrl: "#{
+        @proposal_url
+      }") {
           delegator {
             email
           }
