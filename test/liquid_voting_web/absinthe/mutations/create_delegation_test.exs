@@ -241,19 +241,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
 
       assert modified_delegation["delegator"]["email"] == @delegator_email
       assert modified_delegation["delegate"]["email"] == @another_delegate_email
-
-      query = """
-      query {
-        delegations {
-          id 
-        }
-      }
-      """
-
-      {:ok, %{data: %{"delegations" => delegations}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
-
-      assert Enum.count(delegations) == 1
     end
   end
 
@@ -303,19 +290,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert modified_delegation["delegator"]["email"] == @delegator_email
       assert modified_delegation["delegate"]["email"] == @another_delegate_email
       assert original_delegation["proposalUrl"] == modified_delegation["proposalUrl"]
-
-      query = """
-      query {
-        delegations {
-          id 
-        }
-      }
-      """
-
-      {:ok, %{data: %{"delegations" => [delegations]}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
-
-      assert Enum.count(delegations) == 1
     end
   end
 end
