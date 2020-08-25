@@ -168,9 +168,9 @@ defmodule LiquidVoting.Delegations do
     |> where_proposal(proposal_url)
     |> Repo.one()
     |> case do
-      # Delegation (of same type) not found, we build one
+      # Delegation (of same type) not found, so we build one
       nil -> %Delegation{}
-      # Delegation (of same type) exists, let's use it
+      # Delegation (of same type) exists - let's use it
       delegation -> delegation
     end
     |> Delegation.changeset(attrs)
