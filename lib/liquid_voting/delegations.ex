@@ -145,10 +145,10 @@ defmodule LiquidVoting.Delegations do
   @doc """
   Upserts a delegation (updates or inserts).
 
-  Updates existing global delegation for a specific delegator
-  if a new global delegation for the same delegator is passed in.
-  Updates existing proposal-specific delegation for a specific delegator
-  if a delegation for the same proposal and delegator is passed in.
+  Updates existing global delegation for a specific delegator if attributes
+  for a global delegation for the same delegator are passed in.
+  Updates existing proposal-specific delegation for a specific delegator if
+  attributes for a delegation for the same proposal and delegator are passed in.
   Creates a new delegation if neither aforementioned condition is true.
 
   ## Examples
