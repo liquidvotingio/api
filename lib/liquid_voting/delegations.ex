@@ -147,8 +147,10 @@ defmodule LiquidVoting.Delegations do
 
   Updates existing global delegation for a specific delegator if attributes
   for a global delegation for the same delegator are passed in.
+
   Updates existing proposal-specific delegation for a specific delegator if
   attributes for a delegation for the same proposal and delegator are passed in.
+  
   Creates a new delegation if neither aforementioned condition is true.
 
   ## Examples
@@ -159,8 +161,7 @@ defmodule LiquidVoting.Delegations do
       iex> upsert_delegation(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
   """
-  def upsert_delegation(attrs \\ %{}) do
-    %{delegator_id: delegator_id} = attrs
+  def upsert_delegation(%{delegator_id: delegator_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
     Delegation
