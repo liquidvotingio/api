@@ -155,7 +155,12 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> upsert_delegation(%{field: value})
+      iex> upsert_delegation(%{
+          delegate_id: "66aa035a-58e0-4396-b5f7-15314cf6123d",
+          delegator_id: "c9c2fa04-a35b-427b-80b4-894043264d25",
+          organization_id: "a880e0e6-da9c-4f43-8560-b228586d680e",
+          proposal_url: "https://proposal.com/1"
+      })
       {:ok, %Delegation{}}
 
       iex> upsert_delegation(%{field: bad_value})
