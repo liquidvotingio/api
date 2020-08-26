@@ -102,12 +102,6 @@ defmodule LiquidVoting.DelegationsTest do
       assert original_delegation.organization_id == modified_delegation.organization_id
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
-
-      assert(
-        Delegations.list_delegations(original_delegation.organization_id)
-        |> Enum.count() ==
-          1
-      )
     end
 
     test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
@@ -121,12 +115,6 @@ defmodule LiquidVoting.DelegationsTest do
       assert original_delegation.organization_id == modified_delegation.organization_id
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
-
-      assert(
-        Delegations.list_delegations(original_delegation.organization_id)
-        |> Enum.count() ==
-          1
-      )
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
