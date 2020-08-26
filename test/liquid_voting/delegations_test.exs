@@ -93,12 +93,17 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
          context do
-      {:ok, %Delegation{} = original_delegation} =
-        Delegations.create_delegation(context[:valid_proposal_specific_attrs])
+      original_delegation = insert(:delegation, proposal_url: "https://www.someorg/proposalX")
+      new_delegate = insert(:participant)
 
-      assert {:ok, %Delegation{} = modified_delegation} =
-               Delegations.upsert_delegation(context[:update_proposal_specific_attrs])
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: new_delegate.id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: original_delegation.proposal_url
+      }
 
+      assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
       assert original_delegation.organization_id == modified_delegation.organization_id
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
@@ -106,12 +111,16 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
          context do
-      {:ok, %Delegation{} = original_delegation} =
-        Delegations.create_delegation(context[:valid_attrs])
+      original_delegation = insert(:delegation)
+      new_delegate = insert(:participant)
 
-      assert {:ok, %Delegation{} = modified_delegation} =
-               Delegations.upsert_delegation(context[:update_attrs])
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: new_delegate.id,
+        organization_id: original_delegation.organization_id
+      }
 
+      assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
       assert original_delegation.organization_id == modified_delegation.organization_id
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
