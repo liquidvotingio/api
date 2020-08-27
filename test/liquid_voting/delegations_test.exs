@@ -34,12 +34,6 @@ defmodule LiquidVoting.DelegationsTest do
           delegate_id: delegate.id,
           organization_id: organization_id,
           proposal_url: proposal_url
-        },
-        update_proposal_specific_attrs: %{
-          delegator_id: delegator.id,
-          delegate_id: another_delegate.id,
-          organization_id: organization_id,
-          proposal_url: proposal_url
         }
       ]
     end
