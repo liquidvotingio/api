@@ -10,22 +10,30 @@ defmodule LiquidVoting.DelegationsTest do
       delegator = insert(:participant)
       delegate = insert(:participant)
       another_delegate = insert(:participant)
+      organization_id = Ecto.UUID.generate()
+      proposal_url = "https://www.someorg/proposalX"
 
       [
         valid_attrs: %{
           delegator_id: delegator.id,
           delegate_id: delegate.id,
-          organization_id: Ecto.UUID.generate()
+          organization_id: organization_id
         },
         update_attrs: %{
           delegator_id: delegator.id,
           delegate_id: another_delegate.id,
-          organization_id: Ecto.UUID.generate()
+          organization_id: organization_id
         },
         invalid_attrs: %{
           delegator_id: delegator.id,
           delegate_id: nil,
           organization_id: nil
+        },
+        valid_proposal_specific_attrs: %{
+          delegator_id: delegator.id,
+          delegate_id: delegate.id,
+          organization_id: organization_id,
+          proposal_url: proposal_url
         }
       ]
     end
@@ -61,24 +69,55 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
     end
 
-    test "create_delegation/1 with proposal url sets global boolean to false", context do
-      proposal_url = "https://www.someorg/proposalX"
-
-      args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
-      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
-
-      assert delegation.global == false
-    end
-
-    test "create_delegation/1 without proposal url sets global boolean to true", context do
-      {:ok, %Delegation{} = delegation} = Delegations.create_delegation(context[:valid_attrs])
-
-      assert delegation.global == true
-    end
-
     test "create_delegation/1 with duplicate data returns error changeset", context do
       Delegations.create_delegation(context[:valid_attrs])
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
+    end
+
+    test "upsert_delegation/1 with valid proposal_specific delegation data creates a delegation",
+         context do
+      assert {:ok, %Delegation{} = delegation} =
+               Delegations.upsert_delegation(context[:valid_proposal_specific_attrs])
+    end
+
+    test "upsert_delegation/1 with valid global delegation data creates a delegation", context do
+      assert {:ok, %Delegation{} = delegation} =
+               Delegations.upsert_delegation(context[:valid_attrs])
+    end
+
+    test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
+         context do
+      original_delegation = insert(:delegation, proposal_url: "https://www.someorg/proposalX")
+      new_delegate = insert(:participant)
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: new_delegate.id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: original_delegation.proposal_url
+      }
+
+      assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
+      assert original_delegation.organization_id == modified_delegation.organization_id
+      assert original_delegation.delegate_id != modified_delegation.delegate_id
+      assert original_delegation.delegator_id == modified_delegation.delegator_id
+    end
+
+    test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
+         context do
+      original_delegation = insert(:delegation)
+      new_delegate = insert(:participant)
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: new_delegate.id,
+        organization_id: original_delegation.organization_id
+      }
+
+      assert {:ok, %Delegation{} = modified_delegation} = Delegations.upsert_delegation(args)
+      assert original_delegation.organization_id == modified_delegation.organization_id
+      assert original_delegation.delegate_id != modified_delegation.delegate_id
+      assert original_delegation.delegator_id == modified_delegation.delegator_id
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
