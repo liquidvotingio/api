@@ -127,7 +127,7 @@ defmodule LiquidVoting.Delegations do
       attrs
       |> Map.put(:delegator_id, changes.delegator.id)
       |> Map.put(:delegate_id, changes.delegate.id)
-      |> create_delegation()
+      |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
@@ -141,6 +141,53 @@ defmodule LiquidVoting.Delegations do
     |> Delegation.changeset(attrs)
     |> Repo.insert()
   end
+
+  @doc """
+  Upserts a delegation (updates or inserts).
+
+  Updates existing global delegation for a specific delegator if attributes
+  for a global delegation for the same delegator are passed in.
+
+  Updates existing proposal-specific delegation for a specific delegator if
+  attributes for a delegation for the same proposal and delegator are passed in.
+
+  Creates a new delegation if neither aforementioned condition is true.
+
+  ## Examples
+
+      iex> upsert_delegation(%{
+          delegate_id: "66aa035a-58e0-4396-b5f7-15314cf6123d",
+          delegator_id: "c9c2fa04-a35b-427b-80b4-894043264d25",
+          organization_id: "a880e0e6-da9c-4f43-8560-b228586d680e",
+          proposal_url: "https://proposal.com/1"
+      })
+      {:ok, %Delegation{}}
+
+      iex> upsert_delegation(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
+  def upsert_delegation(%{delegator_id: delegator_id} = attrs) do
+    proposal_url = Map.get(attrs, :proposal_url)
+
+    Delegation
+    |> where([d], d.delegator_id == ^delegator_id)
+    |> where_proposal(proposal_url)
+    |> Repo.one()
+    |> case do
+      # Delegation (of same type) not found, so we build one
+      nil -> %Delegation{}
+      # Delegation (of same type) exists - let's use it
+      delegation -> delegation
+    end
+    |> Delegation.changeset(attrs)
+    |> Repo.insert_or_update()
+  end
+
+  defp where_proposal(query, _proposal_url = nil),
+    do: query |> where([d], is_nil(d.proposal_url))
+
+  defp where_proposal(query, proposal_url),
+    do: query |> where([d], d.proposal_url == ^proposal_url)
 
   @doc """
   Updates a delegation.
