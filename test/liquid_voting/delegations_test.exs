@@ -90,9 +90,13 @@ defmodule LiquidVoting.DelegationsTest do
                Delegations.create_delegation(context[:valid_proposal_specific_attrs])
     end
 
-    #create_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists
+    test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
+         context do
+      Delegations.create_delegation(context[:valid_proposal_specific_attrs])
 
-    #create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists
+      assert {:error, %Ecto.Changeset{}} =
+               Delegations.create_delegation(context[:valid_attrs])
+    end
 
     test "upsert_delegation/1 with valid proposal_specific delegation data creates a delegation",
          context do
