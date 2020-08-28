@@ -94,8 +94,7 @@ defmodule LiquidVoting.DelegationsTest do
          context do
       Delegations.create_delegation(context[:valid_proposal_specific_attrs])
 
-      assert {:error, %Ecto.Changeset{}} =
-               Delegations.create_delegation(context[:valid_attrs])
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
     end
 
     test "upsert_delegation/1 with valid proposal_specific delegation data creates a delegation",
