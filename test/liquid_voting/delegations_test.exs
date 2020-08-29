@@ -38,8 +38,6 @@ defmodule LiquidVoting.DelegationsTest do
       ]
     end
 
-    @proposal_url "https://www.someorg/proposalX"
-
     test "list_delegations/1 returns all delegations for an organization_id" do
       delegation = insert(:delegation)
       assert Delegations.list_delegations(delegation.organization_id) == [delegation]
@@ -85,7 +83,7 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "create_delegation/1 with duplicate proposal-specific data returns error changeset",
          context do
-      original_delegation = insert(:delegation, proposal_url: @proposal_url)
+      original_delegation = insert(:delegation, proposal_url: "https://www.someorg/proposalX")
 
       args = %{
         delegator_id: original_delegation.delegator_id,
@@ -113,7 +111,7 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
          context do
-      original_delegation = insert(:delegation, proposal_url: @proposal_url)
+      original_delegation = insert(:delegation, proposal_url: "https://www.someorg/proposalX")
 
       args = %{
         delegator_id: original_delegation.delegator_id,
@@ -137,7 +135,7 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
          context do
-      original_delegation = insert(:delegation, proposal_url: @proposal_url)
+      original_delegation = insert(:delegation, proposal_url: "https://www.someorg/proposalX")
       new_delegate = insert(:participant)
 
       args = %{
