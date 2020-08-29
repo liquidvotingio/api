@@ -14,6 +14,7 @@ defmodule LiquidVoting.DelegationsTest do
       proposal_url = "https://www.someorg/proposalX"
 
       [
+        proposal_url: proposal_url,
         valid_attrs: %{
           delegator_id: delegator.id,
           delegate_id: delegate.id,
@@ -69,9 +70,57 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
     end
 
-    test "create_delegation/1 with duplicate data returns error changeset", context do
-      Delegations.create_delegation(context[:valid_attrs])
-      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:valid_attrs])
+    test "create_delegation/1 with duplicate data returns error changeset" do
+      original_delegation = insert(:delegation)
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
+
+    test "create_delegation/1 with duplicate proposal-specific data returns error changeset",
+         context do
+      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: original_delegation.proposal_url
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
+
+    test "create_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists",
+         context do
+      original_delegation = insert(:delegation)
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: context[:proposal_url]
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
+
+    test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
+         context do
+      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
     end
 
     test "upsert_delegation/1 with valid proposal_specific delegation data creates a delegation",
@@ -87,7 +136,7 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
          context do
-      original_delegation = insert(:delegation, proposal_url: "https://www.someorg/proposalX")
+      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
       new_delegate = insert(:participant)
 
       args = %{
@@ -103,8 +152,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert original_delegation.delegator_id == modified_delegation.delegator_id
     end
 
-    test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation",
-         context do
+    test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation" do
       original_delegation = insert(:delegation)
       new_delegate = insert(:participant)
 
