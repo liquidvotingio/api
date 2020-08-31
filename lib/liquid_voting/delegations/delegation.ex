@@ -35,7 +35,7 @@ defmodule LiquidVoting.Delegations.Delegation do
     delegator_id = get_field(changeset, :delegator_id)
     delegate_id = get_field(changeset, :delegate_id)
 
-    # we are only checking if non-nil ids match, as validate_required/1 will catch nil case(s)
+    # we are only checking if non-nil ids match, as validate_required/1 will catch nil case
     case delegator_id == delegate_id && delegator_id != nil do
       true -> add_error(changeset, :delegate_id, "delegator and delegate must be different")
       false -> changeset
