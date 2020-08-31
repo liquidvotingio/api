@@ -181,8 +181,6 @@ defmodule LiquidVoting.Delegations do
     end
     |> Delegation.changeset(attrs)
     |> Repo.insert_or_update()
-
-    # |> IO.inspect
   end
 
   defp where_proposal(query, _proposal_url = nil),
