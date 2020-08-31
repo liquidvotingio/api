@@ -60,6 +60,19 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:invalid_attrs])
     end
 
+    test "create_delegation/1 with same participant as delegator and delegate returns error changeset",
+         context do
+      participant = insert(:participant)
+
+      args = %{
+        delegator_id: participant.id,
+        delegate_id: participant.id,
+        organization_id: Ecto.UUID.generate()
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
+
     test "create_delegation/1 with proposal url creates a delegation", context do
       # Test long urls while at it
       proposal_url = """
