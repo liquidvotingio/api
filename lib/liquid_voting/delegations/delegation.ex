@@ -27,6 +27,17 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> assoc_constraint(:delegator)
     |> assoc_constraint(:delegate)
     |> validate_required(required_fields)
+    |> validate_participants_different
     |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
+  end
+
+  defp validate_participants_different(changeset) do
+    delegator_id = get_field(changeset, :delegator_id)
+    delegate_id = get_field(changeset, :delegate_id)
+
+    case delegator_id == delegate_id do
+      true -> add_error(changeset, :delegate_id, "delegator and delegate must be different")
+      false -> changeset
+    end
   end
 end
