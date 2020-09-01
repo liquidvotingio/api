@@ -190,6 +190,52 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert message == "Could not create delegation"
       assert details == %{delegate_id: ["can't be blank"]}
     end
+
+    test "with identical emails for delegator and delegate", context do
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{context[:delegator].email}", delegateEmail: "#{
+        context[:delegator].email
+      }") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
+
+      assert message == "Could not create delegation"
+      assert details == %{delegate_id: ["delegator and delegate must be different"]}
+    end
+
+    test "with identical ids for delegator and delegate", context do
+      query = """
+      mutation {
+        createDelegation(delegatorId: "#{context[:delegator].id}", delegateId: "#{
+        context[:delegator].id
+      }") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
+
+      assert message == "Could not create delegation"
+      assert details == %{delegate_id: ["delegator and delegate must be different"]}
+    end
   end
 
   describe "create new global delegation for delegator with existing global delegation" do
