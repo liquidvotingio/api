@@ -12,6 +12,15 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   # Their ids are used for delegator_id and delegate_id when inserting the delegation
   # with create_delegation_with_valid_arguments/1
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
+    args =
+    cond do
+      Map.has_key?(args, :delegator_email) && Map.has_key?(args, :delegate_email) == false
+        -> Map.put(args, :delegate_email, nil)
+      Map.has_key?(args, :delegate_email) && Map.has_key?(args, :delegator_email) == false
+        -> Map.put(args, :delegator_email, nil)
+      true -> args
+    end
+    
     args
     |> Map.put(:organization_id, organization_id)
     |> Delegations.create_delegation()
