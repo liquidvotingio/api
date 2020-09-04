@@ -128,5 +128,4 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegatorD
       assert details == %{delegate_id: ["delegator and delegate must be different"]}
     end
   end
-
 end
