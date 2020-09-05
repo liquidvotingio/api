@@ -13,34 +13,70 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   # with create_delegation_with_valid_arguments/1
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
     args
+    |> validate_participants
     |> case do
-      %{delegator_email: _, delegate_email: _} = args ->
+      {:ok, args} ->
         args
+        |> Map.put(:organization_id, organization_id)
+        |> Delegations.create_delegation()
+        |> case do
+          {:ok, delegation} ->
+            {:ok, delegation}
 
-      # if delegator_email field exists, add delegate_email field with nil value
-      %{delegator_email: _} = args ->
-        Map.put(args, :delegate_email, nil)
+          {:error, changeset} ->
+            {:error,
+             message: "Could not create delegation",
+             details: ChangesetErrors.error_details(changeset)}
 
-      # if delegate_email field exists, add delegator_email field with nil value
-      %{delegate_email: _} = args ->
-        Map.put(args, :delegator_email, nil)
+          {:error, name, changeset, _} ->
+            {:error,
+             message: "Could not create #{name}",
+             details: ChangesetErrors.error_details(changeset)}
+        end
 
-      _ ->
-        args
+      {:error, message} ->
+        {:error, message}
     end
-    |> Map.put(:organization_id, organization_id)
-    |> Delegations.create_delegation()
+  end
+
+  defp validate_participants(args) do
+    args
     |> case do
-      {:ok, delegation} ->
-        {:ok, delegation}
+      %{delegator_email: _, delegate_email: _} ->
+        {:ok, args}
+      
+      %{delegator_id: _, delegate_id: _} ->
+        {:ok, args}
 
-      {:error, changeset} ->
-        {:error,
-         message: "Could not create delegation", details: ChangesetErrors.error_details(changeset)}
+      # if delegator_email field exists, but no delegate_email field exists
+      %{delegator_email: _} ->
+        {:error, %{
+          message: "Could not create delegation",
+          details: %{delegate_email: ["field not found"]}
+        }}
 
-      {:error, name, changeset, _} ->
-        {:error,
-         message: "Could not create #{name}", details: ChangesetErrors.error_details(changeset)}
+      # if delegate_email field exists, but no delegator_email field exists
+      %{delegate_email: _} ->
+        {:error, %{
+          message: "Could not create delegation",
+          details: %{delegator_email: ["field not found"]}
+        }}
+
+      # if delegator_id field exists, but no delegate_id field exists
+      %{delegator_id: _} ->
+        {:error, %{
+          message: "Could not create delegation",
+          details: %{delegate_id: ["field not found"]}
+        }}
+
+      # if delegate_id field exists, but no delegator_id field exists
+      %{delegate_id: _} ->
+        {:error, %{
+          message: "Could not create delegation",
+          details: %{delegator_id: ["field not found"]}
+        }}
+
+      _ -> {:error, "some generic error - as yet undecided"}
     end
   end
 
