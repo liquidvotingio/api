@@ -60,8 +60,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(context[:invalid_attrs])
     end
 
-    test "create_delegation/1 with same participant as delegator and delegate returns error changeset",
-         context do
+    test "create_delegation/1 with same participant as delegator and delegate returns error changeset" do
       participant = insert(:participant)
 
       args = %{

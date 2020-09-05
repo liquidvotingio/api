@@ -13,7 +13,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   # with create_delegation_with_valid_arguments/1
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
     args
-    |> validate_participants
+    |> validate_participant_fields_provided
     |> case do
       {:ok, args} ->
         args
@@ -39,44 +39,49 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     end
   end
 
-  defp validate_participants(args) do
+  defp validate_participant_fields_provided(args) do
     args
     |> case do
       %{delegator_email: _, delegate_email: _} ->
         {:ok, args}
-      
+
       %{delegator_id: _, delegate_id: _} ->
         {:ok, args}
 
       # if delegator_email field exists, but no delegate_email field exists
       %{delegator_email: _} ->
-        {:error, %{
-          message: "Could not create delegation",
-          details: %{delegate_email: ["field not found"]}
-        }}
+        {:error,
+         %{
+           message: "Could not create delegation",
+           details: %{delegate_email: ["field not found"]}
+         }}
 
       # if delegate_email field exists, but no delegator_email field exists
       %{delegate_email: _} ->
-        {:error, %{
-          message: "Could not create delegation",
-          details: %{delegator_email: ["field not found"]}
-        }}
+        {:error,
+         %{
+           message: "Could not create delegation",
+           details: %{delegator_email: ["field not found"]}
+         }}
 
       # if delegator_id field exists, but no delegate_id field exists
       %{delegator_id: _} ->
-        {:error, %{
-          message: "Could not create delegation",
-          details: %{delegate_id: ["field not found"]}
-        }}
+        {:error,
+         %{
+           message: "Could not create delegation",
+           details: %{delegate_id: ["field not found"]}
+         }}
 
       # if delegate_id field exists, but no delegator_id field exists
       %{delegate_id: _} ->
-        {:error, %{
-          message: "Could not create delegation",
-          details: %{delegator_id: ["field not found"]}
-        }}
+        {:error,
+         %{
+           message: "Could not create delegation",
+           details: %{delegator_id: ["field not found"]}
+         }}
 
-      _ -> {:error, "some generic error - as yet undecided"}
+      _ ->
+        {:error, "some generic error - as yet undecided"}
     end
   end
 
