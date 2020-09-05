@@ -48,41 +48,34 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       %{delegator_id: _, delegate_id: _} ->
         {:ok, args}
 
-      # if delegator_email field exists, but no delegate_email field exists
+      # delegator_email field provided, but no delegate_email field provided
       %{delegator_email: _} ->
-        {:error,
-         %{
-           message: "Could not create delegation",
-           details: %{delegate_email: ["field not found"]}
-         }}
+        field_not_found_error(%{delegate_email: ["field not found"]})
 
-      # if delegate_email field exists, but no delegator_email field exists
+      # delegate_email field provided, but no delegator_email field provided
       %{delegate_email: _} ->
-        {:error,
-         %{
-           message: "Could not create delegation",
-           details: %{delegator_email: ["field not found"]}
-         }}
+        field_not_found_error(%{delegator_email: ["field not found"]})
 
-      # if delegator_id field exists, but no delegate_id field exists
+      # delegator_id field provided, but no delegate_id field provided
       %{delegator_id: _} ->
-        {:error,
-         %{
-           message: "Could not create delegation",
-           details: %{delegate_id: ["field not found"]}
-         }}
+        field_not_found_error(%{delegate_id: ["field not found"]})
 
-      # if delegate_id field exists, but no delegator_id field exists
+      # delegate_id field provided, but no delegator_id field provided
       %{delegate_id: _} ->
-        {:error,
-         %{
-           message: "Could not create delegation",
-           details: %{delegator_id: ["field not found"]}
-         }}
-
+        field_not_found_error(%{delegator_id: ["field not found"]})
+       
+      # no id or email fields for delegator and delegate provided
       _ ->
-        {:error, "some generic error - as yet undecided"}
+        field_not_found_error("emails or ids identifying delegator and delegate not found")
     end
+  end
+
+  defp field_not_found_error(details) do
+    {:error,
+     %{
+       message: "Could not create delegation",
+       details: details
+     }}
   end
 
   # Delete proposal-specific delegations
