@@ -63,8 +63,8 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       # delegate_id field provided, but no delegator_id field provided
       %{delegate_id: _} ->
         field_not_found_error(%{delegator_id: ["can't be blank"]})
-       
-      # no id or email fields for delegator and delegate provided
+
+      # no id or email fields provided for delegator and delegate
       _ ->
         field_not_found_error("emails or ids identifying delegator and delegate can't be blank")
     end
