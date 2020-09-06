@@ -89,7 +89,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert delegation["votingResult"]["against"] == 0
     end
 
-    test "with missing fields" do
+    test "with missing delegate email field" do
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{@delegator_email}") {
@@ -170,7 +170,28 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert delegation["delegate"]["email"] == context[:delegate].email
     end
 
-    test "with missing field", context do
+    test "with proposal url, but missing delegate and delegator id fields", context do
+      query = """
+      mutation {
+        createDelegation(proposalUrl: "#{@proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
+
+      assert message == "Could not create delegation"
+      assert details == "emails or ids identifying delegator and delegate can't be blank"
+    end
+
+    test "with missing delegate id field", context do
       query = """
       mutation {
         createDelegation(delegatorId: "#{context[:delegator].id}") {
