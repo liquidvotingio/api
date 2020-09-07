@@ -13,7 +13,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   # with create_delegation_with_valid_arguments/1
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
     args
-    |> validate_participant_fields_provided
+    |> validate_participant_args
     |> case do
       {:ok, args} ->
         args
@@ -39,7 +39,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     end
   end
 
-  defp validate_participant_fields_provided(args) do
+  defp validate_participant_args(args) do
     args
     |> case do
       %{delegator_email: _, delegate_email: _} ->
