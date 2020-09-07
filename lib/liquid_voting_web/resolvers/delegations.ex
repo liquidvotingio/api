@@ -45,30 +45,22 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     }}
   """
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
-    args
-    |> validate_participant_args
-    |> case do
-      {:ok, args} ->
-        args
-        |> Map.put(:organization_id, organization_id)
-        |> Delegations.create_delegation()
-        |> case do
-          {:ok, delegation} ->
-            {:ok, delegation}
+    args = Map.put(args, :organization_id, organization_id)
 
-          {:error, changeset} ->
-            {:error,
-             message: "Could not create delegation",
-             details: ChangesetErrors.error_details(changeset)}
-
-          {:error, name, changeset, _} ->
-            {:error,
-             message: "Could not create #{name}",
-             details: ChangesetErrors.error_details(changeset)}
-        end
-
-      {:error, message} ->
+    with {:step1, {:ok, args}} <- {:step1, validate_participant_args(args)},
+         {:step2, {:ok, delegation}} <- {:step2, Delegations.create_delegation(args)} do
+      {:ok, delegation}
+    else
+      {:step1, {:error, message}} ->
         {:error, message}
+
+      {:step2, {:error, changeset}} ->
+        {:error,
+         message: "Could not create delegation", details: ChangesetErrors.error_details(changeset)}
+
+      {:step2, {:error, name, changeset, _}} ->
+        {:error,
+         message: "Could not create #{name}", details: ChangesetErrors.error_details(changeset)}
     end
   end
 
