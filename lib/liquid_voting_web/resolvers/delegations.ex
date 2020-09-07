@@ -73,8 +73,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   end
 
   defp validate_participant_args(args) do
-    args
-    |> case do
+    case args do
       %{delegator_email: _, delegate_email: _} ->
         {:ok, args}
 
