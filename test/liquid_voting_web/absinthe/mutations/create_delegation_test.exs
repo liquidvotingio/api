@@ -170,7 +170,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegationTest do
       assert delegation["delegate"]["email"] == context[:delegate].email
     end
 
-    test "with proposal url, but missing delegate and delegator id fields", context do
+    test "with proposal url, but missing delegate and delegator id fields" do
       query = """
       mutation {
         createDelegation(proposalUrl: "#{@proposal_url}") {
