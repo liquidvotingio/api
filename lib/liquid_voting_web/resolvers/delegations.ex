@@ -8,9 +8,20 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   def delegation(_, %{id: id}, %{context: %{organization_id: organization_id}}),
     do: {:ok, Delegations.get_delegation!(id, organization_id)}
 
-  # Will add participants to the db if they don't exist yet, or fetch them if they do. 
-  # Their ids are used for delegator_id and delegate_id when inserting the delegation
-  # with create_delegation_with_valid_arguments/1
+  # Creates a delegation.
+
+  # Adds participants to the db if they don't exist yet, or fetch them if they do.
+
+  # Valid arguments (args) must include 2 ids (delegator_id and delegate_id)
+  # OR 2 emails (delegator_email and delegate_email).
+
+  # Valid arguments (args) may include a proposal_url.
+  # Without a proposal_url, an attempt to create a global delegation will occur.
+
+  # The participant ids, either directly taken from delegator_id and
+  # delegate_id, or via searching the db for pariticpants with the emails
+  # provided, are used when inserting the delegation with
+  # LiquidVoting.Delegations.create_delegation/1.
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
     args
     |> validate_participant_args
