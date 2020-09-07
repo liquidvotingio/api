@@ -8,20 +8,42 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
   def delegation(_, %{id: id}, %{context: %{organization_id: organization_id}}),
     do: {:ok, Delegations.get_delegation!(id, organization_id)}
 
-  # Creates a delegation.
+  @doc """
+  Creates a delegation.
 
-  # Adds participants to the db if they don't exist yet, or fetch them if they do.
+  Adds participants to the db if they don't exist, or fetches them if they do.
 
-  # Valid arguments (args) must include 2 ids (delegator_id and delegate_id)
-  # OR 2 emails (delegator_email and delegate_email).
+  Valid arguments (args) must include 2 ids (delegator_id and delegate_id)
+  OR 2 emails (delegator_email and delegate_email).
 
-  # Valid arguments (args) may include a proposal_url.
-  # Without a proposal_url, an attempt to create a global delegation will occur.
+  Valid arguments (args) may include a proposal_url.
+  Without a proposal_url, an attempt to create a global delegation will occur.
 
-  # The participant ids, either directly taken from delegator_id and
-  # delegate_id, or via searching the db for pariticpants with the emails
-  # provided, are used when inserting the delegation with
-  # LiquidVoting.Delegations.create_delegation/1.
+  The participant ids, either directly taken from delegator_id and
+  delegate_id, or via searching the db for participants with the emails
+  provided, are used when inserting the delegation with
+  LiquidVoting.Delegations.create_delegation/1.
+
+  ## Examples
+
+  iex> create_delegation(
+    %{},
+    %{delegator_email: "alice@somemail.com",
+    delegate_email: "bob@somemail.com",
+    proposal_url: "https://proposalplace/proposal63"},
+    %{context: %{organization_id: "b212ef83-d3df-4a7a-8875-36cca613e8d6"}})
+  %Delegation{}
+
+  iex> create_delegation(
+    %{},
+    %{delegator_email: "alice@somemail.com"},
+    %{context: %{organization_id: "b212ef83-d3df-4a7a-8875-36cca613e8d6"}})
+  {:error,                                                   
+    %{
+      details: %{delegate_email: ["can't be blank"]},
+      message: "Could not create delegation"
+    }}
+  """
   def create_delegation(_, args, %{context: %{organization_id: organization_id}}) do
     args
     |> validate_participant_args
