@@ -91,6 +91,7 @@ defmodule LiquidVoting.DelegationsTest do
     # Since we wish to permit the existence of both a global and a proposal-specific delegation for the same delegate/delegator
     # pair, in certain cases (see issue # 125: https://github.com/liquidvotingio/api/issues/125, for details), this test case
     # should actually be acceptable (and this test, therefore, should be removed/ammended appropriately)
+    #
     test "create_delegation/1 with duplicate data returns error changeset" do
       original_delegation = insert(:delegation)
 
