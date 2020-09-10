@@ -84,6 +84,13 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
     end
 
+    # FAILING!!
+    # PR #109 https://github.com/liquidvotingio/api/issues/109
+    # "Allow creation of more than one proposal-specific delegation (different proposals) with same delegator and delegate"
+    # causes this failure.
+    # Since we wish to permit the existence of both a global and a proposal-specific delegation for the same delegate/delegator
+    # pair, in certain cases (see issue # 125: https://github.com/liquidvotingio/api/issues/125, for details), this test case
+    # should actually be acceptable (and this test, therefore, should be removed/ammended appropriately)
     test "create_delegation/1 with duplicate data returns error changeset" do
       original_delegation = insert(:delegation)
 
@@ -110,6 +117,13 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
     end
 
+    # FAILING!!
+    # PR #109 https://github.com/liquidvotingio/api/issues/109
+    # "Allow creation of more than one proposal-specific delegation (different proposals) with same delegator and delegate"
+    # causes this failure.
+    # Addressed in issue #125:https://github.com/liquidvotingio/api/issues/125
+    # This test case should actually be acceptable (should not return a changeset error), though we need to ensure (in applying
+    # issue #125, above) that the proposal-specific delegation takes precedence (to prevent double delegation counting if delegate votes)
     test "create_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists",
          context do
       original_delegation = insert(:delegation)
@@ -124,6 +138,12 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
     end
 
+    # FAILING!!
+    # PR #109 https://github.com/liquidvotingio/api/issues/109
+    # "Allow creation of more than one proposal-specific delegation (different proposals) with same delegator and delegate"
+    # causes this failure.
+    # Addressed in issue #125:https://github.com/liquidvotingio/api/issues/125
+    # This test should pass when #125 is addressed as the global delegation should cause the deletion of the proposal-specific delegation.
     test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
          context do
       original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
