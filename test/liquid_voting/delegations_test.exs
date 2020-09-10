@@ -91,18 +91,18 @@ defmodule LiquidVoting.DelegationsTest do
     # Since we wish to permit the existence of both a global and a proposal-specific delegation for the same delegate/delegator
     # pair, in certain cases (see issue # 125: https://github.com/liquidvotingio/api/issues/125, for details), this test case
     # should actually be acceptable (and this test, therefore, should be removed/ammended appropriately)
-    #
-    # test "create_delegation/1 with duplicate data returns error changeset" do
-    #   original_delegation = insert(:delegation)
+    @tag :skip
+    test "create_delegation/1 with duplicate data returns error changeset" do
+      original_delegation = insert(:delegation)
 
-    #   args = %{
-    #     delegator_id: original_delegation.delegator_id,
-    #     delegate_id: original_delegation.delegate_id,
-    #     organization_id: original_delegation.organization_id
-    #   }
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id
+      }
 
-    #   assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
-    # end
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
 
     test "create_delegation/1 with duplicate proposal-specific data returns error changeset",
          context do
@@ -127,20 +127,20 @@ defmodule LiquidVoting.DelegationsTest do
     # issue #125, above) that the proposal-specific delegation takes precedence (to prevent double delegation counting if delegate votes)
     # Thus, delete this test and add a new test of proposal-specific delegation takes precedence over global delegation for same
     # delegator/delegate pair, when issue #125 is addressed.
-    #
-    # test "create_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists",
-    #      context do
-    #   original_delegation = insert(:delegation)
+    @tag :skip
+    test "create_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists",
+         context do
+      original_delegation = insert(:delegation)
 
-    #   args = %{
-    #     delegator_id: original_delegation.delegator_id,
-    #     delegate_id: original_delegation.delegate_id,
-    #     organization_id: original_delegation.organization_id,
-    #     proposal_url: context[:proposal_url]
-    #   }
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: context[:proposal_url]
+      }
 
-    #   assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
-    # end
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
 
     # FAILING!!
     # PR #109 https://github.com/liquidvotingio/api/issues/109
@@ -148,19 +148,19 @@ defmodule LiquidVoting.DelegationsTest do
     # causes this failure.
     # Addressed in issue #125:https://github.com/liquidvotingio/api/issues/125
     # This test should pass when #125 is addressed as the global delegation should cause the deletion of the proposal-specific delegation.
-    #
-    # test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
-    #      context do
-    #   original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
+    @tag :skip
+    test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
+         context do
+      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
 
-    #   args = %{
-    #     delegator_id: original_delegation.delegator_id,
-    #     delegate_id: original_delegation.delegate_id,
-    #     organization_id: original_delegation.organization_id
-    #   }
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id
+      }
 
-    #   assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
-    # end
+      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
+    end
 
     test "create_delegation/1 creates second different proposal-specific delegation for same delegator/delegate pair",
          context do
