@@ -107,7 +107,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.NewParticipantsTes
         Absinthe.run(query, Schema, context: %{organization_id: Ecto.UUID.generate()})
 
       assert message == "Could not create delegation"
-      assert details == %{delegate_id: ["can't be blank"], delegator_id: ["can't be blank"]}
+      assert details == %{delegate_email: ["can't be blank"]}
     end
   end
 end
