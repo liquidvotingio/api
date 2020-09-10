@@ -135,6 +135,20 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
     end
 
+    test "create_delegation/1 creates second different proposal-specific delegation for same delegator/delegate pair",
+         context do
+      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: "https://someorg/another-proposal"
+      }
+
+      assert {:ok, %Delegation{}} = Delegations.create_delegation(args)
+    end
+
     test "upsert_delegation/1 with valid proposal_specific delegation data creates a delegation",
          context do
       assert {:ok, %Delegation{} = delegation} =
