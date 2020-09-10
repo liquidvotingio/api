@@ -12,6 +12,7 @@ defmodule LiquidVoting.DelegationsTest do
       another_delegate = insert(:participant)
       organization_id = Ecto.UUID.generate()
       proposal_url = "https://www.someorg/proposalX"
+      another_proposal_url = "https://someorg/another-proposal"
 
       [
         proposal_url: proposal_url,
@@ -35,7 +36,8 @@ defmodule LiquidVoting.DelegationsTest do
           delegate_id: delegate.id,
           organization_id: organization_id,
           proposal_url: proposal_url
-        }
+        },
+        another_proposal_url: another_proposal_url
       ]
     end
 
@@ -143,7 +145,7 @@ defmodule LiquidVoting.DelegationsTest do
         delegator_id: original_delegation.delegator_id,
         delegate_id: original_delegation.delegate_id,
         organization_id: original_delegation.organization_id,
-        proposal_url: "https://someorg/another-proposal"
+        proposal_url: context[:another_proposal_url]
       }
 
       assert {:ok, %Delegation{}} = Delegations.create_delegation(args)
