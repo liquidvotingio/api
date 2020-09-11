@@ -1,4 +1,4 @@
-defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegationsTest do
+defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithEmails.ExistingDelegationsTest do
   use LiquidVotingWeb.ConnCase
 
   alias LiquidVotingWeb.Schema.Schema

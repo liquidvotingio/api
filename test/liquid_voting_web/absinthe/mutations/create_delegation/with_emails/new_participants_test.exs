@@ -1,4 +1,4 @@
-defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.NewParticipantsTest do
+defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithEmails.NewParticipantsTest do
   use LiquidVotingWeb.ConnCase
   import LiquidVoting.Factory
 
