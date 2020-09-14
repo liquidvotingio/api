@@ -28,7 +28,9 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> assoc_constraint(:delegate)
     |> validate_required(required_fields)
     |> validate_participants_different
-    |> unique_constraint(:org_delegator_delegate, name: :uniq_index_org_delegator_delegate)
+    |> unique_constraint(:org_delegator_delegate_proposal,
+      name: :uniq_index_org_delegator_delegate_proposal
+    )
   end
 
   defp validate_participants_different(changeset) do
