@@ -100,36 +100,18 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
     end
 
     test "when a similar proposal-specific delegation exists", context do
-      # test case where a proposal-specific delegation already exists and we wish to delete
-      # a global delegation (if one exists) for the same delegator & delegate.
-
-      # first, create a proposal-specific delegation
-      query1 = """
+      query = """
       mutation {
-        createDelegation(delegatorEmail: "delegator@email.com", delegateEmail: "delegate@email.com", proposalUrl: "https://proposal.com/1") {
-          proposalUrl
-        }
-      }
-      """
-
-      {:ok, %{data: %{"createDelegation" => original_delegation}}} =
-        Absinthe.run(query1, Schema, context: %{organization_id: context[:organization_id]})
-
-      assert original_delegation["proposalUrl"] == "https://proposal.com/1"
-
-      # now delete delegation, using same details as above, except without proposalUrl field:
-      query2 = """
-      mutation {
-        deleteDelegation(delegatorEmail: "delegator@email.com", delegateEmail: "delegate@email.com") {
+        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}") {
           proposalUrl
         }
       }
       """
 
       {:ok, %{data: %{"deleteDelegation" => delegation}}} =
-        Absinthe.run(query2, Schema, context: %{organization_id: context[:organization_id]})
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
-      assert delegation["proposalUrl"] != original_delegation["proposalUrl"]
+      assert delegation["proposalUrl"] != context[:proposal_url]
     end
 
     test "when delegation doesn't exist", context do
