@@ -129,7 +129,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       {:ok, %{data: %{"deleteDelegation" => delegation}}} =
         Absinthe.run(query2, Schema, context: %{organization_id: context[:organization_id]})
 
-      assert delegation["proposalUrl"] != "https://proposal.com/1"
+      assert delegation["proposalUrl"] != original_delegation["proposalUrl"]
     end
 
     test "when delegation doesn't exist", context do
