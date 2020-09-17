@@ -225,13 +225,13 @@ defmodule LiquidVoting.DelegationsTest do
     end
 
     # test "delete_delegation/1 without proposal_url does not delete a proposal-specific delegation" do
-      # actually, I think this may only be a problem at absinthe layer, since at this level the actual
-      # delegation is required. Thus, I think the problem arises when we find a delegation to delete
-      # based on the params passed into absinthe layer.
+    # actually, I think this may only be a problem at absinthe layer, since at this level the actual
+    # delegation is required. Thus, I think the problem arises when we find a delegation to delete
+    # based on the params passed into absinthe layer.
 
-      # create a proposal specific delegation
-      # attempt to delete delegation without proposal_url field
-      # assert proposal-specific delegation still exists
+    # create a proposal specific delegation
+    # attempt to delete delegation without proposal_url field
+    # assert proposal-specific delegation still exists
     # end
 
     test "change_delegation/1 returns a delegation changeset" do
