@@ -110,7 +110,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       # first, create a proposal-specific delegation
       query1 = """
       mutation {
-        createDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}", proposalUrl: "#{context[:proposal_url]}") {
+        createDelegation(delegatorEmail: "delegator@email.com", delegateEmail: "delegate@email.com", proposalUrl: "#{context[:proposal_url]}") {
           proposalUrl
         }
       }
@@ -125,7 +125,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       # now delete delegation, using same details as above, except without proposalUrl field:
       query2 = """
       mutation {
-        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{context[:delegate_email]}") {
+        deleteDelegation(delegatorEmail: "delegator@email.com", delegateEmail: "delegate@email.com") {
           proposalUrl
         }
       }
