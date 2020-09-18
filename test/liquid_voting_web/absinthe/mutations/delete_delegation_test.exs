@@ -73,12 +73,26 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
 
   describe "delete global delegation" do
     setup do
-      delegation = insert(:delegation)
+      global_delegation = insert(:delegation)
+
+      # proposal-specific delegation for SAME participants as global delegation (and same organization id)
+      insert(:delegation_for_proposal,
+        delegator: global_delegation.delegator,
+        delegate: global_delegation.delegate,
+        organization_id: global_delegation.organization_id
+      )
+
+      # proposal-specific delegation for DIFFERENT participants to global delegation (and same organization id)
+      proposal_delegation_different_participants =
+        insert(:delegation_for_proposal, organization_id: global_delegation.organization_id)
 
       [
-        delegator_email: delegation.delegator.email,
-        delegate_email: delegation.delegate.email,
-        organization_id: delegation.organization_id
+        delegator_email: global_delegation.delegator.email,
+        delegate_email: global_delegation.delegate.email,
+        global_delegation_id: global_delegation.id,
+        organization_id: global_delegation.organization_id,
+        proposal_only_delegator_email: proposal_delegation_different_participants.delegator.email,
+        proposal_only_delegate_email: proposal_delegation_different_participants.delegate.email
       ]
     end
 
@@ -89,14 +103,57 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         context[:delegate_email]
       }") {
           proposalUrl
+          id
         }
       }
       """
 
-      {:ok, %{data: %{"deleteDelegation" => delegation}}} =
+      {:ok, %{data: %{"deleteDelegation" => deleted_delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
-      assert delegation["proposalUrl"] == context[:proposal_url]
+      assert deleted_delegation["proposal_url"] == nil
+      assert deleted_delegation["id"] == context[:global_delegation_id]
+    end
+
+    # test case where a proposal-specific delegation already exists and we wish to delete an
+    # existing global delegation for the same delegator & delegate.
+    # NOTE: this case should never occur when we prevent global AND proposal-specific delegations
+    # existing simultaneously for same delegator/delegate pair.
+    test "when a similar proposal-specific delegation exists", context do
+      query = """
+      mutation {
+        deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{
+        context[:delegate_email]
+      }") {
+          id
+        }
+      }
+      """
+
+      {:ok, %{data: %{"deleteDelegation" => deleted_delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
+
+      assert deleted_delegation["id"] == context[:global_delegation_id]
+    end
+
+    # test case where a proposal-specific delegation already exists and we try to delete a
+    # non-existent global delegation for the same delegator & delegate.
+    test "when no matching global delegation exists, but a similar proposal-specific delegation exists",
+         context do
+      query = """
+      mutation {
+        deleteDelegation(delegatorEmail: "#{context[:proposal_only_delegator_email]}", delegateEmail: "#{
+        context[:proposal_only_delegate_email]
+      }") {
+          proposalUrl
+        }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
+
+      assert message == "No delegation found to delete"
     end
 
     test "when delegation doesn't exist", context do
@@ -104,10 +161,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       mutation {
         deleteDelegation(delegatorEmail: "random@person.com", delegateEmail: "random2@person.com") {
           proposalUrl
-          votingResult {
-            in_favor
-            against
-          }
         }
       }
       """
