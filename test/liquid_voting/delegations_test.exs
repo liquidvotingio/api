@@ -67,7 +67,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert result.id == delegation.id
     end
 
-    test "get_delegation!/3 returns a proposal-specific delegation with given emails and organization_id" do
+    test "get_delegation!/3 returns a proposal-specific delegation with given emails, proposal_url and organization_id" do
       delegation = insert(:delegation_for_proposal)
 
       result =
