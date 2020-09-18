@@ -117,6 +117,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
 
     # test case where a proposal-specific delegation already exists and we wish to delete an
     # existing global delegation for the same delegator & delegate.
+    # NOTE: this case should not occur when we prevent global AND proposal-specific delegations
+    # existing simultaneously for same delegator/delegate pair.
     test "when a similar proposal-specific delegation exists", context do
       query = """
       mutation {
