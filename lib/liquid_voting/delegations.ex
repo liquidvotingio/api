@@ -90,7 +90,6 @@ defmodule LiquidVoting.Delegations do
     delegator = Voting.get_participant_by_email!(delegator_email, organization_id)
     delegate = Voting.get_participant_by_email!(delegate_email, organization_id)
 
-    delegation =
       Delegation
       |> where(
         [d],
