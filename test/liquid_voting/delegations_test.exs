@@ -43,6 +43,7 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "list_delegations/1 returns all delegations for an organization_id" do
       delegation = insert(:delegation)
+
       assert Delegations.list_delegations(delegation.organization_id) == [delegation]
     end
 
@@ -51,6 +52,56 @@ defmodule LiquidVoting.DelegationsTest do
 
       assert Delegations.get_delegation!(delegation.id, delegation.organization_id) ==
                delegation
+    end
+
+    test "get_delegation!/3 returns a global delegation with given emails and organization_id" do
+      delegation = insert(:delegation)
+
+      result =
+        Delegations.get_delegation!(
+          delegation.delegator.email,
+          delegation.delegate.email,
+          delegation.organization_id
+        )
+
+      assert result.id == delegation.id
+    end
+
+    test "get_delegation!/3 returns a proposal-specific delegation with given emails, proposal_url and organization_id" do
+      delegation = insert(:delegation_for_proposal)
+
+      result =
+        Delegations.get_delegation!(
+          delegation.delegator.email,
+          delegation.delegate.email,
+          delegation.proposal_url,
+          delegation.organization_id
+        )
+
+      assert result.id == delegation.id
+    end
+
+    test "get_delegation!/3 returns returns error if a global delegation does not exist",
+         context do
+      assert_raise Ecto.NoResultsError, fn ->
+        Delegations.get_delegation!(
+          "random@person.com",
+          "random2@person.com",
+          context[:valid_attrs][:organization_id]
+        )
+      end
+    end
+
+    test "get_delegation!/3 returns returns error if a proposal-specific delegation does not exist",
+         context do
+      assert_raise Ecto.NoResultsError, fn ->
+        Delegations.get_delegation!(
+          "random@person.com",
+          "random2@person.com",
+          "https://proposals.com/random_proposal",
+          context[:valid_attrs][:organization_id]
+        )
+      end
     end
 
     test "create_delegation/1 with valid data creates a delegation", context do

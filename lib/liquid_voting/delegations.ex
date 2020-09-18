@@ -90,12 +90,15 @@ defmodule LiquidVoting.Delegations do
     delegator = Voting.get_participant_by_email!(delegator_email, organization_id)
     delegate = Voting.get_participant_by_email!(delegate_email, organization_id)
 
-    Repo.get_by!(
-      Delegation,
-      delegator_id: delegator.id,
-      delegate_id: delegate.id,
-      organization_id: organization_id
+    Delegation
+    |> where(
+      [d],
+      d.delegator_id == ^delegator.id and
+        d.delegate_id == ^delegate.id and
+        d.organization_id == ^organization_id and
+        is_nil(d.proposal_url)
     )
+    |> Repo.one!()
   end
 
   @doc """
