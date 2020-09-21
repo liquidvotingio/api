@@ -175,18 +175,18 @@ defmodule LiquidVoting.Delegations do
     # Delegations = all delegations for delegator
     #
     #  search Delegations for any with SAME DELEGATE
-    #    if find global and trying to create proposal
+    #    if find global and trying to create proposal delegation
     #      return error -> "global delegation already exists"
     #    if find proposal(s) and trying to create global
-    #      create new global delegation & delete all proposals found
+    #      delete all proposal delegations found
     #  next (keep the existing functionality):
-    #    if trying to create global
+    #    if trying to create global delegation
     #      search Delegations for ANY GLOBAL
     #        if found (should only be one or none)
     #          update
     #        else
     #          create new delegation 
-    #    if trying to create proposal
+    #    if trying to create proposal delegation
     #      search delegations for SAME PROPOSAL
     #        if found (should only be one or none)
     #          update
