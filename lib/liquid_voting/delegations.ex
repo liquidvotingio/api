@@ -195,17 +195,14 @@ defmodule LiquidVoting.Delegations do
     #        else
     #          create new delegation
 
+    _delegations =
+      Delegation
+      |> where(delegator_id: ^delegator_id)
+      |> Repo.all()
+      |> resolve_conflicts(proposal_url)
 
-    _delegations = Delegation
-    |> where(delegator_id: ^delegator_id)
-    |> Repo.all()
-    |> resolve_conflicts(proposal_url)
-    #|> IO.inspect()
-    #|> Enum.filter(fn(d) -> d.proposal_url == nil end) # DEBUG
-
-
-
-
+    # |> IO.inspect()
+    # |> Enum.filter(fn(d) -> d.proposal_url == nil end) # DEBUG
 
     Delegation
     |> where([d], d.delegator_id == ^delegator_id)
@@ -229,15 +226,15 @@ defmodule LiquidVoting.Delegations do
 
   defp resolve_conflicts(delegations, proposal_url) do
     case proposal_url do
+      # if trying to create global
+      #   if find proposal(s) in Delegations
+      #     delete all proposal delegations found
+      nil -> IO.puts("global case")
+      
       # if trying to create proposal delegation
       #   if find global in Delegations
       #     return error -> "global delegation already exists"
-      nil -> IO.puts "global case"
-
-    # if trying to create proposal delegation
-    #   if find global in Delegations
-    #     return error -> "global delegation already exists"
-      _proposal_url -> IO.puts "proposal case"
+      _proposal_url -> IO.puts("proposal case")
     end
 
     delegations
