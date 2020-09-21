@@ -11,47 +11,60 @@ on:
     - 'CONTRIBUTING.md'
 
 jobs:
-  tests:
-    name: Tests
+  deploy:
+    name: Deploy to GKE
     runs-on: ubuntu-latest
-    container:
-      image: elixir:1.10.2-slim
-    services:
-      postgres:
-        image: postgres:10.4
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: liquid_voting_test
-        ports:
-          - 5432:5432
-        # postgres container doesn't provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v1
-    - name: Install Dependencies
-      run: |
-        mix local.rebar --force
-        mix local.hex --force
-        mix deps.get
-    - name: Run Tests
-      run: mix test
-      env:
-        MIX_ENV: test
-        # refers to the service name, since we're running on containers
-        POSTGRES_HOST: postgres
+    - uses: actions/checkout@master
+    - name: Setup Linode cli
+      uses: brendon1555/setup-linode-cli@master
+      with:
+        LINODE_CLI_TOKEN: ${{ secrets.LINODE_TOKEN }}
+    - run: linode-cli --help
+    - name: Deploy
+      run: kubectl get pods
 
-  linting:
-    name: Linting
-    runs-on: ubuntu-latest
-    container:
-      image: elixir:1.10.2-slim
-    steps:
-    - uses: actions/checkout@v1
-    - name: Install Dependencies
-      run: |
-        mix local.rebar --force
-        mix local.hex --force
-        mix deps.get
-    - name: Run Formatter
-      run: mix format --check-formatted
+  # tests:
+  #   name: Tests
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: elixir:1.10.2-slim
+  #   services:
+  #     postgres:
+  #       image: postgres:10.4
+  #       env:
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_DB: liquid_voting_test
+  #       ports:
+  #         - 5432:5432
+  #       # postgres container doesn't provide a healthcheck
+  #       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: Install Dependencies
+  #     run: |
+  #       mix local.rebar --force
+  #       mix local.hex --force
+  #       mix deps.get
+  #   - name: Run Tests
+  #     run: mix test
+  #     env:
+  #       MIX_ENV: test
+  #       # refers to the service name, since we're running on containers
+  #       POSTGRES_HOST: postgres
+
+  # linting:
+  #   name: Linting
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: elixir:1.10.2-slim
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: Install Dependencies
+  #     run: |
+  #       mix local.rebar --force
+  #       mix local.hex --force
+  #       mix deps.get
+  #   - name: Run Formatter
+  #     run: mix format --check-formatted
