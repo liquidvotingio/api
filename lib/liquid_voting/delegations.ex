@@ -175,10 +175,12 @@ defmodule LiquidVoting.Delegations do
     # Delegations = all delegations for delegator
     #
     #  search Delegations for any with SAME DELEGATE
-    #    if find global and trying to create proposal delegation
-    #      return error -> "global delegation already exists"
-    #    if find proposal(s) and trying to create global
-    #      delete all proposal delegations found
+    #    if trying to create proposal delegation
+    #      if find global in Delegations
+    #        return error -> "global delegation already exists"
+    #    if trying to create global
+    #      if find proposal(s) in Delegations
+    #       delete all proposal delegations found
     #  next (keep the existing functionality):
     #    if trying to create global delegation
     #      search Delegations for ANY GLOBAL
@@ -187,11 +189,23 @@ defmodule LiquidVoting.Delegations do
     #        else
     #          create new delegation 
     #    if trying to create proposal delegation
-    #      search delegations for SAME PROPOSAL
+    #      search Delegations for SAME PROPOSAL
     #        if found (should only be one or none)
     #          update
     #        else
     #          create new delegation
+
+
+    _delegations = Delegation
+    |> where(delegator_id: ^delegator_id)
+    |> Repo.all()
+    |> resolve_conflicts(proposal_url)
+    #|> IO.inspect()
+    #|> Enum.filter(fn(d) -> d.proposal_url == nil end) # DEBUG
+
+
+
+
 
     Delegation
     |> where([d], d.delegator_id == ^delegator_id)
@@ -212,6 +226,22 @@ defmodule LiquidVoting.Delegations do
 
   defp where_proposal(query, proposal_url),
     do: query |> where([d], d.proposal_url == ^proposal_url)
+
+  defp resolve_conflicts(delegations, proposal_url) do
+    case proposal_url do
+      # if trying to create proposal delegation
+      #   if find global in Delegations
+      #     return error -> "global delegation already exists"
+      nil -> IO.puts "global case"
+
+    # if trying to create proposal delegation
+    #   if find global in Delegations
+    #     return error -> "global delegation already exists"
+      _proposal_url -> IO.puts "proposal case"
+    end
+
+    delegations
+  end
 
   @doc """
   Updates a delegation.
