@@ -17,11 +17,18 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Deploy
-      uses: steebchen/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.LINODE_KUBE_CONFIG }}
-      with:
-        args: get pods
+      run: |
+        echo "$KUBE_CONFIG_DATA" | base64 --decode > /tmp/config
+        export KUBECONFIG=/tmp/config
+        kubectl rollout restart deployment/api-deployment
+        pod=$(kubectl get pods -l app=api  -o json | jq -r '.items[].metadata.name' | head -1)
+        kubectl wait --timeout=120s --for=condition=Ready pod/$pod
+        kubectl exec -i pod/$pod \
+        --container api-container \
+        -- /opt/app/bin/liquid_voting \
+        eval "LiquidVoting.Release.migrate"
 
   # tests:
   #   name: Tests
