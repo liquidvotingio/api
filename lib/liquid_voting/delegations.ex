@@ -172,25 +172,26 @@ defmodule LiquidVoting.Delegations do
   def upsert_delegation(%{delegator_id: delegator_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
-    # delegations = all delegations for delegator
-    #   search delegations for any with SAME DELEGATE
-    #     if find global and trying to create proposal
-    #       return error -> "global delegation already exists"
-    #     if find proposal(s) and trying to create global
-    #       delete all proposals found & create global
+    # Delegations = all delegations for delegator
+    #
+    #  search Delegations for any with SAME DELEGATE
+    #    if find global and trying to create proposal
+    #      return error -> "global delegation already exists"
+    #    if find proposal(s) and trying to create global
+    #      create new global delegation & delete all proposals found
     #  next (keep the existing functionality):
-    #     if trying to create global
-    #       search delegations for ANY GLOBAL
-    #         if found (should only be one or none)
-    #           update
-    #         else
-    #           create new delegation 
-    #     if trying to create proposal
-    #       search delegations for SAME PROPOSAL
-    #         if found (should only be one or none)
-    #           update
-    #         else
-    #           create new delegation
+    #    if trying to create global
+    #      search Delegations for ANY GLOBAL
+    #        if found (should only be one or none)
+    #          update
+    #        else
+    #          create new delegation 
+    #    if trying to create proposal
+    #      search delegations for SAME PROPOSAL
+    #        if found (should only be one or none)
+    #          update
+    #        else
+    #          create new delegation
 
     Delegation
     |> where([d], d.delegator_id == ^delegator_id)
