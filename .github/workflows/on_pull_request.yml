@@ -16,12 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Setup Linode cli
-      uses: brendon1555/setup-linode-cli@master
-      with:
-        LINODE_CLI_TOKEN: ${{ secrets.LINODE_TOKEN }}
-    - run: linode-cli --help
     - name: Deploy
+      with:
+        KUBECONFIG: ${{ secrets.LINODE_KUBE_CONFIG }}
       run: kubectl get pods
 
   # tests:
