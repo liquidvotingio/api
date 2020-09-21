@@ -17,9 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Deploy
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.LINODE_KUBE_CONFIG }}
       with:
-        KUBECONFIG: ${{ secrets.LINODE_KUBE_CONFIG }}
-      run: kubectl get pods
+        args: get pods
 
   # tests:
   #   name: Tests
