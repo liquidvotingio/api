@@ -175,23 +175,23 @@ defmodule LiquidVoting.Delegations do
     # Delegations = all delegations for delegator
     #
     #  if trying to create proposal delegation
-    #    search Delegations for any proposal delegations with SAME DELEGATE
-    #      if find global in Delegations
+    #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
+    #      if find global delegation
     #        return error -> "global delegation already exists"
-    #  if trying to create global
-    #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)
-    #      if find proposal(s) in Delegations
+    #  if trying to create global delegation
+    #    search Delegations for any proposal delegations with SAME DELEGATE
+    #      if find proposal(s) delegations
     #       delete all proposal delegations found
     #
     #  next (keep the existing functionality):
     #    if trying to create global delegation
-    #      search Delegations for ANY GLOBAL
+    #      search Delegations for ANY GLOBAL dlegation
     #        if found (should only be one or none)
     #          update
     #        else
     #          create new delegation 
     #    if trying to create proposal delegation
-    #      search Delegations for SAME PROPOSAL
+    #      search Delegations for SAME PROPOSAL delegation
     #        if found (should only be one or none)
     #          update
     #        else
@@ -229,13 +229,14 @@ defmodule LiquidVoting.Delegations do
   defp resolve_conflicts(delegations, delegate_id, proposal_url) do
     delegations =
       case proposal_url do
-        #  if trying to create global
-        #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)
-        #      if find proposal(s) in Delegations
+        #  if trying to create global delegation
+        #    search Delegations for any proposal delegations with SAME DELEGATE
+        #      if find proposal(s) delegations
         #       delete all proposal delegations found
-        nil ->
-          IO.puts("global case")
 
+        # case: attempting to create global delegation
+        nil ->
+          # find any proposal delegations with SAME DELEGATE
           same_delegate_proposal_delegations =
             Enum.filter(delegations, fn d ->
               d.proposal_url != nil and d.delegate_id == delegate_id
@@ -253,8 +254,8 @@ defmodule LiquidVoting.Delegations do
           end
 
         #  if trying to create proposal delegation
-        #    search Delegations for any proposal delegations with SAME DELEGATE
-        #      if find global in Delegations
+        #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
+        #      if find global delegation
         #        return error -> "global delegation already exists"
         _proposal_url ->
           IO.puts("proposal case")
