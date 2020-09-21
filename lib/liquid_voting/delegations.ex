@@ -169,7 +169,7 @@ defmodule LiquidVoting.Delegations do
       iex> upsert_delegation(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
   """
-  def upsert_delegation(%{delegator_id: delegator_id} = attrs) do
+  def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
     # Delegations = all delegations for delegator
@@ -181,6 +181,7 @@ defmodule LiquidVoting.Delegations do
     #    if trying to create global
     #      if find proposal(s) in Delegations
     #       delete all proposal delegations found
+    #
     #  next (keep the existing functionality):
     #    if trying to create global delegation
     #      search Delegations for ANY GLOBAL
@@ -199,9 +200,9 @@ defmodule LiquidVoting.Delegations do
       Delegation
       |> where(delegator_id: ^delegator_id)
       |> Repo.all()
-      |> resolve_conflicts(proposal_url)
+      |> resolve_conflicts(delegate_id, proposal_url)
+      |> IO.inspect()
 
-    # |> IO.inspect()
     # |> Enum.filter(fn(d) -> d.proposal_url == nil end) # DEBUG
 
     Delegation
@@ -224,17 +225,36 @@ defmodule LiquidVoting.Delegations do
   defp where_proposal(query, proposal_url),
     do: query |> where([d], d.proposal_url == ^proposal_url)
 
-  defp resolve_conflicts(delegations, proposal_url) do
+  defp resolve_conflicts(delegations, delegate_id, proposal_url) do
+    #  search Delegations for any with SAME DELEGATE
+
+
+    delegations =
     case proposal_url do
-      # if trying to create global
+      # if trying to create global DONE
       #   if find proposal(s) in Delegations
       #     delete all proposal delegations found
-      nil -> IO.puts("global case")
-      
+      nil ->
+        IO.puts("global case")
+
+        same_delegate_proposal_delegations =
+          Enum.filter(delegations, fn d -> d.proposal_url != nil and d.delegate_id == delegate_id end)
+
+        cond do
+          same_delegate_proposal_delegations != [] ->
+            IO.puts "FOUND PROPOSAL(S) TO DELETE!!!"
+            IO.puts "***********************"
+            IO.inspect(same_delegate_proposal_delegations)
+            IO.puts "***********************"
+          true ->
+            delegations
+        end 
+
       # if trying to create proposal delegation
       #   if find global in Delegations
       #     return error -> "global delegation already exists"
-      _proposal_url -> IO.puts("proposal case")
+      _proposal_url ->
+        IO.puts("proposal case")
     end
 
     delegations
