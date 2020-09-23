@@ -203,7 +203,7 @@ defmodule LiquidVoting.Delegations do
     |> resolve_conflicts(delegate_id, proposal_url)
     |> case do
       {:ok, delegations_of_delegator} -> delegations_of_delegator
-      # Search for delegations of same type as in attrs (global vs proposal) for same delegator
+      # Search delegations_of_delegator for delegations of same type as in attrs (global vs proposal)
       |> Enum.filter(fn d ->
         d.delegator_id == delegator_id and d.proposal_url == proposal_url
       end)
@@ -225,7 +225,6 @@ defmodule LiquidVoting.Delegations do
     #    Search Delegations for any proposal delegations with SAME DELEGATE
     #    and delete all proposal delegations found
 
-    # same_delegate_proposal_delegations =
     delegations_of_delegator
     |> Stream.filter(fn d ->
       d.proposal_url != nil and d.delegate_id == delegate_id
@@ -242,8 +241,15 @@ defmodule LiquidVoting.Delegations do
     #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
     #      if find global delegation
     #        return error -> "global delegation already exists"
-    IO.puts("proposal case")
-    {:ok, delegations_of_delegator}
+
+    delegations_of_delegator
+    |> Enum.filter(fn d ->
+      d.proposal_url == nil and d.delegate_id == delegate_id
+    end)
+    |> case do
+      [] -> {:ok, delegations_of_delegator}
+      _found_global -> IO.puts("Found GLOBAL in proposal case")
+    end
   end
 
   @doc """
