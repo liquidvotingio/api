@@ -204,8 +204,6 @@ defmodule LiquidVoting.Delegations do
       |> resolve_conflicts(delegate_id, proposal_url)
       |> IO.inspect()
 
-    # |> Enum.filter(fn(d) -> d.proposal_url == nil end) # DEBUG
-
     Delegation
     |> where([d], d.delegator_id == ^delegator_id)
     |> where_proposal(proposal_url)
@@ -226,24 +224,25 @@ defmodule LiquidVoting.Delegations do
   defp where_proposal(query, proposal_url),
     do: query |> where([d], d.proposal_url == ^proposal_url)
 
-  defp resolve_conflicts(delegations, delegate_id, proposal_url = nil) do
-    #  if trying to create global delegation
-    #    search Delegations for any proposal delegations with SAME DELEGATE
-    #      if find proposal(s) delegations
-    #       delete all proposal delegations found
-    same_delegate_proposal_delegations =
-      Enum.filter(delegations, fn d ->
-        d.proposal_url != nil and d.delegate_id == delegate_id
-      end)
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil) do
+    #  When attemting global delegation creation:
+    #    Search Delegations for any proposal delegations with SAME DELEGATE
+    #    and delete all proposal delegations found
 
-    Enum.each(same_delegate_proposal_delegations, fn d ->
-      IO.puts("FOUND PROPOSAL TO DELETE!!!")
+    # same_delegate_proposal_delegations =
+    delegations
+    |> Stream.filter(fn d ->
+      d.proposal_url != nil and d.delegate_id == delegate_id
+    end)
+    |> Enum.each(fn d ->
       delete_delegation!(d)
     end)
+
+    delegations
   end
 
   defp resolve_conflicts(delegations, delegate_id, proposal_url) do
-    #  if trying to create proposal delegation
+    #  When attempting proposal-specific delegation creation
     #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
     #      if find global delegation
     #        return error -> "global delegation already exists"
