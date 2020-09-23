@@ -197,49 +197,28 @@ defmodule LiquidVoting.Delegations do
     #        else
     #          create new delegation
 
-    _delegations =
-      Delegation
-      |> where(delegator_id: ^delegator_id)
-      |> Repo.all()
-      |> resolve_conflicts(delegate_id, proposal_url)
+    Delegation
+    |> where(delegator_id: ^delegator_id)
+    |> Repo.all()
+    |> resolve_conflicts(delegate_id, proposal_url)
+    |> case do
+      {:ok, delegations} -> delegations
+      # Find delegations of same type as in attrs (global vs proposal) for same delegator
+      |> Enum.filter(fn d ->
+        d.delegator_id == delegator_id and d.proposal_url == proposal_url
+      end)
       |> case do
-        {:ok, delegations} ->
-          delegations
-          |> Enum.filter(fn d ->
-            d.delegator_id == delegator_id and d.proposal_url == proposal_url
-          end)
-          |> case do
-            # Delegation (of same type) not found, so we build one
-            [] -> %Delegation{}
-            # Delegation (of same type) exists - let's use it
-            [delegation] -> delegation
-          end
-          |> Delegation.changeset(attrs)
-          |> Repo.insert_or_update()
-
-        _error ->
-          IO.puts("ERROR!")
+        # Delegation (of same type) not found, so we build one
+        [] -> %Delegation{}
+        # Delegation (of same type) exists - let's use it
+        [delegation] -> delegation
       end
+      |> Delegation.changeset(attrs)
+      |> Repo.insert_or_update()
 
-    # Delegation
-    # |> where([d], d.delegator_id == ^delegator_id)
-    # |> where_proposal(proposal_url)
-    # |> Repo.one()
-    # |> case do
-    #   # Delegation (of same type) not found, so we build one
-    #   nil -> %Delegation{}
-    #   # Delegation (of same type) exists - let's use it
-    #   delegation -> delegation
-    # end
-    # |> Delegation.changeset(attrs)
-    # |> Repo.insert_or_update()
+      _error -> IO.puts "ERROR!"
+    end
   end
-
-  defp where_proposal(query, _proposal_url = nil),
-    do: query |> where([d], is_nil(d.proposal_url))
-
-  defp where_proposal(query, proposal_url),
-    do: query |> where([d], d.proposal_url == ^proposal_url)
 
   defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil) do
     #  When attemting global delegation creation:
