@@ -202,8 +202,8 @@ defmodule LiquidVoting.Delegations do
     |> Repo.all()
     |> resolve_conflicts(delegate_id, proposal_url)
     |> case do
-      {:ok, delegations} -> delegations
-      # Find delegations of same type as in attrs (global vs proposal) for same delegator
+      {:ok, delegations_of_delegator} -> delegations_of_delegator
+      # Search for delegations of same type as in attrs (global vs proposal) for same delegator
       |> Enum.filter(fn d ->
         d.delegator_id == delegator_id and d.proposal_url == proposal_url
       end)
@@ -220,13 +220,13 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
-  defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil) do
-    #  When attemting global delegation creation:
+  defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url = nil) do
+    #  When attempting global delegation creation:
     #    Search Delegations for any proposal delegations with SAME DELEGATE
     #    and delete all proposal delegations found
 
     # same_delegate_proposal_delegations =
-    delegations
+    delegations_of_delegator
     |> Stream.filter(fn d ->
       d.proposal_url != nil and d.delegate_id == delegate_id
     end)
@@ -234,16 +234,16 @@ defmodule LiquidVoting.Delegations do
       delete_delegation!(d)
     end)
 
-    {:ok, delegations}
+    {:ok, delegations_of_delegator}
   end
 
-  defp resolve_conflicts(delegations, delegate_id, proposal_url) do
+  defp resolve_conflicts(delegations_of_delegator, delegate_id, proposal_url) do
     #  When attempting proposal-specific delegation creation
     #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
     #      if find global delegation
     #        return error -> "global delegation already exists"
     IO.puts("proposal case")
-    {:ok, delegations}
+    {:ok, delegations_of_delegator}
   end
 
   @doc """
