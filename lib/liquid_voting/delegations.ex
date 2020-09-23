@@ -226,41 +226,28 @@ defmodule LiquidVoting.Delegations do
   defp where_proposal(query, proposal_url),
     do: query |> where([d], d.proposal_url == ^proposal_url)
 
+  defp resolve_conflicts(delegations, delegate_id, proposal_url = nil) do
+    #  if trying to create global delegation
+    #    search Delegations for any proposal delegations with SAME DELEGATE
+    #      if find proposal(s) delegations
+    #       delete all proposal delegations found
+    same_delegate_proposal_delegations =
+      Enum.filter(delegations, fn d ->
+        d.proposal_url != nil and d.delegate_id == delegate_id
+      end)
+
+    Enum.each(same_delegate_proposal_delegations, fn d ->
+      IO.puts("FOUND PROPOSAL TO DELETE!!!")
+      delete_delegation!(d)
+    end)
+  end
+
   defp resolve_conflicts(delegations, delegate_id, proposal_url) do
-    delegations =
-      case proposal_url do
-        #  if trying to create global delegation
-        #    search Delegations for any proposal delegations with SAME DELEGATE
-        #      if find proposal(s) delegations
-        #       delete all proposal delegations found
-
-        # case: attempting to create global delegation
-        nil ->
-          # find any proposal delegations with SAME DELEGATE
-          same_delegate_proposal_delegations =
-            Enum.filter(delegations, fn d ->
-              d.proposal_url != nil and d.delegate_id == delegate_id
-            end)
-
-          cond do
-            same_delegate_proposal_delegations != [] ->
-              IO.puts("FOUND PROPOSAL(S) TO DELETE!!!")
-              IO.puts("***********************")
-              IO.inspect(same_delegate_proposal_delegations)
-              IO.puts("***********************")
-
-            true ->
-              delegations
-          end
-
-        #  if trying to create proposal delegation
-        #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
-        #      if find global delegation
-        #        return error -> "global delegation already exists"
-        _proposal_url ->
-          IO.puts("proposal case")
-      end
-
+    #  if trying to create proposal delegation
+    #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
+    #      if find global delegation
+    #        return error -> "global delegation already exists"
+    IO.puts("proposal case")
     delegations
   end
 

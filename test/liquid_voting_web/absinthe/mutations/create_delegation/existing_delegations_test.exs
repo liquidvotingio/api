@@ -60,7 +60,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
   describe "create global delegation for delegator with existing proposal delegations to same delegate" do
     test "deletes proposal specific delegations for same delegator/delegate pair" do
-      # first, create a proposal-specific delegation
+      # First, create a proposal-specific delegation.
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}", proposalUrl: "#{
@@ -77,7 +77,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
       assert proposal_delegation_1["proposalUrl"] == @proposal_url
 
-      # second, create another proposal-specific delegation (same participants, different proposalUrl)
+      # Second, create another proposal-specific delegation (same participants, different proposalUrl).
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}", proposalUrl: "#{
@@ -96,7 +96,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
       # TODO? Insert 3rd proposal-specific delegation to DIFFERENT delegate, for testing deletion of wrong delegations does not occur?
 
-      # third, create a global delegation for the same participants
+      # Third, create a global delegation for the same participants.
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}") {
@@ -116,7 +116,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       assert global_delegation["delegator"]["email"] == @delegator_email
       assert global_delegation["delegate"]["email"] == @delegate_email
 
-      # fourth, search for proposal_delgation_1 (should return error)
+      # Fourth, search for proposal_delgation_1 (should return error).
       query = """
       query {
         delegation(id: "#{proposal_delegation_1["id"]}") {
@@ -125,13 +125,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       }
       """
 
-      # TODO: Change to {:ok, %{errors: ...}} and assert specific error, when functionality created
-      {:ok, %{data: %{"delegation" => delegation}}} =
+      assert_raise Ecto.NoResultsError, fn ->
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+      end
 
-      assert delegation["id"] != proposal_delegation_1["id"]
-
-      # lastly, search for proposal_delegation_2 (should return error)
+      # Lastly, search for proposal_delegation_2 (should return error).
       query = """
       query {
         delegation(id: "#{proposal_delegation_2["id"]}") {
@@ -140,11 +138,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       }
       """
 
-      # TODO: Change to {:ok, %{errors: ...}} and assert specific error, when functionality created
-      {:ok, %{data: %{"delegation" => delegation}}} =
+      assert_raise Ecto.NoResultsError, fn ->
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
-
-      assert delegation["id"] != proposal_delegation_2["id"]
+      end
 
       # TODO? Search for 3rd proposal-specific delegation to DIFFERENT delegate, and assert can be found (not deleted)?
     end
