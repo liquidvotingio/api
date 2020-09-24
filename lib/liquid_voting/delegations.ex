@@ -134,8 +134,14 @@ defmodule LiquidVoting.Delegations do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, resources} -> {:ok, resources.delegation}
-      error -> error
+      {:ok, resources} ->
+        {:ok, resources.delegation}
+
+      {:error, :delegation, value, _} ->
+        {:error, value}
+
+      error ->
+        error
     end
   end
 
@@ -197,26 +203,30 @@ defmodule LiquidVoting.Delegations do
     #        else
     #          create new delegation
 
+    # IO.inspect(proposal_url)
+
     Delegation
     |> where(delegator_id: ^delegator_id)
     |> Repo.all()
     |> resolve_conflicts(delegate_id, proposal_url)
     |> case do
-      {:ok, delegations_of_delegator} -> delegations_of_delegator
-      # Search delegations_of_delegator for delegations of same type as in attrs (global vs proposal)
-      |> Enum.filter(fn d ->
-        d.delegator_id == delegator_id and d.proposal_url == proposal_url
-      end)
-      |> case do
-        # Delegation (of same type) not found, so we build one
-        [] -> %Delegation{}
-        # Delegation (of same type) exists - let's use it
-        [delegation] -> delegation
-      end
-      |> Delegation.changeset(attrs)
-      |> Repo.insert_or_update()
+      {:ok, delegations_of_delegator} ->
+        delegations_of_delegator
+        # Search delegations_of_delegator for delegations of same type as in attrs (global vs proposal)
+        |> Enum.filter(fn d ->
+          d.delegator_id == delegator_id and d.proposal_url == proposal_url
+        end)
+        |> case do
+          # Delegation (of same type) not found, so we build one
+          [] -> %Delegation{}
+          # Delegation (of same type) exists - let's use it
+          [delegation] -> delegation
+        end
+        |> Delegation.changeset(attrs)
+        |> Repo.insert_or_update()
 
-      _error -> IO.puts "ERROR!"
+      {:error, %{message: message, details: details}} ->
+        {:error, %{message: message, details: details}}
     end
   end
 
@@ -236,7 +246,7 @@ defmodule LiquidVoting.Delegations do
     {:ok, delegations_of_delegator}
   end
 
-  defp resolve_conflicts(delegations_of_delegator, delegate_id, proposal_url) do
+  defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url) do
     #  When attempting proposal-specific delegation creation
     #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
     #      if find global delegation
@@ -247,10 +257,21 @@ defmodule LiquidVoting.Delegations do
       d.proposal_url == nil and d.delegate_id == delegate_id
     end)
     |> case do
-      [] -> {:ok, delegations_of_delegator}
-      _found_global -> IO.puts("Found GLOBAL in proposal case")
+      [] ->
+        {:ok, delegations_of_delegator}
+
+      [_global_delegation_same_participants] ->
+        {:error,
+         %{
+           message: "Could not create delegation.",
+           details: "A global delegation for the same participants already exists."
+         }}
     end
   end
+
+  # {:ok, %{errors: [%{message: message, details: details}]}}
+  # This is what is recieved by working test: create delegation with existing delegator and delegate with missing field
+  # LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegatorDelegateTest
 
   @doc """
   Updates a delegation.

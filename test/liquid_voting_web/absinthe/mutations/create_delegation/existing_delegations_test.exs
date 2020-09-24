@@ -234,12 +234,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       }
       """
 
-      # TODO: Change to {:ok, %{errors: ...}} and assert specific error, when functionality created
-      {:ok, %{data: %{"createDelegation" => new_delegation}}} =
+      # TODO: Improve structure of error returned to absinthe (this is way too messy)
+      {:ok, %{data: %{}, errors: [%{details: details, message: message}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
-      assert new_delegation["delegator"]["email"] != @delegator_email
-      assert new_delegation["delegate"]["email"] != @delegate_email
+      assert message == "Could not create delegation."
+      assert details == "A global delegation for the same participants already exists."
     end
   end
 end
