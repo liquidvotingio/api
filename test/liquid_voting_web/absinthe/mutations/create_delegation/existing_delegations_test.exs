@@ -235,7 +235,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       """
 
       # TODO: Improve structure of error returned to absinthe (this is way too messy)
-      {:ok, %{data: %{}, errors: [%{details: details, message: message}]}} =
+      {:ok, %{errors: [%{details: details, message: message}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
       assert message == "Could not create delegation."
