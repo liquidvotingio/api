@@ -212,21 +212,24 @@ defmodule LiquidVoting.Delegations do
     |> case do
       {:ok, delegations_of_delegator} ->
         delegations_of_delegator
-        # Search delegations_of_delegator for delegations of same type as in attrs (global vs proposal)
-        |> Enum.filter(fn d ->
-          d.delegator_id == delegator_id and d.proposal_url == proposal_url
-        end)
-        |> case do
-          # Delegation (of same type) not found, so we build one
-          [] -> %Delegation{}
-          # Delegation (of same type) exists - let's use it
-          [delegation] -> delegation
-        end
+        |> find_similar_delegation_or_return_new_struct(proposal_url)
         |> Delegation.changeset(attrs)
         |> Repo.insert_or_update()
 
       {:error, %{message: message, details: details}} ->
         {:error, %{message: message, details: details}}
+    end
+  end
+
+  defp find_similar_delegation_or_return_new_struct(delegations_of_delegator, proposal_url) do
+    delegations_of_delegator
+    # Search delegations_of_delegator for delegations of same type as in attrs (global vs proposal)
+    |> Enum.filter(fn d -> d.proposal_url == proposal_url end)
+    |> case do
+      # Delegation (of same type) not found, so we build one
+      [] -> %Delegation{}
+      # Delegation (of same type) exists - let's use it
+      [delegation] -> delegation
     end
   end
 
