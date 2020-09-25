@@ -237,7 +237,7 @@ defmodule LiquidVoting.Delegations do
 
     delegations_of_delegator
     |> Stream.filter(fn d ->
-      d.proposal_url != nil and d.delegate_id == delegate_id
+      d.delegate_id == delegate_id and d.proposal_url != nil
     end)
     |> Enum.each(fn d ->
       delete_delegation!(d)
@@ -250,7 +250,7 @@ defmodule LiquidVoting.Delegations do
     #  When attempting proposal-specific delegation creation
     #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
     #      if find global delegation
-    #        return error -> "global delegation already exists"
+    #        return error
 
     delegations_of_delegator
     |> Enum.filter(fn d ->
@@ -268,10 +268,6 @@ defmodule LiquidVoting.Delegations do
          }}
     end
   end
-
-  # {:ok, %{errors: [%{message: message, details: details}]}}
-  # This is what is recieved by working test: create delegation with existing delegator and delegate with missing field
-  # LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegatorDelegateTest
 
   @doc """
   Updates a delegation.

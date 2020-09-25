@@ -135,22 +135,6 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
     end
 
-    # FAILING!!
-    # Following PR #109 https://github.com/liquidvotingio/api/issues/109
-    # See issue #28 https://github.com/liquidvotingio/api/issues/128
-    @tag :skip
-    test "create_delegation/1 with duplicate global delegation data returns error changeset" do
-      original_delegation = insert(:delegation)
-
-      args = %{
-        delegator_id: original_delegation.delegator_id,
-        delegate_id: original_delegation.delegate_id,
-        organization_id: original_delegation.organization_id
-      }
-
-      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
-    end
-
     test "create_delegation/1 with duplicate proposal-specific data returns error changeset",
          context do
       original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
@@ -160,41 +144,6 @@ defmodule LiquidVoting.DelegationsTest do
         delegate_id: original_delegation.delegate_id,
         organization_id: original_delegation.organization_id,
         proposal_url: original_delegation.proposal_url
-      }
-
-      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
-    end
-
-    # FAILING!!
-    # Following PR #109 https://github.com/liquidvotingio/api/issues/109
-    # See issue #125:https://github.com/liquidvotingio/api/issues/125
-    @tag :skip
-    test "create_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists",
-         context do
-      original_delegation = insert(:delegation)
-
-      args = %{
-        delegator_id: original_delegation.delegator_id,
-        delegate_id: original_delegation.delegate_id,
-        organization_id: original_delegation.organization_id,
-        proposal_url: context[:proposal_url]
-      }
-
-      assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
-    end
-
-    # FAILING!!
-    # Following PR #109 https://github.com/liquidvotingio/api/issues/109
-    # See issue #125:https://github.com/liquidvotingio/api/issues/125
-    @tag :skip
-    test "create_delegation/1 with global delegation data returns error if proposal-specific delegation for same delegator/delegate pair exists",
-         context do
-      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
-
-      args = %{
-        delegator_id: original_delegation.delegator_id,
-        delegate_id: original_delegation.delegate_id,
-        organization_id: original_delegation.organization_id
       }
 
       assert {:error, %Ecto.Changeset{}} = Delegations.create_delegation(args)
@@ -243,7 +192,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert original_delegation.delegator_id == modified_delegation.delegator_id
     end
 
-    test "upsert_delegation/1 for global delegation with duplicate delegator updates the respective delegation" do
+    test "upsert_delegation/1 for global delegation with same delegator updates the respective delegation" do
       original_delegation = insert(:delegation)
       new_delegate = insert(:participant)
 
@@ -257,6 +206,52 @@ defmodule LiquidVoting.DelegationsTest do
       assert original_delegation.organization_id == modified_delegation.organization_id
       assert original_delegation.delegate_id != modified_delegation.delegate_id
       assert original_delegation.delegator_id == modified_delegation.delegator_id
+    end
+
+    test "upsert_delegation/1 with duplicate global delegation does nothing" do
+      original_delegation = insert(:delegation)
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id
+      }
+
+      assert {:ok, %Delegation{} = delegation} = Delegations.upsert_delegation(args)
+      assert delegation.id == original_delegation.id
+    end
+
+    test "upsert_delegation/1 with proposal-specifc data returns error if global delegation for same delegator/delegate pair exists",
+         context do
+      original_delegation = insert(:delegation)
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id,
+        proposal_url: context[:proposal_url]
+      }
+
+      {:error, %{details: details, message: message}} = Delegations.upsert_delegation(args)
+      assert details == "A global delegation for the same participants already exists."
+      assert message == "Could not create delegation."
+    end
+
+    test "upsert_delegation/1 with global delegation deletes an existing proposal-specific delegation for same delegator/delegate pair",
+         context do
+      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
+
+      args = %{
+        delegator_id: original_delegation.delegator_id,
+        delegate_id: original_delegation.delegate_id,
+        organization_id: original_delegation.organization_id
+      }
+
+      assert {:ok, %Delegation{}} = Delegations.upsert_delegation(args)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Delegations.get_delegation!(original_delegation.id, original_delegation.organization_id)
+      end
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
