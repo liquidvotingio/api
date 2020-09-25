@@ -162,6 +162,9 @@ defmodule LiquidVoting.Delegations do
 
   Creates a new delegation if neither aforementioned condition is true.
 
+  Also resolves conflicts with existing delegations for same delegator and
+  delegate as those passed in.
+
   ## Examples
 
       iex> upsert_delegation(%{
