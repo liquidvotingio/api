@@ -178,33 +178,6 @@ defmodule LiquidVoting.Delegations do
   def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
-    # Delegations = all delegations for delegator
-    #
-    #  if trying to create proposal delegation
-    #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
-    #      if find global delegation
-    #        return error -> "global delegation already exists"
-    #  if trying to create global delegation
-    #    search Delegations for any proposal delegations with SAME DELEGATE
-    #      if find proposal(s) delegations
-    #       delete all proposal delegations found
-    #
-    #  next (keep the existing functionality):
-    #    if trying to create global delegation
-    #      search Delegations for ANY GLOBAL dlegation
-    #        if found (should only be one or none)
-    #          update
-    #        else
-    #          create new delegation 
-    #    if trying to create proposal delegation
-    #      search Delegations for SAME PROPOSAL delegation
-    #        if found (should only be one or none)
-    #          update
-    #        else
-    #          create new delegation
-
-    # IO.inspect(proposal_url)
-
     Delegation
     |> where(delegator_id: ^delegator_id)
     |> Repo.all()
@@ -221,23 +194,22 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
-  defp find_similar_delegation_or_return_new_struct(delegations_of_delegator, proposal_url) do
-    delegations_of_delegator
-    # Search delegations_of_delegator for delegations of same type as in attrs (global vs proposal)
-    |> Enum.filter(fn d -> d.proposal_url == proposal_url end)
-    |> case do
-      # Delegation (of same type) not found, so we build one
-      [] -> %Delegation{}
-      # Delegation (of same type) exists - let's use it
-      [delegation] -> delegation
-    end
-  end
-
+  # Resolves conflicting delegations for same delegator and delegate (2 clauses).
+  #
+  # Used by upsert_delegation/1 (above).
+  #
+  # Clause 1: Matches an attempt to upsert a global delegation.
+  #
+  # Searches list of delegations for the specified delegator for any
+  # proposal-specific delegations to the same delegate in the attributes passed
+  # into upsert_delegation/1. and deletes any such delegations found.
+  #
+  # Clause 2: Matches an attempt to upsert a proposal-specific delegation.
+  #
+  # Searches list of delegations for the specified delegator for global delegation
+  # to the same delegate in the attributes passed into upsert_delegation/1 and
+  # returns an error if such a delegation is found.
   defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url = nil) do
-    #  When attempting global delegation creation:
-    #    Search Delegations for any proposal delegations with SAME DELEGATE
-    #    and delete all proposal delegations found
-
     delegations_of_delegator
     |> Stream.filter(fn d ->
       d.delegate_id == delegate_id and d.proposal_url != nil
@@ -250,11 +222,6 @@ defmodule LiquidVoting.Delegations do
   end
 
   defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url) do
-    #  When attempting proposal-specific delegation creation
-    #    search Delegations for any global delegation with SAME DELEGATE (should be one or none)    
-    #      if find global delegation
-    #        return error
-
     delegations_of_delegator
     |> Enum.filter(fn d ->
       d.proposal_url == nil and d.delegate_id == delegate_id
@@ -269,6 +236,25 @@ defmodule LiquidVoting.Delegations do
            message: "Could not create delegation.",
            details: "A global delegation for the same participants already exists."
          }}
+    end
+  end
+
+  # Searches the list of delegations for the specified delegator for delegations
+  # of the same type (global or for the same specific proposal) as in the
+  # attributes passed into upsert_delegation/1.
+  #
+  # Returns a matching delegation type, if found, or returns an empty Delegation
+  # struct.
+  #
+  # Used by upsert_delegation/1 (above.)
+  defp find_similar_delegation_or_return_new_struct(delegations_of_delegator, proposal_url) do
+    delegations_of_delegator
+    |> Enum.filter(fn d -> d.proposal_url == proposal_url end)
+    |> case do
+      # Delegation (of same type) not found, so we build one
+      [] -> %Delegation{}
+      # Delegation (of same type) exists - let's use it
+      [delegation] -> delegation
     end
   end
 
