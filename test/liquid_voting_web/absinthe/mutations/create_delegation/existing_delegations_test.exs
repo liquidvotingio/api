@@ -94,8 +94,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
       assert proposal_delegation_2["proposalUrl"] == @another_proposal_url
 
-      # TODO? Insert 3rd proposal-specific delegation to DIFFERENT delegate, for testing deletion of wrong delegations does not occur?
-
       # Third, create a global delegation for the same participants.
       query = """
       mutation {
@@ -141,8 +139,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       assert_raise Ecto.NoResultsError, fn ->
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
       end
-
-      # TODO? Search for 3rd proposal-specific delegation to DIFFERENT delegate, and assert can be found (not deleted)?
     end
   end
 
