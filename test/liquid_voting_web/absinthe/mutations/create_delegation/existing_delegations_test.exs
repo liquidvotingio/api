@@ -67,7 +67,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       ]
     end
 
-    test "deletes proposal specific delegations for same delegator/delegate pair", context do
+    test "returns the new global delegation", context do
       # Third, create a global delegation for the same participants.
       query = """
       mutation {
@@ -90,32 +90,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
       assert global_delegation["delegator"]["email"] == context[:delegator].email
       assert global_delegation["delegate"]["email"] == context[:delegate].email
-
-      # Fourth, search for proposal_delegation_1 (should return error).
-      query = """
-      query {
-        delegation(id: "#{context[:proposal_delegation_1_id]}") {
-          id
-        }
-      }
-      """
-
-      assert_raise Ecto.NoResultsError, fn ->
-        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
-      end
-
-      # Lastly, search for proposal_delegation_2 (should return error).
-      query = """
-      query {
-        delegation(id: "#{context[:proposal_delegation_2_id]}") {
-          id
-        }
-      }
-      """
-
-      assert_raise Ecto.NoResultsError, fn ->
-        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
-      end
     end
   end
 
