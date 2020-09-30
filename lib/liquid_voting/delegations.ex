@@ -162,8 +162,7 @@ defmodule LiquidVoting.Delegations do
 
   Creates a new delegation if neither aforementioned condition is true.
 
-  Also resolves conflicts with existing delegations for same delegator and
-  delegate as those passed in.
+  Also resolves conflicts with existing delegations.
 
   ## Examples
 
@@ -197,21 +196,15 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
-  # Resolves conflicting delegations for same delegator and delegate (2 clauses).
+  # Resolves conflicting delegations (2 clauses).
   #
   # Used by upsert_delegation/1 (above).
   #
   # Clause 1: Matches an attempt to upsert a global delegation.
-  #
-  # Searches list of delegations for the specified delegator for any
-  # proposal-specific delegations to the same delegate in the attributes passed
-  # into upsert_delegation/1. and deletes any such delegations found.
+  # Looks for conflicting proposal-specific delegations and deletes any found.
   #
   # Clause 2: Matches an attempt to upsert a proposal-specific delegation.
-  #
-  # Searches list of delegations for the specified delegator for global delegation
-  # to the same delegate in the attributes passed into upsert_delegation/1 and
-  # returns an error if such a delegation is found.
+  # Looks for conflicting global delegation, and returns an error if found.
   defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url = nil) do
     delegations_of_delegator
     |> Stream.filter(fn d ->
@@ -242,12 +235,9 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
-  # Searches the list of delegations for the specified delegator for delegations
-  # of the same type (global or for the same specific proposal) as in the
-  # attributes passed into upsert_delegation/1.
-  #
-  # Returns a matching delegation type, if found, or returns an empty Delegation
-  # struct.
+  # Looks for a delegator's existing delegation of matching type (global or for
+  # same proposal).Returns a matching delegation type, if found, or returns an
+  #  empty Delegation struct.
   #
   # Used by upsert_delegation/1 (above.)
   defp find_similar_delegation_or_return_new_struct(delegations_of_delegator, proposal_url) do
