@@ -205,8 +205,8 @@ defmodule LiquidVoting.Delegations do
   #
   # Clause 2: Matches an attempt to upsert a proposal-specific delegation.
   # Looks for conflicting global delegation, and returns an error if found.
-  defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url = nil) do
-    delegations_of_delegator
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil) do
+    delegations
     |> Stream.filter(fn d ->
       d.delegate_id == delegate_id and d.proposal_url != nil
     end)
@@ -214,19 +214,19 @@ defmodule LiquidVoting.Delegations do
       delete_delegation!(d)
     end)
 
-    {:ok, delegations_of_delegator}
+    {:ok, delegations}
   end
 
-  defp resolve_conflicts(delegations_of_delegator, delegate_id, _proposal_url) do
-    delegations_of_delegator
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url) do
+    delegations
     |> Enum.filter(fn d ->
       d.proposal_url == nil and d.delegate_id == delegate_id
     end)
     |> case do
       [] ->
-        {:ok, delegations_of_delegator}
+        {:ok, delegations}
 
-      [_global_delegation_same_participants] ->
+      [_conflicting_global_delegation] ->
         {:error,
          %{
            message: "Could not create delegation.",
@@ -240,8 +240,8 @@ defmodule LiquidVoting.Delegations do
   #  empty Delegation struct.
   #
   # Used by upsert_delegation/1 (above.)
-  defp find_similar_delegation_or_return_new_struct(delegations_of_delegator, proposal_url) do
-    delegations_of_delegator
+  defp find_similar_delegation_or_return_new_struct(delegations, proposal_url) do
+    delegations
     |> Enum.filter(fn d -> d.proposal_url == proposal_url end)
     |> case do
       # Delegation (of same type) not found, so we build one
