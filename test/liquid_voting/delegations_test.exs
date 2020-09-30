@@ -208,7 +208,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert original_delegation.delegator_id == modified_delegation.delegator_id
     end
 
-    test "upsert_delegation/1 with duplicate global delegation does nothing" do
+    test "upsert_delegation/1 with duplicate global returns the original delegation" do
       original_delegation = insert(:delegation)
 
       args = %{

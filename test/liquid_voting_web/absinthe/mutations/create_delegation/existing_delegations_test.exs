@@ -10,7 +10,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
   @another_proposal_url "https://www.proposal.com/another"
   @organization_id Ecto.UUID.generate()
 
-  describe "create global delegation for delegator with existing global delegation to different delegate" do
+  describe "create global delegation when a global delegation for a different delegate already exists" do
     test "overwrites existing global delegation" do
       query = """
       mutation {
@@ -58,7 +58,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
     end
   end
 
-  describe "create global delegation for delegator with existing proposal delegations to same delegate" do
+  describe "create global delegation when proposal delegations to same delegate already exist" do
     test "deletes proposal specific delegations for same delegator/delegate pair" do
       # First, create a proposal-specific delegation.
       query = """
@@ -142,7 +142,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
     end
   end
 
-  describe "create new proposal-specific delegation for delegator with existing delegation for same proposal" do
+  describe "create proposal delegation when delegation for same proposal already exists" do
     test "overwrites existing proposal-specific delegation" do
       query = """
       mutation {
@@ -191,7 +191,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
     end
   end
 
-  describe "create proposal delegation for delegator with existing global delegation to same delegate" do
+  describe "create proposal delegation when global delegation to same delegate already exists" do
     test "returns error" do
       # first, create a global delegation
       query = """
@@ -230,7 +230,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       }
       """
 
-      # TODO: Improve structure of error returned to absinthe (this is way too messy)
       {:ok, %{errors: [%{details: details, message: message}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
 
