@@ -124,8 +124,12 @@ defmodule LiquidVoting.Delegations do
     delegation_attrs = Map.take(args, [:organization_id, :proposal_url])
 
     Multi.new()
-    |> Multi.run(:upsert_delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_attrs) end)
-    |> Multi.run(:upsert_delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_attrs) end)
+    |> Multi.run(:upsert_delegator, fn _repo, _changes ->
+      Voting.upsert_participant(delegator_attrs)
+    end)
+    |> Multi.run(:upsert_delegate, fn _repo, _changes ->
+      Voting.upsert_participant(delegate_attrs)
+    end)
     |> Multi.run(:upsert_delegation, fn _repo, changes ->
       delegation_attrs
       |> Map.put(:delegator_id, changes.upsert_delegator.id)
