@@ -1,41 +1,18 @@
 defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegationsTest do
   use LiquidVotingWeb.ConnCase
+  import LiquidVoting.Factory
 
   alias LiquidVotingWeb.Schema.Schema
 
-  @delegator_email "delegator@email.com"
-  @delegate_email "delegate@email.com"
-  @another_delegate_email "another-delegate@email.com"
-  @proposal_url "https://www.proposal.com/my"
-  @organization_id Ecto.UUID.generate()
-
-  describe "with existing global delegation" do
+  describe "create global delegation when a global delegation for a different delegate already exists" do
     test "overwrites existing global delegation" do
-      query = """
-      mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}") {
-          delegator {
-            email
-            name
-          }
-          delegate {
-            email
-            name
-          }
-        }
-      }
-      """
-
-      {:ok, %{data: %{"createDelegation" => original_delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
-
-      assert original_delegation["delegator"]["email"] == @delegator_email
-      assert original_delegation["delegate"]["email"] == @delegate_email
+      global_delegation = insert(:delegation)
+      another_delegate = insert(:participant)
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @another_delegate_email
+        createDelegation(delegatorEmail: "#{global_delegation.delegator.email}", delegateEmail: "#{
+        another_delegate.email
       }") {
           delegator {
             email
@@ -45,24 +22,28 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
             email
             name
           }
+          id
         }
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => modified_delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+      {:ok, %{data: %{"createDelegation" => updated_delegation}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
-      assert modified_delegation["delegator"]["email"] == @delegator_email
-      assert modified_delegation["delegate"]["email"] == @another_delegate_email
+      assert updated_delegation["delegator"]["email"] == global_delegation.delegator.email
+      assert updated_delegation["delegate"]["email"] == another_delegate.email
+      assert updated_delegation["id"] == global_delegation.id
     end
   end
 
-  describe "create new proposal-specific delegation for delegator with existing delegation for same proposal" do
-    test "overwrites existing proposal-specific delegation" do
+  describe "create global delegation when proposal delegation to same delegate already exists" do
+    test "returns the new global delegation" do
+      proposal_delegation = insert(:delegation_for_proposal)
+
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{@delegate_email}", proposalUrl: "#{
-        @proposal_url
+        createDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
+        proposal_delegation.delegate.email
       }") {
           delegator {
             email
@@ -70,22 +51,63 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
           delegate {
             email
           }
-          proposalUrl
         }
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => original_delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+      {:ok, %{data: %{"createDelegation" => global_delegation}}} =
+        Absinthe.run(query, Schema,
+          context: %{organization_id: proposal_delegation.organization_id}
+        )
 
-      assert original_delegation["delegator"]["email"] == @delegator_email
-      assert original_delegation["delegate"]["email"] == @delegate_email
+      assert global_delegation["delegator"]["email"] == proposal_delegation.delegator.email
+      assert global_delegation["delegate"]["email"] == proposal_delegation.delegate.email
+    end
+  end
+
+  describe "create proposal delegation when delegation for same proposal already exists" do
+    test "overwrites existing proposal-specific delegation" do
+      proposal_delegation = insert(:delegation_for_proposal)
+      another_delegate = insert(:participant)
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{@delegator_email}", delegateEmail: "#{
-        @another_delegate_email
-      }", proposalUrl: "#{@proposal_url}") {
+        createDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
+        another_delegate.email
+      }", proposalUrl: "#{proposal_delegation.proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+          proposalUrl
+          id
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createDelegation" => updated_delegation}}} =
+        Absinthe.run(query, Schema,
+          context: %{organization_id: proposal_delegation.organization_id}
+        )
+
+      assert updated_delegation["delegator"]["email"] == proposal_delegation.delegator.email
+      assert updated_delegation["delegate"]["email"] == another_delegate.email
+      assert updated_delegation["proposalUrl"] == proposal_delegation.proposal_url
+      assert updated_delegation["id"] == proposal_delegation.id
+    end
+  end
+
+  describe "create proposal delegation when global delegation to same delegate already exists" do
+    test "returns error" do
+      global_delegation = insert(:delegation)
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{global_delegation.delegator.email}", delegateEmail: "#{
+        global_delegation.delegate.email
+      }", proposalUrl: "https://www.proposal.com/1") {
           delegator {
             email
           }
@@ -97,12 +119,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       }
       """
 
-      {:ok, %{data: %{"createDelegation" => modified_delegation}}} =
-        Absinthe.run(query, Schema, context: %{organization_id: @organization_id})
+      {:ok, %{errors: [%{details: details, message: message}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
-      assert modified_delegation["delegator"]["email"] == @delegator_email
-      assert modified_delegation["delegate"]["email"] == @another_delegate_email
-      assert original_delegation["proposalUrl"] == modified_delegation["proposalUrl"]
+      assert message == "Could not create delegation."
+      assert details == "A global delegation for the same participants already exists."
     end
   end
 end

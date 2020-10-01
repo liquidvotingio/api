@@ -134,8 +134,14 @@ defmodule LiquidVoting.Delegations do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, resources} -> {:ok, resources.delegation}
-      error -> error
+      {:ok, resources} ->
+        {:ok, resources.delegation}
+
+      {:error, :delegation, value, _} ->
+        {:error, value}
+
+      error ->
+        error
     end
   end
 
@@ -156,6 +162,8 @@ defmodule LiquidVoting.Delegations do
 
   Creates a new delegation if neither aforementioned condition is true.
 
+  Also resolves conflicts with existing delegations.
+
   ## Examples
 
       iex> upsert_delegation(%{
@@ -169,28 +177,79 @@ defmodule LiquidVoting.Delegations do
       iex> upsert_delegation(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
   """
-  def upsert_delegation(%{delegator_id: delegator_id} = attrs) do
+  def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
     Delegation
-    |> where([d], d.delegator_id == ^delegator_id)
-    |> where_proposal(proposal_url)
-    |> Repo.one()
+    |> where(delegator_id: ^delegator_id)
+    |> Repo.all()
+    |> resolve_conflicts(delegate_id, proposal_url)
     |> case do
-      # Delegation (of same type) not found, so we build one
-      nil -> %Delegation{}
-      # Delegation (of same type) exists - let's use it
-      delegation -> delegation
+      {:ok, delegations_of_delegator} ->
+        delegations_of_delegator
+        |> find_similar_delegation_or_return_new_struct(proposal_url)
+        |> Delegation.changeset(attrs)
+        |> Repo.insert_or_update()
+
+      {:error, %{message: message, details: details}} ->
+        {:error, %{message: message, details: details}}
     end
-    |> Delegation.changeset(attrs)
-    |> Repo.insert_or_update()
   end
 
-  defp where_proposal(query, _proposal_url = nil),
-    do: query |> where([d], is_nil(d.proposal_url))
+  # Resolves conflicting delegations (2 clauses).
+  #
+  # Used by upsert_delegation/1 (above).
+  #
+  # Clause 1: Matches an attempt to upsert a global delegation.
+  # Looks for conflicting proposal-specific delegations and deletes any found.
+  #
+  # Clause 2: Matches an attempt to upsert a proposal-specific delegation.
+  # Looks for conflicting global delegation, and returns an error if found.
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil) do
+    delegations
+    |> Stream.filter(fn d ->
+      d.delegate_id == delegate_id and d.proposal_url != nil
+    end)
+    |> Enum.each(fn d ->
+      delete_delegation!(d)
+    end)
 
-  defp where_proposal(query, proposal_url),
-    do: query |> where([d], d.proposal_url == ^proposal_url)
+    {:ok, delegations}
+  end
+
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url) do
+    delegations
+    |> Enum.filter(fn d ->
+      d.proposal_url == nil and d.delegate_id == delegate_id
+    end)
+    |> case do
+      [] ->
+        {:ok, delegations}
+
+      [_conflicting_global_delegation] ->
+        {:error,
+         %{
+           message: "Could not create delegation.",
+           details: "A global delegation for the same participants already exists."
+         }}
+    end
+  end
+
+  # Looks for a delegator's existing delegation of matching type (global or for
+  # same proposal).Returns a matching delegation type, if found, or returns an
+  #  empty Delegation struct.
+  #
+  # Used by upsert_delegation/1 (above.)
+  defp find_similar_delegation_or_return_new_struct(delegations, proposal_url) do
+    delegations
+    |> Enum.filter(fn d -> d.proposal_url == proposal_url end)
+    |> case do
+      # Delegation (of same type) not found, so we build one
+      [] -> %Delegation{}
+      # Delegation (of same type) exists - let's use it
+      [delegation] -> delegation
+    end
+  end
 
   @doc """
   Updates a delegation.
