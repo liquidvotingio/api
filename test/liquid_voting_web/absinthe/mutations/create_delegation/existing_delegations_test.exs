@@ -38,12 +38,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
   describe "create global delegation when proposal delegation to same delegate already exists" do
     test "returns the new global delegation" do
-      proposal_delegation_1 = insert(:delegation_for_proposal)
+      proposal_delegation = insert(:delegation_for_proposal)
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{proposal_delegation_1.delegator.email}", delegateEmail: "#{
-        proposal_delegation_1.delegate.email
+        createDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
+        proposal_delegation.delegate.email
       }") {
           delegator {
             email
@@ -57,11 +57,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
 
       {:ok, %{data: %{"createDelegation" => global_delegation}}} =
         Absinthe.run(query, Schema,
-          context: %{organization_id: proposal_delegation_1.organization_id}
+          context: %{organization_id: proposal_delegation.organization_id}
         )
 
-      assert global_delegation["delegator"]["email"] == proposal_delegation_1.delegator.email
-      assert global_delegation["delegate"]["email"] == proposal_delegation_1.delegate.email
+      assert global_delegation["delegator"]["email"] == proposal_delegation.delegator.email
+      assert global_delegation["delegate"]["email"] == proposal_delegation.delegate.email
     end
   end
 
@@ -82,6 +82,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
             email
           }
           proposalUrl
+          id
         }
       }
       """
@@ -94,6 +95,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
       assert updated_delegation["delegator"]["email"] == proposal_delegation.delegator.email
       assert updated_delegation["delegate"]["email"] == another_delegate.email
       assert updated_delegation["proposalUrl"] == proposal_delegation.proposal_url
+      assert updated_delegation["id"] == proposal_delegation.id
     end
   end
 
