@@ -185,8 +185,8 @@ defmodule LiquidVoting.Delegations do
     |> Repo.all()
     |> resolve_conflicts(delegate_id, proposal_url)
     |> case do
-      {:ok, delegations_of_delegator} ->
-        delegations_of_delegator
+      {:ok, delegations} ->
+        delegations
         |> find_similar_delegation_or_return_new_struct(proposal_url)
         |> Delegation.changeset(attrs)
         |> Repo.insert_or_update()
