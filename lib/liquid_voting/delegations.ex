@@ -121,23 +121,27 @@ defmodule LiquidVoting.Delegations do
   def create_delegation(%{delegator_email: _, delegate_email: _} = args) do
     delegator_attrs = %{email: args.delegator_email, organization_id: args.organization_id}
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
-    attrs = Map.take(args, [:organization_id, :proposal_url])
+    delegation_attrs = Map.take(args, [:organization_id, :proposal_url])
 
     Multi.new()
-    |> Multi.run(:delegator, fn _repo, _changes -> Voting.upsert_participant(delegator_attrs) end)
-    |> Multi.run(:delegate, fn _repo, _changes -> Voting.upsert_participant(delegate_attrs) end)
-    |> Multi.run(:delegation, fn _repo, changes ->
-      attrs
-      |> Map.put(:delegator_id, changes.delegator.id)
-      |> Map.put(:delegate_id, changes.delegate.id)
+    |> Multi.run(:upsert_delegator, fn _repo, _changes ->
+      Voting.upsert_participant(delegator_attrs)
+    end)
+    |> Multi.run(:upsert_delegate, fn _repo, _changes ->
+      Voting.upsert_participant(delegate_attrs)
+    end)
+    |> Multi.run(:upsert_delegation, fn _repo, changes ->
+      delegation_attrs
+      |> Map.put(:delegator_id, changes.upsert_delegator.id)
+      |> Map.put(:delegate_id, changes.upsert_delegate.id)
       |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
       {:ok, resources} ->
-        {:ok, resources.delegation}
+        {:ok, resources.upsert_delegation}
 
-      {:error, :delegation, value, _} ->
+      {:error, :upsert_delegation, value, _} ->
         {:error, value}
 
       error ->
@@ -185,8 +189,8 @@ defmodule LiquidVoting.Delegations do
     |> Repo.all()
     |> resolve_conflicts(delegate_id, proposal_url)
     |> case do
-      {:ok, delegations_of_delegator} ->
-        delegations_of_delegator
+      {:ok, delegations} ->
+        delegations
         |> find_similar_delegation_or_return_new_struct(proposal_url)
         |> Delegation.changeset(attrs)
         |> Repo.insert_or_update()
