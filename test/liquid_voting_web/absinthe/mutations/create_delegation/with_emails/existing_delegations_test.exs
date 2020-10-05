@@ -1,4 +1,4 @@
-defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegationsTest do
+defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithEmails.ExistingDelegationsTest do
   use LiquidVotingWeb.ConnCase
   import LiquidVoting.Factory
 
@@ -7,7 +7,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
   describe "create global delegation when a global delegation for a different delegate already exists" do
     test "overwrites existing global delegation" do
       global_delegation = insert(:delegation)
-      another_delegate = insert(:participant)
+      another_delegate = insert(:participant, organization_id: global_delegation.organization_id)
 
       query = """
       mutation {
@@ -68,7 +68,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.ExistingDelegation
   describe "create proposal delegation when delegation for same proposal already exists" do
     test "overwrites existing proposal-specific delegation" do
       proposal_delegation = insert(:delegation_for_proposal)
-      another_delegate = insert(:participant)
+
+      another_delegate =
+        insert(:participant, organization_id: proposal_delegation.organization_id)
 
       query = """
       mutation {

@@ -105,7 +105,10 @@ defmodule LiquidVoting.Delegations do
   Creates a delegation.
 
   The delegation will be global if no `proposal_url` is passed in.
-  The delegation can be created by ID or by email.
+  The delegation can be created using participant IDs or emails.
+
+  If created using participant emails, new participant(s) will be created if
+  they do not already exist.
 
   ## Examples
 
@@ -149,10 +152,8 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
-  def create_delegation(attrs) do
-    %Delegation{}
-    |> Delegation.changeset(attrs)
-    |> Repo.insert()
+  def create_delegation(%{delegator_id: _, delegate_id: _} = attrs) do
+    upsert_delegation(attrs)
   end
 
   @doc """
