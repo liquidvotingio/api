@@ -149,27 +149,8 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
-  def create_delegation(%{delegator_id: _, delegate_id: _} = args) do
-    args
-    |> upsert_delegation()
-    #|> Repo.transaction()
-    #|> IO.inspect()
-    |> case do
-      {:ok, delegation} ->
-        {:ok, delegation}
-
-      {:error, value, _} ->
-        {:error, value}
-
-      error ->
-        error
-    end
-  end
-
-  def create_delegation(attrs) do
-    %Delegation{}
-    |> Delegation.changeset(attrs)
-    |> Repo.insert()
+  def create_delegation(%{delegator_id: _, delegate_id: _} = attrs) do
+    upsert_delegation(attrs)
   end
 
   @doc """
