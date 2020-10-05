@@ -32,7 +32,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
 
       assert updated_delegation["delegator"]["id"] == global_delegation.delegator.id
       assert updated_delegation["delegate"]["id"] == another_delegate.id
-      assert updated_delegation["id"] == global_delegation.id # DEV: Fails here, as expected
+      assert updated_delegation["id"] == global_delegation.id
     end
   end
 
@@ -95,7 +95,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
       assert updated_delegation["delegator"]["id"] == proposal_delegation.delegator.id
       assert updated_delegation["delegate"]["id"] == another_delegate.id
       assert updated_delegation["proposalUrl"] == proposal_delegation.proposal_url
-      assert updated_delegation["id"] == proposal_delegation.id # DEV: Fails here, as expected
+      assert updated_delegation["id"] == proposal_delegation.id
     end
   end
 
@@ -119,7 +119,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
       }
       """
 
-      # DEV: Fails here, as expected (Returns: {:ok, %{data: %{"createDelegation" => %{...}}})
       {:ok, %{errors: [%{details: details, message: message}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
