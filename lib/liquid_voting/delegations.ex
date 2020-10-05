@@ -105,7 +105,10 @@ defmodule LiquidVoting.Delegations do
   Creates a delegation.
 
   The delegation will be global if no `proposal_url` is passed in.
-  The delegation can be created by ID or by email.
+  The delegation can be created using participant IDs or emails.
+
+  If created using participant emails, new participant(s) will be created if
+  they do not already exist.
 
   ## Examples
 
