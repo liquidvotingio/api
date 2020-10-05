@@ -11,15 +11,15 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{global_delegation.delegator.email}", delegateEmail: "#{
-        another_delegate.email
+        createDelegation(delegatorId: "#{global_delegation.delegator.id}", delegateId: "#{
+        another_delegate.id
       }") {
           delegator {
-            email
+            id
             name
           }
           delegate {
-            email
+            id
             name
           }
           id
@@ -30,9 +30,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
       {:ok, %{data: %{"createDelegation" => updated_delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
-      assert updated_delegation["delegator"]["email"] == global_delegation.delegator.email
-      assert updated_delegation["delegate"]["email"] == another_delegate.email
-      assert updated_delegation["id"] == global_delegation.id
+      assert updated_delegation["delegator"]["id"] == global_delegation.delegator.id
+      assert updated_delegation["delegate"]["id"] == another_delegate.id
+      assert updated_delegation["id"] == global_delegation.id # DEV: Fails here, as expected
     end
   end
 
@@ -42,14 +42,14 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
-        proposal_delegation.delegate.email
+        createDelegation(delegatorId: "#{proposal_delegation.delegator.id}", delegateId: "#{
+        proposal_delegation.delegate.id
       }") {
           delegator {
-            email
+            id
           }
           delegate {
-            email
+            id
           }
         }
       }
@@ -60,8 +60,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
           context: %{organization_id: proposal_delegation.organization_id}
         )
 
-      assert global_delegation["delegator"]["email"] == proposal_delegation.delegator.email
-      assert global_delegation["delegate"]["email"] == proposal_delegation.delegate.email
+      assert global_delegation["delegator"]["id"] == proposal_delegation.delegator.id
+      assert global_delegation["delegate"]["id"] == proposal_delegation.delegate.id
     end
   end
 
@@ -72,14 +72,14 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
-        another_delegate.email
+        createDelegation(delegatorId: "#{proposal_delegation.delegator.id}", delegateId: "#{
+        another_delegate.id
       }", proposalUrl: "#{proposal_delegation.proposal_url}") {
           delegator {
-            email
+            id
           }
           delegate {
-            email
+            id
           }
           proposalUrl
           id
@@ -92,10 +92,10 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
           context: %{organization_id: proposal_delegation.organization_id}
         )
 
-      assert updated_delegation["delegator"]["email"] == proposal_delegation.delegator.email
-      assert updated_delegation["delegate"]["email"] == another_delegate.email
+      assert updated_delegation["delegator"]["id"] == proposal_delegation.delegator.id
+      assert updated_delegation["delegate"]["id"] == another_delegate.id
       assert updated_delegation["proposalUrl"] == proposal_delegation.proposal_url
-      assert updated_delegation["id"] == proposal_delegation.id
+      assert updated_delegation["id"] == proposal_delegation.id # DEV: Fails here, as expected
     end
   end
 
@@ -105,20 +105,21 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{global_delegation.delegator.email}", delegateEmail: "#{
-        global_delegation.delegate.email
+        createDelegation(delegatorId: "#{global_delegation.delegator.id}", delegateId: "#{
+        global_delegation.delegate.id
       }", proposalUrl: "https://www.proposal.com/1") {
           delegator {
-            email
+            id
           }
           delegate {
-            email
+            id
           }
           proposalUrl
         }
       }
       """
 
+      # DEV: Fails here, as expected (Returns: {:ok, %{data: %{"createDelegation" => %{...}}})
       {:ok, %{errors: [%{details: details, message: message}]}} =
         Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
