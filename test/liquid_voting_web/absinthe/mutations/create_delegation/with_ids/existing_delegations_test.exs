@@ -68,7 +68,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
   describe "create proposal delegation when delegation for same proposal already exists" do
     test "overwrites existing proposal-specific delegation" do
       proposal_delegation = insert(:delegation_for_proposal)
-      another_delegate = insert(:participant, organization_id: proposal_delegation.organization_id)
+
+      another_delegate =
+        insert(:participant, organization_id: proposal_delegation.organization_id)
 
       query = """
       mutation {
