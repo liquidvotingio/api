@@ -149,6 +149,11 @@ defmodule LiquidVoting.Delegations do
     end
   end
 
+  def create_delegation(%{delegator_id: _, delegate_id: _} = args) do
+    IO.inspect(args.delegator_id)
+    IO.inspect(args.delegate_id)
+  end
+
   def create_delegation(attrs) do
     %Delegation{}
     |> Delegation.changeset(attrs)
