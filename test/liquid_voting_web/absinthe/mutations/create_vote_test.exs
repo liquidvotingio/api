@@ -125,5 +125,73 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       assert message == "Could not create vote"
       assert details == "No participant identifier (id or email) submitted"
     end
+
+    # This tests 2 things (which are covered separately in related liquid_voting tests):
+    #
+    # 1. Global and proposal-specific delegations made by same participant (delegator)
+    # are correctly counted in voting results when different proposal voting results
+    # are calculated (for the same proposal as the proposal-specific delegation, and
+    # for proposals not related to a proposal-specific delegation and which should,
+    # therefore, be related to the vote of the global delegation delegate).
+    #
+    # 2. Creating votes after related delegations are created correctly weights the
+    # votes cast by the respective delegates.
+    test "when created after related global and proposal delegations" do
+      global_delegation = insert(:delegation)
+      another_delegate = insert(:participant, organization_id: global_delegation.organization_id)
+      proposal_A_url = "https://proposals/a"
+
+      _proposal_delegation =
+        insert(:delegation,
+          delegator: global_delegation.delegator,
+          delegate: another_delegate,
+          organization_id: global_delegation.organization_id,
+          proposal_url: proposal_A_url
+        )
+
+      proposal_B_url = "https://proposals/b"
+
+      # create a vote cast by the proposal-specific delegation's delegate
+      query = """
+      mutation {
+        createVote(participantEmail: "#{another_delegate.email}", proposalUrl: "#{proposal_A_url}", yes: false) {
+          proposalUrl
+          votingResult {
+            inFavor
+            against
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
+
+      assert vote["proposalUrl"] == proposal_A_url
+      assert vote["votingResult"]["inFavor"] == 0
+      assert vote["votingResult"]["against"] == 2
+
+      # create a vote cast by the global delegation's delegate
+      query = """
+      mutation {
+        createVote(participantEmail: "#{global_delegation.delegate.email}", proposalUrl: "#{
+        proposal_B_url
+      }", yes: true) {
+          proposalUrl
+          votingResult {
+            inFavor
+            against
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
+
+      assert vote["proposalUrl"] == proposal_B_url
+      assert vote["votingResult"]["inFavor"] == 2
+      assert vote["votingResult"]["against"] == 0
+    end
   end
 end
