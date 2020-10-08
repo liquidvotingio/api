@@ -126,7 +126,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       assert details == "No participant identifier (id or email) submitted"
     end
 
-    # This tests 2 things (which are covered separately in related liquid_voting tests):
+    # This tests 2 things:
     #
     # 1. Global and proposal-specific delegations made by same participant (delegator)
     # are correctly counted in voting results when different proposal voting results
@@ -137,19 +137,31 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     # 2. Creating votes after related delegations are created correctly weights the
     # votes cast by the respective delegates.
     test "when created after related global and proposal delegations" do
-      global_delegation = insert(:delegation)
-      another_delegate = insert(:participant, organization_id: global_delegation.organization_id)
-      proposal_A_url = "https://proposals/a"
+      # global_delegation = insert(:delegation)
+      # another_delegate = insert(:participant, organization_id: global_delegation.organization_id)
+      # proposal_A_url = "https://proposals/a"
 
-      _proposal_delegation =
-        insert(:delegation,
-          delegator: global_delegation.delegator,
-          delegate: another_delegate,
-          organization_id: global_delegation.organization_id,
-          proposal_url: proposal_A_url
-        )
+      # _proposal_delegation =
+      #   insert(:delegation,
+      #     delegator: global_delegation.delegator,
+      #     delegate: another_delegate,
+      #     organization_id: global_delegation.organization_id,
+      #     proposal_url: proposal_A_url
+      #   )
+
+      global_delegation = insert(:delegation)
+
+      proposal_delegation = insert(:delegation_for_proposal,
+        delegator: global_delegation.delegator,
+        organization_id: global_delegation.organization_id
+      )
+      another_delegate = proposal_delegation.delegate
+      proposal_A_url = proposal_delegation.proposal_url
 
       proposal_B_url = "https://proposals/b"
+
+      IO.inspect(another_delegate.organization_id)
+      IO.inspect(global_delegation.organization_id)
 
       # create a vote cast by the proposal-specific delegation's delegate
       query = """
