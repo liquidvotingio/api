@@ -34,15 +34,17 @@ defmodule LiquidVoting.Factory do
     }
   end
 
-  def delegation_for_proposal_factory do
-    organization_id = Ecto.UUID.generate()
+  def delegation_for_proposal_factory(attrs) do
+    organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
 
-    %Delegation{
+    delegation = %Delegation{
       delegator: build(:participant, organization_id: organization_id),
       delegate: build(:participant, organization_id: organization_id),
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
       organization_id: organization_id
     }
+
+    merge_attributes(delegation, attrs)
   end
 
   def voting_result_factory do
