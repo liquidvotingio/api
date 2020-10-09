@@ -23,10 +23,10 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   end
 
   def votes(_, %{proposal_url: proposal_url}, %{context: %{organization_id: organization_id}}),
-    do: {:ok, Voting.list_votes(proposal_url, organization_id)}
+    do: {:ok, Voting.list_votes_by_proposal(proposal_url, organization_id)}
 
   def votes(_, _, %{context: %{organization_id: organization_id}}),
-    do: {:ok, Voting.list_votes(organization_id)}
+    do: {:ok, Voting.list_votes_by_proposal(organization_id)}
 
   def vote(_, %{id: id}, %{context: %{organization_id: organization_id}}),
     do: {:ok, Voting.get_vote!(id, organization_id)}

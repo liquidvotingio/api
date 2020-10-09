@@ -19,7 +19,7 @@ defmodule LiquidVoting.VotingResults do
 
   """
   def calculate_result!(proposal_url, organization_id) do
-    votes = Voting.list_votes(proposal_url, organization_id)
+    votes = Voting.list_votes_by_proposal(proposal_url, organization_id)
 
     attrs = %{
       in_favor: 0,

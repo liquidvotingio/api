@@ -71,15 +71,22 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> list_votes("https://docs.google.com/document/d/someid", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> list_votes_by_proposal("https://docs.google.com/document/d/someid", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Vote{}, ...]
 
   """
-  def list_votes(proposal_url, organization_id) do
+  def list_votes_by_proposal(proposal_url, organization_id) do
     Vote
     |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
     |> Repo.all()
     |> Repo.preload([:participant])
+  end
+
+  def list_votes_by_participant(participant_id, organization_id) do
+  Vote
+  |> where(participant_id: ^participant_id, organization_id: ^organization_id)
+  |> Repo.all()
+  |> Repo.preload([:participant])
   end
 
   @doc """
