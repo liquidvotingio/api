@@ -86,6 +86,11 @@ defmodule LiquidVoting.VotingTest do
       assert Voting.list_votes_by_proposal(vote.proposal_url, vote.organization_id) == [vote]
     end
 
+    test "list_votes_by_participant/2 returns all votes for a participant_id and an organization_id" do
+      vote = insert(:vote)
+      assert Voting.list_votes_by_participant(vote.participant_id, vote.organization_id) == [vote]
+    end
+
     test "get_vote!/2 returns the vote for given id and organization_id" do
       vote = insert(:vote)
       assert Voting.get_vote!(vote.id, vote.organization_id) == vote

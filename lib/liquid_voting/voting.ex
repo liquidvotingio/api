@@ -83,10 +83,10 @@ defmodule LiquidVoting.Voting do
   end
 
   def list_votes_by_participant(participant_id, organization_id) do
-  Vote
-  |> where(participant_id: ^participant_id, organization_id: ^organization_id)
-  |> Repo.all()
-  |> Repo.preload([:participant])
+    Vote
+    |> where(participant_id: ^participant_id, organization_id: ^organization_id)
+    |> Repo.all()
+    |> Repo.preload([:participant])
   end
 
   @doc """
