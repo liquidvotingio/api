@@ -131,10 +131,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     # multiple delegations:
     #
     # First, a global delegation is created.
+    #
     # Second, a proposal-specific delegation (for proposal_A_url), with the same
     # delegator, but a different delegate, is created.
     #
     # Third, the delegate of the proposal-specific delegation casts a vote (against).
+    #
     # Fourth, the delegate of the global delegation casts a vote (in favor) for 
     # a separate proposal (proposal_B_url).
     #
@@ -144,18 +146,16 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "when created after related global and proposal delegations" do
       global_delegation = insert(:delegation)
 
-      proposal_delegation =
-        insert(:delegation_for_proposal,
-          delegator: global_delegation.delegator,
-          organization_id: global_delegation.organization_id
-        )
-
+      proposal_delegation = insert(:delegation_for_proposal,
+        delegator: global_delegation.delegator,
+        organization_id: global_delegation.organization_id
+      )
       proposal_delegate = proposal_delegation.delegate
       proposal_A_url = proposal_delegation.proposal_url
 
       proposal_B_url = "https://proposals/b"
 
-      # create a vote for 'proposal A', cast by the proposal-specific delegation's delegate
+      # create a vote for 'proposal A', cast by the proposal-specific delegation's delegate.
       query = """
       mutation {
         createVote(participantEmail: "#{proposal_delegate.email}", proposalUrl: "#{proposal_A_url}", yes: false) {
@@ -173,9 +173,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
 
       assert vote["proposalUrl"] == proposal_A_url
       assert vote["votingResult"]["inFavor"] == 0
-      assert vote["votingResult"]["against"] == 2
+      assert vote["votingResult"]["against"] == 2   
 
-      # create a vote for 'proposal B', cast by the global delegation's delegate
+      # create a vote for 'proposal B', cast by the global delegation's delegate.
       query = """
       mutation {
         createVote(participantEmail: "#{global_delegation.delegate.email}", proposalUrl: "#{
