@@ -146,10 +146,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "when created after related global and proposal delegations" do
       global_delegation = insert(:delegation)
 
-      proposal_delegation = insert(:delegation_for_proposal,
-        delegator: global_delegation.delegator,
-        organization_id: global_delegation.organization_id
-      )
+      proposal_delegation =
+        insert(:delegation_for_proposal,
+          delegator: global_delegation.delegator,
+          organization_id: global_delegation.organization_id
+        )
+
       proposal_delegate = proposal_delegation.delegate
       proposal_A_url = proposal_delegation.proposal_url
 
@@ -173,7 +175,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
 
       assert vote["proposalUrl"] == proposal_A_url
       assert vote["votingResult"]["inFavor"] == 0
-      assert vote["votingResult"]["against"] == 2   
+      assert vote["votingResult"]["against"] == 2
 
       # create a vote for 'proposal B', cast by the global delegation's delegate.
       query = """
