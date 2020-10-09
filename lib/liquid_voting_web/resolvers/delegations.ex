@@ -49,6 +49,16 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
 
     with {:ok, args} <- validate_participant_args(args),
          {:ok, delegation} <- Delegations.create_delegation(args) do
+
+          # case proposal_url do
+          #   nil -> votes = 
+          # end
+
+      # if delegation is global... find all votes of delegate (if any) and call
+      #   publish_voting_results on each vote's proposal_url
+      # else if delegation is proposal-specific
+      # call publish_voting_results on specific proposal_url
+
       {:ok, delegation}
     else
       {:error, %{message: message, details: details}} ->
