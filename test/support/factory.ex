@@ -5,33 +5,41 @@ defmodule LiquidVoting.Factory do
   alias LiquidVoting.Delegations.Delegation
   alias LiquidVoting.VotingResults.Result
 
-  def participant_factory do
-    %Participant{
+  def participant_factory(attrs) do
+    organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
+
+    participant = %Participant{
       name: sequence(:name, &"Jane Doe #{&1}"),
       email: sequence(:email, &"jane#{&1}@somedomain.com"),
-      organization_id: Ecto.UUID.generate()
+      organization_id: organization_id
     }
+
+    merge_attributes(participant, attrs)
   end
 
-  def vote_factory do
-    organization_id = Ecto.UUID.generate()
+  def vote_factory(attrs) do
+    organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
 
-    %Vote{
+    vote = %Vote{
       yes: true,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
       participant: build(:participant, organization_id: organization_id),
       organization_id: organization_id
     }
+
+    merge_attributes(vote, attrs)
   end
 
-  def delegation_factory do
-    organization_id = Ecto.UUID.generate()
+  def delegation_factory(attrs) do
+    organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
 
-    %Delegation{
+    delegation = %Delegation{
       delegator: build(:participant, organization_id: organization_id),
       delegate: build(:participant, organization_id: organization_id),
       organization_id: organization_id
     }
+
+    merge_attributes(delegation, attrs)
   end
 
   def delegation_for_proposal_factory(attrs) do
@@ -47,12 +55,16 @@ defmodule LiquidVoting.Factory do
     merge_attributes(delegation, attrs)
   end
 
-  def voting_result_factory do
-    %Result{
+  def voting_result_factory (attrs) do
+    organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
+
+    voting_result = %Result{
       in_favor: 0,
       against: 0,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
-      organization_id: Ecto.UUID.generate()
+      organization_id: organization_id
     }
+
+    merge_attributes(voting_result, attrs)
   end
 end
