@@ -55,7 +55,7 @@ defmodule LiquidVoting.Factory do
     merge_attributes(delegation, attrs)
   end
 
-  def voting_result_factory (attrs) do
+  def voting_result_factory(attrs) do
     organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
 
     voting_result = %Result{
