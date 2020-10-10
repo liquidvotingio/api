@@ -34,9 +34,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       {:ok, %{data: %{"createDelegation" => delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: vote.organization_id})
 
-        assert delegation["proposalUrl"] == proposal_url
-        assert delegation["votingResult"]["inFavor"] == 2
-        assert delegation["votingResult"]["against"] == 0
+      assert delegation["proposalUrl"] == proposal_url
+      assert delegation["votingResult"]["inFavor"] == 2
+      assert delegation["votingResult"]["against"] == 0
     end
   end
 
@@ -132,9 +132,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       {:ok, %{data: %{"createDelegation" => delegation}}} =
         Absinthe.run(query, Schema, context: %{organization_id: vote_A.organization_id})
 
-        assert delegation["proposalUrl"] == proposal_A_url
-        assert delegation["votingResult"]["inFavor"] == 2
-        assert delegation["votingResult"]["against"] == 0
+      assert delegation["proposalUrl"] == proposal_A_url
+      assert delegation["votingResult"]["inFavor"] == 2
+      assert delegation["votingResult"]["against"] == 0
 
       # create global delegation to participant_B (as delegate)
       #
