@@ -16,7 +16,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
 
       # Create proposal_url delegation to participant (as delegate) and get
       # voting result for proposal_url.
-
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{
@@ -114,7 +113,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
 
       # Create proposal_A_url delegation to participant_A (as delegate) and get
       # voting result for proposal_A_url.
-
       query = """
       mutation {
         createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{
