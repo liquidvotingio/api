@@ -82,6 +82,15 @@ defmodule LiquidVoting.Voting do
     |> Repo.preload([:participant])
   end
 
+  @doc """
+  Returns the list of votes for a participant id and organization id
+
+  ## Examples
+
+      iex> list_votes_by_participant("cc1e2ea3-317e-4f40-97b4-06db6e48cd05", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      [%Vote{}, ...]
+
+  """
   def list_votes_by_participant(participant_id, organization_id) do
     Vote
     |> where(participant_id: ^participant_id, organization_id: ^organization_id)
