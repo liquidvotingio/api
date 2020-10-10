@@ -52,12 +52,14 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       proposal_url = Map.get(args, :proposal_url)
 
       case proposal_url do
+        # Global delegation: We find all votes of the delegate and update related voting result(s).
         nil ->
           Voting.list_votes_by_participant(delegation.delegate_id, delegation.organization_id)
           |> Enum.each(fn v ->
             VotingResults.publish_voting_result_change(v.proposal_url, v.organization_id)
           end)
 
+        # Proposal delegation: We update the voting result for the given proposal_url.
         _proposal_url ->
           VotingResults.publish_voting_result_change(proposal_url, delegation.organization_id)
       end

@@ -150,6 +150,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       {:ok, %{data: %{"createVote" => vote}}} =
         Absinthe.run(query, Schema, context: %{organization_id: delegation.organization_id})
 
+      # Assert the voting result includes the voting weight due to delegation,
+      # in addition to the delegate's default vote-weight of 1.
       assert vote["proposalUrl"] == proposal_url
       assert vote["votingResult"]["inFavor"] == 2
       assert vote["votingResult"]["against"] == 0
@@ -179,14 +181,16 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       {:ok, %{data: %{"createVote" => vote}}} =
         Absinthe.run(query, Schema, context: %{organization_id: delegation.organization_id})
 
+      # Assert the voting result includes the voting weight due to delegation,
+      # in addition to the delegate's default vote-weight of 1.
       assert vote["proposalUrl"] == proposal_url
       assert vote["votingResult"]["inFavor"] == 0
       assert vote["votingResult"]["against"] == 2
     end
 
     # This tests 2 separate, but related, scenarios - to help test that voting
-    # results are correctly reported when the same participant is delegator for
-    # multiple delegations:
+    # results are correctly calculated when the same participant is delegator
+    # for multiple delegations:
     #
     # First, a global delegation is created.
     #
@@ -199,8 +203,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     # a separate proposal (proposal_B_url).
     #
     # Lastly, we assert that the voting results returned in a query within the
-    # createVote mutations contain the expected votes - 2 votes 'against' for 
-    # proposal_A_url, and 2 votes 'in_favor' for proposal_B_url.
+    # createVote mutations contain the expected vote counts - 2 votes 'against'
+    # for proposal_A_url, and 2 votes 'in_favor' for proposal_B_url.
     test "when created after related global and proposal delegations" do
       global_delegation = insert(:delegation)
 
@@ -215,7 +219,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
 
       proposal_B_url = "https://proposals/b"
 
-      # create a vote for 'proposal A', cast by the proposal-specific delegation's delegate.
+      # Create a vote for 'proposal A', cast by the proposal-specific delegation's delegate.
       query = """
       mutation {
         createVote(participantEmail: "#{proposal_delegate.email}", proposalUrl: "#{proposal_A_url}", yes: false) {
@@ -235,7 +239,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       assert vote["votingResult"]["inFavor"] == 0
       assert vote["votingResult"]["against"] == 2
 
-      # create a vote for 'proposal B', cast by the global delegation's delegate.
+      # Create a vote for 'proposal B', cast by the global delegation's delegate.
       query = """
       mutation {
         createVote(participantEmail: "#{global_delegation.delegate.email}", proposalUrl: "#{
