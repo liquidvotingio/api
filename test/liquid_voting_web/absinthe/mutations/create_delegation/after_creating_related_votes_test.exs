@@ -97,7 +97,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
   end
 
   describe "create proposal-specific and global delegations" do
-    test "after creating related proposal votes" do
+    test "after creating related votes" do
       # Insert vote_A and get related participant and proposal_url.
       vote_A = insert(:vote, yes: true)
       participant_A = vote_A.participant
