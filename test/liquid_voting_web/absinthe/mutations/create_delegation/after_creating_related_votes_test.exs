@@ -11,11 +11,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       participant = vote.participant
       proposal_url = vote.proposal_url
 
-      # Insert participant to act as delegator
+      # Insert participant to act as delegator.
       delegator = insert(:participant, organization_id: vote.organization_id)
 
-      # create proposal_url delegation to participant (as delegate) and get
-      # voting result for proposal_url
+      # Create proposal_url delegation to participant (as delegate) and get
+      # voting result for proposal_url.
 
       query = """
       mutation {
@@ -50,7 +50,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       # Insert participant to act as delegator
       delegator = insert(:participant, organization_id: vote.organization_id)
 
-      # create global delegation to participant (as delegate)
+      # Create global delegation to participant (as delegate).
       #
       # This setup step needs to involve a call to create_delegation, as simply
       # inserting a factory delegation cannot be expected to call
@@ -77,7 +77,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       assert delegation["delegator"]["email"] == delegator.email
       assert delegation["delegate"]["email"] == participant.email
 
-      # Get result for proposal_B_url (should be 'against == 2')
+      # Get result for proposal_B_url (should be 'against == 2').
       query = """
       query {
         votingResult(proposalUrl: "#{proposal_url}") {
@@ -104,16 +104,16 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       participant_A = vote_A.participant
       proposal_A_url = vote_A.proposal_url
 
-      # Insert vote_B and get related participant asnd proposal_url
+      # Insert vote_B and get related participant asnd proposal_url.
       vote_B = insert(:vote, yes: false, organization_id: vote_A.organization_id)
       participant_B = vote_B.participant
       proposal_B_url = vote_B.proposal_url
 
-      # Insert participant to act as delegator
+      # Insert participant to act as delegator.
       delegator = insert(:participant, organization_id: vote_A.organization_id)
 
-      # create proposal_A_url delegation to participant_A (as delegate) and get
-      # voting result for proposal_A_url
+      # Create proposal_A_url delegation to participant_A (as delegate) and get
+      # voting result for proposal_A_url.
 
       query = """
       mutation {
@@ -136,7 +136,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       assert delegation["votingResult"]["inFavor"] == 2
       assert delegation["votingResult"]["against"] == 0
 
-      # create global delegation to participant_B (as delegate)
+      # Create global delegation to participant_B (as delegate)
       #
       # This setup step needs to involve a call to create_delegation, as simply
       # inserting a factory delegation cannot be expected to call
@@ -163,7 +163,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       assert delegation["delegator"]["email"] == delegator.email
       assert delegation["delegate"]["email"] == participant_B.email
 
-      # Get result for proposal_B_url (should be 'against == 2')
+      # Get result for proposal_B_url (should be 'against == 2').
       query = """
       query {
         votingResult(proposalUrl: "#{proposal_B_url}") {
