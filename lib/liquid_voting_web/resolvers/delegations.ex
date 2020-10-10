@@ -1,5 +1,5 @@
 defmodule LiquidVotingWeb.Resolvers.Delegations do
-  alias LiquidVoting.{Delegations, VotingResults}
+  alias LiquidVoting.{Voting, Delegations, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def delegations(_, _, %{context: %{organization_id: organization_id}}),
@@ -49,14 +49,18 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
 
     with {:ok, args} <- validate_participant_args(args),
          {:ok, delegation} <- Delegations.create_delegation(args) do
-      # case proposal_url do
-      #   nil -> votes = 
-      # end
+      proposal_url = Map.get(args, :proposal_url)
 
-      # if delegation is global... find all votes of delegate (if any) and call
-      #   publish_voting_results on each vote's proposal_url
-      # else if delegation is proposal-specific
-      # call publish_voting_results on specific proposal_url
+      case proposal_url do
+        nil ->
+          Voting.list_votes_by_participant(delegation.delegate_id, delegation.organization_id)
+          |> Enum.each(fn v ->
+            VotingResults.publish_voting_result_change(v.proposal_url, v.organization_id)
+          end)
+
+        _proposal_url ->
+          VotingResults.publish_voting_result_change(proposal_url, delegation.organization_id)
+      end
 
       {:ok, delegation}
     else
