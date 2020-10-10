@@ -126,6 +126,64 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       assert details == "No participant identifier (id or email) submitted"
     end
 
+    test "when created after proposal-specific delegation" do
+      # Insert a proposal-specific delegation.
+      delegation = insert(:delegation_for_proposal)
+      delegate = delegation.delegate
+
+      proposal_url = delegation.proposal_url
+
+      # Create a vote, cast by the proposal-specific delegation's delegate,
+      # and query the votingResult for the proposal_url of the vote.
+      query = """
+      mutation {
+        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", yes: true) {
+          proposalUrl
+          votingResult {
+            inFavor
+            against
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: delegation.organization_id})
+
+      assert vote["proposalUrl"] == proposal_url
+      assert vote["votingResult"]["inFavor"] == 2
+      assert vote["votingResult"]["against"] == 0
+    end
+
+    test "when created after global delegation" do
+      # Insert a global delegation.
+      delegation = insert(:delegation)
+      delegate = delegation.delegate
+
+      proposal_url = "https://proposals/1"
+
+      # Create a vote, cast by the global delegation's delegate, and query
+      # the votingResult for the proposal_url of the vote.
+      query = """
+      mutation {
+        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", yes: false) {
+          proposalUrl
+          votingResult {
+            inFavor
+            against
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: delegation.organization_id})
+
+      assert vote["proposalUrl"] == proposal_url
+      assert vote["votingResult"]["inFavor"] == 0
+      assert vote["votingResult"]["against"] == 2
+    end
+
     # This tests 2 separate, but related, scenarios - to help test that voting
     # results are correctly reported when the same participant is delegator for
     # multiple delegations:
