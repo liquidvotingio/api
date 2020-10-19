@@ -170,5 +170,83 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
 
       assert message == "No delegation found to delete"
     end
+
+    test "updates a related voting result" do
+      global_delegation = insert(:delegation)
+
+      # TODO - check if we can use this factory when issue resolved.
+      # vote =
+      #   insert(:vote,
+      #     yes: true,
+      #     participant: global_delegation.delegate,
+      #     organization_id: global_delegation.organization_id
+      #   )
+
+      # For now, use absinthe mutation to create vote, to ensure voting result also created.
+      # voter = global_delegation.delegate
+      proposal_url = "https://prop/a"
+
+      query = """
+      mutation {
+        createVote(participantEmail: "#{global_delegation.delegate.email}", proposalUrl: "#{
+        proposal_url
+      }", yes: true) {
+          proposalUrl
+          votingResult {
+            inFavor
+            against
+          }
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
+
+      IO.inspect(vote)
+
+      # Assert voting includes vote weight of deleted delegation.
+      assert vote["proposalUrl"] == proposal_url
+      assert vote["votingResult"]["against"] == 0
+      assert vote["votingResult"]["inFavor"] == 2
+
+      # Delete the global delegation which was created at beginning of test.
+      query = """
+      mutation {
+        deleteDelegation(delegatorEmail: "#{global_delegation.delegator.email}", delegateEmail: "#{
+        global_delegation.delegate.email
+      }") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, _} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
+
+      # Query the voting result for the vote proposal.
+      query = """
+      query {
+        votingResult(proposalUrl: "#{proposal_url}") {
+          inFavor
+          against
+          proposalUrl
+        }
+      }
+      """
+
+      {:ok, %{data: %{"votingResult" => result}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
+
+      # Assert voting result does not include vote weight of deleted delegation.
+      assert result["proposalUrl"] == proposal_url
+      assert result["against"] == 0
+      assert result["inFavor"] == 1
+    end
   end
 end
