@@ -54,10 +54,10 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       case proposal_url do
         # Global delegation: We find all votes of the delegate and update related voting result(s).
         nil ->
-          Voting.list_votes_by_participant(delegation.delegate_id, delegation.organization_id)
-          |> Enum.each(fn vote ->
-            VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_id)
-          end)
+          VotingResults.publish_voting_result_changes_for_participant(
+            delegation.delegate_id,
+            delegation.organization_id
+          )
 
         # Proposal delegation: We update the voting result for the given proposal_url.
         _proposal_url ->
@@ -133,6 +133,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       |> Delegations.delete_delegation!()
 
     VotingResults.publish_voting_result_change(proposal_url, organization_id)
+
     {:ok, deleted_delegation}
   rescue
     Ecto.NoResultsError -> {:error, message: "No delegation found to delete"}
@@ -147,7 +148,13 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       |> Delegations.get_delegation!(delegate_email, organization_id)
       |> Delegations.delete_delegation!()
 
-    # VotingResults.publish_voting_result_change(proposal_url, organization_id)
+    delegate = Voting.get_participant_by_email(delegate_email, organization_id)
+
+    VotingResults.publish_voting_result_changes_for_participant(
+      delegate.id,
+      organization_id
+    )
+
     {:ok, deleted_delegation}
   rescue
     Ecto.NoResultsError -> {:error, message: "No delegation found to delete"}

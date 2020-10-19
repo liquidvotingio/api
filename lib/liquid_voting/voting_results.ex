@@ -67,6 +67,15 @@ defmodule LiquidVoting.VotingResults do
     )
   end
 
+  # TODO - write @doc for this new def
+
+  def publish_voting_result_changes_for_participant(participant_id, organization_id) do
+    Voting.list_votes_by_participant(participant_id, organization_id)
+    |> Enum.each(fn vote ->
+      publish_voting_result_change(vote.proposal_url, organization_id)
+    end)
+  end
+
   @doc """
   Returns the list of results in the scope of a organization_id.
 
