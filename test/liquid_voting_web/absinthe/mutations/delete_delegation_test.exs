@@ -69,6 +69,60 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
 
       assert message == "No delegation found to delete"
     end
+
+    test "updates a related voting result" do
+      proposal_delegation = insert(:delegation_for_proposal)
+
+      vote =
+        insert(:vote,
+          yes: true,
+          participant: proposal_delegation.delegate,
+          proposal_url: proposal_delegation.proposal_url,
+          organization_id: proposal_delegation.organization_id
+        )
+
+      # Delete the proposal-specific delegation created at beginning of test.
+      query = """
+      mutation {
+        deleteDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
+        proposal_delegation.delegate.email
+      }", proposalUrl: "#{proposal_delegation.proposal_url}") {
+          delegator {
+            email
+          }
+          delegate {
+            email
+          }
+        }
+      }
+      """
+
+      {:ok, _} =
+        Absinthe.run(query, Schema,
+          context: %{organization_id: proposal_delegation.organization_id}
+        )
+
+      # Query the voting result for the vote proposal.
+      query = """
+      query {
+        votingResult(proposalUrl: "#{vote.proposal_url}") {
+          inFavor
+          against
+          proposalUrl
+        }
+      }
+      """
+
+      {:ok, %{data: %{"votingResult" => result}}} =
+        Absinthe.run(query, Schema,
+          context: %{organization_id: proposal_delegation.organization_id}
+        )
+
+      # Assert voting result does not include vote weight of deleted delegation.
+      assert result["proposalUrl"] == vote.proposal_url
+      assert result["against"] == 0
+      assert result["inFavor"] == 1
+    end
   end
 
   describe "delete global delegation" do
