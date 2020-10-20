@@ -87,41 +87,22 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         deleteDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
         proposal_delegation.delegate.email
       }", proposalUrl: "#{proposal_delegation.proposal_url}") {
-          delegator {
-            email
-          }
-          delegate {
-            email
+          votingResult {
+            inFavor
+            against
           }
         }
       }
       """
 
-      {:ok, _} =
-        Absinthe.run(query, Schema,
-          context: %{organization_id: proposal_delegation.organization_id}
-        )
-
-      # Query the voting result for the vote proposal.
-      query = """
-      query {
-        votingResult(proposalUrl: "#{vote.proposal_url}") {
-          inFavor
-          against
-          proposalUrl
-        }
-      }
-      """
-
-      {:ok, %{data: %{"votingResult" => result}}} =
+      {:ok, %{data: %{"deleteDelegation" => deleted_delegation}}} =
         Absinthe.run(query, Schema,
           context: %{organization_id: proposal_delegation.organization_id}
         )
 
       # Assert voting result does not include vote weight of deleted delegation.
-      assert result["proposalUrl"] == vote.proposal_url
-      assert result["against"] == 0
-      assert result["inFavor"] == 1
+      assert deleted_delegation["votingResult"]["inFavor"] == 1
+      assert deleted_delegation["votingResult"]["against"] == 0
     end
   end
 
@@ -241,12 +222,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         deleteDelegation(delegatorEmail: "#{global_delegation.delegator.email}", delegateEmail: "#{
         global_delegation.delegate.email
       }") {
-          delegator {
-            email
-          }
-          delegate {
-            email
-          }
+          id
         }
       }
       """
