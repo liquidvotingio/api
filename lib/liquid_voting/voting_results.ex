@@ -51,7 +51,7 @@ defmodule LiquidVoting.VotingResults do
   @doc """
   Publishes voting result changes to Absinthe's pubsub, so clients can receive updates in real-time
 
-  ## Examples
+  ## Example
 
       iex> publish_voting_result_change("https://www.medium/user/eloquent_proposal", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       :ok
@@ -65,6 +65,27 @@ defmodule LiquidVoting.VotingResults do
       result,
       voting_result_change: proposal_url
     )
+  end
+
+  @doc """
+  Publishes voting result changes to Absinthe's pubsub for all results related
+  to a specific user's votes.
+
+  This is called by both the create_delegation/3 and delete_delegation/3 defs in
+  the absinthe layer lib/liquid_voting/reolvers/delegations.ex file. This ensures
+  that related voting results AND Absinthe's pubsub are updated accordingly.
+
+  ## Example
+
+      iex> publish_voting_result_changes_for_participant("377ead47-05f1-46b5-a676-f13b619623a7", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      :ok
+
+  """
+  def publish_voting_result_changes_for_participant(participant_id, organization_id) do
+    Voting.list_votes_by_participant(participant_id, organization_id)
+    |> Enum.each(fn vote ->
+      publish_voting_result_change(vote.proposal_url, organization_id)
+    end)
   end
 
   @doc """
