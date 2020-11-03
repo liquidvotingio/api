@@ -73,7 +73,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
     test "updates a related voting result" do
       proposal_delegation = insert(:delegation_for_proposal)
 
-      vote =
+      _vote =
         insert(:vote,
           yes: true,
           participant: proposal_delegation.delegate,
