@@ -7,6 +7,7 @@ defmodule LiquidVoting.Delegations do
 
   alias __MODULE__.Delegation
   alias LiquidVoting.{Repo, Voting}
+  alias Voting.Vote
   alias Ecto.Multi
 
   @doc """
@@ -185,29 +186,44 @@ defmodule LiquidVoting.Delegations do
   def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
-    if proposal_url != nil do check_vote_conflict(delegator_id, proposal_url) end
+    with {:ok} <- check_vote_conflict(delegator_id, proposal_url) do
+      Delegation
+      |> where(delegator_id: ^delegator_id)
+      |> Repo.all()
+      |> resolve_conflicts(delegate_id, proposal_url)
+      |> case do
+        {:ok, delegations} ->
+          delegations
+          |> find_similar_delegation_or_return_new_struct(proposal_url)
+          |> Delegation.changeset(attrs)
+          |> Repo.insert_or_update()
 
-    Delegation
-    |> where(delegator_id: ^delegator_id)
-    |> Repo.all()
-    |> resolve_conflicts(delegate_id, proposal_url)
-    |> case do
-      {:ok, delegations} ->
-        delegations
-        |> find_similar_delegation_or_return_new_struct(proposal_url)
-        |> Delegation.changeset(attrs)
-        |> Repo.insert_or_update()
-
-      {:error, %{message: message, details: details}} ->
-        {:error, %{message: message, details: details}}
+        {:error, %{message: message, details: details}} ->
+          {:error, %{message: message, details: details}}
+      end
     end
   end
 
   defp check_vote_conflict(delegator_id, proposal_url) do
-    Voting.Vote
-    |> where(participant_id: ^delegator_id, proposal_url: ^proposal_url)
-    |> Repo.all()
-    |> IO.inspect()
+    if proposal_url != nil do
+      Vote
+      |> where(participant_id: ^delegator_id, proposal_url: ^proposal_url)
+      |> Repo.one()
+      |> case do
+        %Vote{} ->
+          {
+            :error,
+            message: "Could not create delegation",
+            details: "Vote for same delegator & proposal exists"
+          }
+
+        # Happy path: no conflicting vote found.
+        nil ->
+          {:ok}
+      end
+    else
+      {:ok}
+    end
   end
 
   # Resolves conflicting delegations (2 clauses).

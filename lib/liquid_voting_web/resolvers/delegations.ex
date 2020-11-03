@@ -66,6 +66,9 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
 
       {:ok, delegation}
     else
+      {:error, message: message, details: details} ->
+        {:error, message: message, details: details}
+
       {:error, %{message: message, details: details}} ->
         {:error, %{message: message, details: details}}
 

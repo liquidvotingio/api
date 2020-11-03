@@ -270,7 +270,8 @@ defmodule LiquidVoting.DelegationsTest do
         organization_id: vote.organization_id
       }
 
-      assert {:ok, %Delegation{}} = Delegations.upsert_delegation(args) # DEBUG: This should fail!!
+      # DEBUG: This should fail!!
+      assert {:ok, %Delegation{}} = Delegations.upsert_delegation(args)
     end
 
     test "update_delegation/2 with valid data updates the delegation", context do
