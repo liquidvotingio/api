@@ -275,6 +275,19 @@ defmodule LiquidVoting.DelegationsTest do
       assert details == "Vote for same delegator & proposal exists."
     end
 
+    test "upsert_delegation/1 with global delegation creates delegation despite delegator having voted" do
+      vote = insert(:vote)
+      delegate = insert(:participant, organization_id: vote.organization_id)
+
+      args = %{
+        delegator_id: vote.participant_id,
+        delegate_id: delegate.id,
+        organization_id: vote.organization_id
+      }
+
+      assert {:ok, %Delegation{}} = Delegations.upsert_delegation(args)
+    end
+
     test "update_delegation/2 with valid data updates the delegation", context do
       delegation = insert(:delegation)
 
