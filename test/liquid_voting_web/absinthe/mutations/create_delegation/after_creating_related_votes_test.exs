@@ -38,6 +38,29 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       assert delegation["votingResult"]["inFavor"] == 2
       assert delegation["votingResult"]["against"] == 0
     end
+
+    test "when conflicting vote exists" do
+      delegator = insert(:participant)
+      vote = insert(:vote, participant: delegator, organization_id: delegator.organization_id)
+      delegate = insert(:participant, organization_id: delegator.organization_id)
+
+      query = """
+      mutation {
+        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{delegate.email}", proposalUrl: "#{
+        vote.proposal_url
+      }") {
+          proposalUrl
+          id
+         }
+      }
+      """
+
+      {:ok, %{errors: [%{message: message, details: details}]}} =
+        Absinthe.run(query, Schema, context: %{organization_id: delegator.organization_id})
+
+      assert message == "Could not create delegation."
+      assert details == "Vote for same delegator & proposal exists."
+    end
   end
 
   describe "create global delegation" do
