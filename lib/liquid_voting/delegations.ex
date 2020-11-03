@@ -206,27 +206,29 @@ defmodule LiquidVoting.Delegations do
 
   # Checks for a conflicting vote, in the case where a proposal-specific delegation creation is attempted.
   #
-  # Returns {:ok} if delegation creation is for a global delegation, or if no conflicting vote is found.
+  # Returns {:ok} if delegation creation is for a global delegation.
+  #
+  # Or returns {:ok} if delegation creation is for a proposal delegation & no conflicting vote is found.
   # Returns an error, if a conflicting vote is found.
-  defp check_vote_conflict(delegator_id, proposal_url) do
-    if proposal_url != nil do
-      Vote
-      |> where(participant_id: ^delegator_id, proposal_url: ^proposal_url)
-      |> Repo.one()
-      |> case do
-        %Vote{} ->
-          {
-            :error,
-            message: "Could not create delegation.",
-            details: "Vote for same delegator & proposal exists."
-          }
+  defp check_vote_conflict(_delegator_id, _proposal_url = nil) do
+    {:ok}
+  end
 
-        # Happy path: no conflicting vote found.
-        nil ->
-          {:ok}
-      end
-    else
-      {:ok}
+  defp check_vote_conflict(delegator_id, proposal_url) do
+    Vote
+    |> where(participant_id: ^delegator_id, proposal_url: ^proposal_url)
+    |> Repo.one()
+    |> case do
+      %Vote{} ->
+        {
+          :error,
+          message: "Could not create delegation.",
+          details: "Vote for same delegator & proposal exists."
+        }
+
+      # Happy path: no conflicting vote found.
+      nil ->
+        {:ok}
     end
   end
 
