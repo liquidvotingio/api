@@ -185,6 +185,8 @@ defmodule LiquidVoting.Delegations do
   def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
+    if proposal_url != nil do check_vote_conflict(delegator_id, proposal_url) end
+
     Delegation
     |> where(delegator_id: ^delegator_id)
     |> Repo.all()
@@ -199,6 +201,13 @@ defmodule LiquidVoting.Delegations do
       {:error, %{message: message, details: details}} ->
         {:error, %{message: message, details: details}}
     end
+  end
+
+  defp check_vote_conflict(delegator_id, proposal_url) do
+    Voting.Vote
+    |> where(participant_id: ^delegator_id, proposal_url: ^proposal_url)
+    |> Repo.all()
+    |> IO.inspect()
   end
 
   # Resolves conflicting delegations (2 clauses).
