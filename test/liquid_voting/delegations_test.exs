@@ -259,6 +259,20 @@ defmodule LiquidVoting.DelegationsTest do
       end
     end
 
+    test "upsert_delegation/1 with proposal delegation return error if conflicting proposal vote exists" do
+      vote = insert(:vote)
+      delegate = insert(:participant, organization_id: vote.organization_id)
+
+      args = %{
+        delegator_id: vote.participant_id,
+        delegate_id: delegate.id,
+        proposal_url: vote.proposal_url,
+        organization_id: vote.organization_id
+      }
+
+      assert {:ok, %Delegation{delegation}} = Delegations.upsert_delegation(args) # DEBUG: This should fail!!
+    end
+
     test "update_delegation/2 with valid data updates the delegation", context do
       delegation = insert(:delegation)
 
