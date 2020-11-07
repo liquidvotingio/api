@@ -272,7 +272,7 @@ defmodule LiquidVoting.DelegationsTest do
 
       {:error, [message: message, details: details]} = Delegations.upsert_delegation(args)
       assert message == "Could not create delegation."
-      assert details == "Vote for same delegator & proposal exists."
+      assert details == "Delegator has already voted on this proposal."
     end
 
     test "upsert_delegation/1 with global delegation creates delegation despite delegator having voted" do

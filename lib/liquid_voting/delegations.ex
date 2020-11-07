@@ -223,7 +223,7 @@ defmodule LiquidVoting.Delegations do
         {
           :error,
           message: "Could not create delegation.",
-          details: "Vote for same delegator & proposal exists."
+          details: "Delegator has already voted on this proposal."
         }
 
       # Happy path: no conflicting vote found.

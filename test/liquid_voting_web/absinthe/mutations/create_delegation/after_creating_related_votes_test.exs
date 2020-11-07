@@ -59,7 +59,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
         Absinthe.run(query, Schema, context: %{organization_id: delegator.organization_id})
 
       assert message == "Could not create delegation."
-      assert details == "Vote for same delegator & proposal exists."
+      assert details == "Delegator has already voted on this proposal."
     end
   end
 
