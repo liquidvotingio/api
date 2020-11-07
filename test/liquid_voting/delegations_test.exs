@@ -275,7 +275,7 @@ defmodule LiquidVoting.DelegationsTest do
       assert details == "Delegator has already voted on this proposal."
     end
 
-    test "upsert_delegation/1 with global delegation creates delegation despite delegator having voted" do
+    test "upsert_delegation/1 creates global delegation despite delegator having voted" do
       vote = insert(:vote)
       delegate = insert(:participant, organization_id: vote.organization_id)
 
