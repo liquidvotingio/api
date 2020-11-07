@@ -144,7 +144,7 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Gets a single vote by participant id, proposal_url and organization id
+  Gets a single vote by participant id and proposal_url
 
   ## Examples
 
