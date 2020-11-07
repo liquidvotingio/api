@@ -143,6 +143,13 @@ defmodule LiquidVoting.Voting do
     |> Repo.preload([:participant])
   end
 
+  def get_vote_by_participant_id(participant_id, proposal_url) do
+    Vote
+    |> where(participant_id: ^participant_id, proposal_url: ^proposal_url)
+    |> Repo.one()
+    |> Repo.preload([:participant])
+  end
+
   # Just for seeding
   def create_vote!(attrs \\ %{}) do
     %Vote{}
