@@ -215,10 +215,7 @@ defmodule LiquidVoting.Delegations do
   end
 
   defp check_vote_conflict(delegator_id, proposal_url) do
-    Vote
-    |> where(participant_id: ^delegator_id, proposal_url: ^proposal_url)
-    |> Repo.one()
-    |> case do
+    case Voting.get_vote_by_participant_id(delegator_id, proposal_url) do
       %Vote{} ->
         {
           :error,
