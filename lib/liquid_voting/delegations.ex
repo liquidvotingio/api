@@ -7,6 +7,7 @@ defmodule LiquidVoting.Delegations do
 
   alias __MODULE__.Delegation
   alias LiquidVoting.{Repo, Voting}
+  alias Voting.Vote
   alias Ecto.Multi
 
   @doc """
@@ -185,19 +186,46 @@ defmodule LiquidVoting.Delegations do
   def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
     proposal_url = Map.get(attrs, :proposal_url)
 
-    Delegation
-    |> where(delegator_id: ^delegator_id)
-    |> Repo.all()
-    |> resolve_conflicts(delegate_id, proposal_url)
-    |> case do
-      {:ok, delegations} ->
-        delegations
-        |> find_similar_delegation_or_return_new_struct(proposal_url)
-        |> Delegation.changeset(attrs)
-        |> Repo.insert_or_update()
+    with {:ok} <- check_vote_conflict(delegator_id, proposal_url) do
+      Delegation
+      |> where(delegator_id: ^delegator_id)
+      |> Repo.all()
+      |> resolve_conflicts(delegate_id, proposal_url)
+      |> case do
+        {:ok, delegations} ->
+          delegations
+          |> find_similar_delegation_or_return_new_struct(proposal_url)
+          |> Delegation.changeset(attrs)
+          |> Repo.insert_or_update()
 
-      {:error, %{message: message, details: details}} ->
-        {:error, %{message: message, details: details}}
+        {:error, %{message: message, details: details}} ->
+          {:error, %{message: message, details: details}}
+      end
+    end
+  end
+
+  # Checks for a conflicting vote, in the case where a proposal-specific delegation creation is attempted.
+  #
+  # Returns {:ok} if delegation creation is for a global delegation.
+  #
+  # Or returns {:ok} if delegation creation is for a proposal delegation & no conflicting vote is found.
+  # Returns an error, if a conflicting vote is found.
+  defp check_vote_conflict(_delegator_id, _proposal_url = nil) do
+    {:ok}
+  end
+
+  defp check_vote_conflict(delegator_id, proposal_url) do
+    case Voting.get_vote_by_participant_id(delegator_id, proposal_url) do
+      %Vote{} ->
+        {
+          :error,
+          message: "Could not create delegation.",
+          details: "Delegator has already voted on this proposal."
+        }
+
+      # Happy path: no conflicting vote found.
+      nil ->
+        {:ok}
     end
   end
 

@@ -117,6 +117,20 @@ defmodule LiquidVoting.VotingTest do
       end
     end
 
+    test "get_vote_by_participant_id/2 returns the vote for a given participant id and proposal url" do
+      vote = insert(:vote)
+      assert Voting.get_vote_by_participant_id(vote.participant_id, vote.proposal_url) == vote
+    end
+
+    test "get_vote_by_participant_id/2 returns nil if no result found matching arguments" do
+      vote = insert(:vote)
+
+      assert Voting.get_vote_by_participant_id(
+               vote.participant_id,
+               "https://proposals.com/non-existant-proposal"
+             ) == nil
+    end
+
     test "update_vote/2 with valid data updates the vote", context do
       vote = insert(:vote)
       assert {:ok, %Vote{} = vote} = Voting.update_vote(vote, context[:update_attrs])
