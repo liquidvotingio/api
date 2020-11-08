@@ -73,13 +73,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
     test "updates a related voting result" do
       proposal_delegation = insert(:delegation_for_proposal)
 
-      _vote =
-        insert(:vote,
-          yes: true,
-          participant: proposal_delegation.delegate,
-          proposal_url: proposal_delegation.proposal_url,
-          organization_id: proposal_delegation.organization_id
-        )
+      insert(:vote,
+        yes: true,
+        participant: proposal_delegation.delegate,
+        proposal_url: proposal_delegation.proposal_url,
+        organization_id: proposal_delegation.organization_id
+      )
 
       # Delete the proposal-specific delegation created at beginning of test.
       query = """
