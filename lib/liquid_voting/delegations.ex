@@ -183,18 +183,21 @@ defmodule LiquidVoting.Delegations do
       iex> upsert_delegation(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
   """
-  def upsert_delegation(%{delegator_id: delegator_id, delegate_id: delegate_id} = attrs) do
+  def upsert_delegation(
+        %{delegator_id: delegator_id, delegate_id: delegate_id, organization_id: organization_id} =
+          attrs
+      ) do
     proposal_url = Map.get(attrs, :proposal_url)
 
-    with {:ok} <- check_vote_conflict(delegator_id, proposal_url) do
+    with {:ok} <- check_vote_conflict(delegator_id, proposal_url, organization_id) do
       Delegation
       |> where(delegator_id: ^delegator_id)
       |> Repo.all()
-      |> resolve_conflicts(delegate_id, proposal_url)
+      |> resolve_conflicts(delegate_id, proposal_url, organization_id)
       |> case do
         {:ok, delegations} ->
           delegations
-          |> find_similar_delegation_or_return_new_struct(proposal_url)
+          |> find_similar_delegation_or_return_new_struct(proposal_url, organization_id)
           |> Delegation.changeset(attrs)
           |> Repo.insert_or_update()
 
@@ -210,12 +213,12 @@ defmodule LiquidVoting.Delegations do
   #
   # Or returns {:ok} if delegation creation is for a proposal delegation & no conflicting vote is found.
   # Returns an error, if a conflicting vote is found.
-  defp check_vote_conflict(_delegator_id, _proposal_url = nil) do
+  defp check_vote_conflict(_delegator_id, _proposal_url = nil, _organization_id) do
     {:ok}
   end
 
-  defp check_vote_conflict(delegator_id, proposal_url) do
-    case Voting.get_vote_by_participant_id(delegator_id, proposal_url) do
+  defp check_vote_conflict(delegator_id, proposal_url, organization_id) do
+    case Voting.get_vote_by_participant_id(delegator_id, proposal_url, organization_id) do
       %Vote{} ->
         {
           :error,
@@ -238,10 +241,11 @@ defmodule LiquidVoting.Delegations do
   #
   # Clause 2: Matches an attempt to upsert a proposal-specific delegation.
   # Looks for conflicting global delegation, and returns an error if found.
-  defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil) do
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil, organization_id) do
     delegations
     |> Stream.filter(fn d ->
-      d.delegate_id == delegate_id and d.proposal_url != nil
+      d.delegate_id == delegate_id and d.proposal_url != nil and
+        d.organization_id == organization_id
     end)
     |> Enum.each(fn d ->
       delete_delegation!(d)
@@ -250,10 +254,11 @@ defmodule LiquidVoting.Delegations do
     {:ok, delegations}
   end
 
-  defp resolve_conflicts(delegations, delegate_id, _proposal_url) do
+  defp resolve_conflicts(delegations, delegate_id, _proposal_url, organization_id) do
     delegations
     |> Enum.filter(fn d ->
-      d.proposal_url == nil and d.delegate_id == delegate_id
+      d.proposal_url == nil and d.delegate_id == delegate_id and
+        d.organization_id == organization_id
     end)
     |> case do
       [] ->
@@ -273,9 +278,11 @@ defmodule LiquidVoting.Delegations do
   #  empty Delegation struct.
   #
   # Used by upsert_delegation/1 (above.)
-  defp find_similar_delegation_or_return_new_struct(delegations, proposal_url) do
+  defp find_similar_delegation_or_return_new_struct(delegations, proposal_url, organization_id) do
     delegations
-    |> Enum.filter(fn d -> d.proposal_url == proposal_url end)
+    |> Enum.filter(fn d ->
+      d.proposal_url == proposal_url and d.organization_id == organization_id
+    end)
     |> case do
       # Delegation (of same type) not found, so we build one
       [] -> %Delegation{}

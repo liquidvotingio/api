@@ -119,7 +119,12 @@ defmodule LiquidVoting.VotingTest do
 
     test "get_vote_by_participant_id/2 returns the vote for a given participant id and proposal url" do
       vote = insert(:vote)
-      assert Voting.get_vote_by_participant_id(vote.participant_id, vote.proposal_url) == vote
+
+      assert Voting.get_vote_by_participant_id(
+               vote.participant_id,
+               vote.proposal_url,
+               vote.organization_id
+             ) == vote
     end
 
     test "get_vote_by_participant_id/2 returns nil if no result found matching arguments" do
@@ -127,7 +132,8 @@ defmodule LiquidVoting.VotingTest do
 
       assert Voting.get_vote_by_participant_id(
                vote.participant_id,
-               "https://proposals.com/non-existant-proposal"
+               "https://proposals.com/non-existant-proposal",
+               vote.organization_id
              ) == nil
     end
 

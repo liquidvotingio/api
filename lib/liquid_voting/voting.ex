@@ -154,9 +154,13 @@ defmodule LiquidVoting.Voting do
       iex> get_vote_by_participant_id("a6158b19-6bf6-4457-9d13-ef8b141611b4", "https://proposals.com/non-existant-proposal")
       => nil
   """
-  def get_vote_by_participant_id(participant_id, proposal_url) do
+  def get_vote_by_participant_id(participant_id, proposal_url, organization_id) do
     Vote
-    |> where(participant_id: ^participant_id, proposal_url: ^proposal_url)
+    |> where(
+      participant_id: ^participant_id,
+      proposal_url: ^proposal_url,
+      organization_id: ^organization_id
+    )
     |> Repo.one()
     |> Repo.preload([:participant])
   end
