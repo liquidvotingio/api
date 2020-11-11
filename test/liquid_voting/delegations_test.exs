@@ -259,7 +259,7 @@ defmodule LiquidVoting.DelegationsTest do
       end
     end
 
-    test "upsert_delegation/1 with proposal delegation returns error if conflicting proposal vote exists" do
+    test "upsert_delegation/1 with proposal delegation returns error if conflicting vote exists" do
       vote = insert(:vote)
       delegate = insert(:participant, organization_id: vote.organization_id)
 
@@ -273,6 +273,20 @@ defmodule LiquidVoting.DelegationsTest do
       {:error, [message: message, details: details]} = Delegations.upsert_delegation(args)
       assert message == "Could not create delegation."
       assert details == "Delegator has already voted on this proposal."
+    end
+
+    test "upsert_delegation/1 with proposal delegation does not conflict with vote with different organization_id" do
+      vote = insert(:vote)
+      delegate = insert(:participant, organization_id: vote.organization_id)
+
+      args = %{
+        delegator_id: vote.participant_id,
+        delegate_id: delegate.id,
+        proposal_url: vote.proposal_url,
+        organization_id: Ecto.UUID.generate()
+      }
+
+      assert {:ok, %Delegation{}} = Delegations.upsert_delegation(args)
     end
 
     test "upsert_delegation/1 creates global delegation despite delegator having voted" do
