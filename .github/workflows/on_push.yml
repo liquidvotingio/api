@@ -15,7 +15,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     container:
-      image: elixir:1.10.2-slim
+      image: elixir:1.11.3-slim
     services:
       postgres:
         image: postgres:10.4
@@ -45,7 +45,7 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     container:
-      image: elixir:1.10.2-slim
+      image: elixir:1.11.3-slim
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
