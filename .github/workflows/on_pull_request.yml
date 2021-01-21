@@ -6,7 +6,7 @@ on:
     - master
     paths-ignore:
     - 'README.md'
-    - 'LICENSE'
+    - 'LICENSE-AGPLv3.txt'
     - 'CODE_OF_CONDUCT.md'
     - 'CONTRIBUTING.md'
 
