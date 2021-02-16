@@ -41,7 +41,7 @@ mix phx.server
 ```
 
 ### Running the dockerized version
-
+Mac OSX:
 ```
 docker run -it --rm \
   -e SECRET_KEY_BASE=$(mix phx.gen.secret) \
@@ -50,6 +50,16 @@ docker run -it --rm \
   -e DB_NAME=liquid_voting_dev \
   -e DB_HOST=host.docker.internal \
   -p 4000:4000 \
+  docker.pkg.github.com/liquidvotingio/api/api:latest
+```
+Linux:
+```
+docker run -it --rm --network=host \
+  -e SECRET_KEY_BASE=$(mix phx.gen.secret) \
+  -e DB_USERNAME=postgres \
+  -e DB_PASSWORD=postgres \
+  -e DB_NAME=liquid_voting_dev \
+  -e DB_HOST=127.0.0.1 \
   docker.pkg.github.com/liquidvotingio/api/api:latest
 ```
 
