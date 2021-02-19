@@ -1,0 +1,33 @@
+version: '3'
+services:
+  liquidvoting:
+    image: docker.pkg.github.com/liquidvotingio/api/api:latest
+    entrypoint: ["/tmp/hello-world-entrypoint.sh"]
+    # The entrypoint override above wipes out the CMD
+    # on the Dockerfile, so we need to declare it
+    # again here (https://github.com/docker/compose/issues/3140)
+    command: ["/opt/app/bin/liquid_voting", "start"]
+    ports:
+      - 4000:4000
+    volumes:
+      # Makes our entrypoint script available to the container
+      # under /code/vendor
+      - ./scripts:/tmp
+    environment:
+      - DB_HOST=pg
+      - DB_POOL_SIZE=10
+      - DB_NAME=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - SECRET_KEY_BASE=super_secret_string
+    links:
+      - pg
+
+  pg:
+    image: postgres
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+volumes:
+  pg-data: {}

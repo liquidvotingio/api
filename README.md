@@ -41,6 +41,15 @@ mix phx.server
 ```
 
 ### Running the dockerized version
+
+__Using docker-compose:__
+
+Clone the repo and:
+
+`$ docker-compose up`
+
+__Running the container:__
+
 Mac OSX:
 ```
 docker run -it --rm \
