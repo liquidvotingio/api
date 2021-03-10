@@ -8,6 +8,14 @@ defmodule LiquidVoting.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    :ok = :telemetry.attach(
+      # unique handler id
+      "liquid_voting-telemetry-metrics",
+      [:phoenix, :request],
+      &LiquidVoting.Telemetry.Metrics.handle_event/4,
+      nil
+    )
+
     # List all child processes to be supervised
     children = [
       LiquidVoting.Repo,

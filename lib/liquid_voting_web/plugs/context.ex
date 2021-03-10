@@ -6,7 +6,12 @@ defmodule LiquidVotingWeb.Plugs.Context do
   def init(opts), do: opts
 
   def call(conn, _) do
+    start = System.monotonic_time()
+
     context = build_context(conn)
+
+    :telemetry.execute([:phoenix, :request], %{duration: System.monotonic_time() - start}, conn)
+
     # Absinthe.Plug calls Absinthe.run() with the options added to the `conn`.
     Absinthe.Plug.put_options(conn, context: context)
   end
