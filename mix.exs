@@ -48,6 +48,11 @@ defmodule LiquidVoting.MixProject do
       {:dataloader, "~> 1.0.6"},
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:telemetry, "~> 0.4.0"},
+      {:opentelemetry, "~> 0.5.0"},
+      {:opentelemetry_api, "~> 0.5.0"},
+      {:opentelemetry_honeycomb, "~> 0.5.0-rc.1"},
+      {:hackney, ">= 1.11.0"},
+      {:poison, ">= 1.5.0"},
       {:ex_machina, "~> 2.3", only: :test},
       {:ecto_fields, "~> 1.3.0"}
     ]
