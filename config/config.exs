@@ -31,10 +31,17 @@ config :opentelemetry, :resource,
     namespace: "service-namespace"
 ]
 
-config :opentelemetry,
-  processors: [
-    otel_batch_processor: %{
-      exporter:
-        {OpenTelemetry.Honeycomb.Exporter, write_key: System.get_env("HONEYCOMB_WRITEKEY")}
-    }
-  ]
+# Honeycomb config - disabled while testing out otel_getting_started
+
+# config :opentelemetry,
+#   processors: [
+#     otel_batch_processor: %{
+#       exporter:
+#         {OpenTelemetry.Honeycomb.Exporter, write_key: System.get_env("HONEYCOMB_WRITEKEY")}
+#     }
+#   ]
+
+config :opentelemetry, :processors,
+  otel_batch_processor: %{
+    exporter: {:otel_exporter_stdout, []}
+  }
