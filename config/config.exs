@@ -22,7 +22,7 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
 
-# Honeycomb config - disabled while testing out otel_getting_started
+# Honeycomb config - disabled while testing out otel_getting_started via stdout
 
 # config :opentelemetry,
 #   processors: [
