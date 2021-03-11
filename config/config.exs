@@ -22,15 +22,6 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
 
-# You can also supply opentelemetry resources using environment variables, eg.:
-# OTEL_RESOURCE_ATTRIBUTES=service.name=name,service.namespace=namespace
-
-config :opentelemetry, :resource,
-  service: [
-    name: "service-name",
-    namespace: "service-namespace"
-]
-
 # Honeycomb config - disabled while testing out otel_getting_started
 
 # config :opentelemetry,
@@ -45,3 +36,12 @@ config :opentelemetry, :processors,
   otel_batch_processor: %{
     exporter: {:otel_exporter_stdout, []}
   }
+
+# You can also supply opentelemetry resources using environment variables, eg.:
+# OTEL_RESOURCE_ATTRIBUTES=service.name=name,service.namespace=namespace
+
+# config :opentelemetry, :resource,
+#   service: [
+#     name: "service-name",
+#     namespace: "service-namespace"
+# ]
