@@ -20,6 +20,17 @@ config :liquid_voting, LiquidVotingWeb.Endpoint,
   http: [:inet6, port: String.to_integer(port)],
   secret_key_base: secret_key_base
 
+# Honeycomb OpenTelemetry exporter config
+
+config :opentelemetry,
+  processors: [
+    otel_batch_processor: %{
+      exporter:
+        {OpenTelemetry.Honeycomb.Exporter,
+         write_key: System.get_env("HONEYCOMB_WRITEKEY"), dataset: "api-telemetry"}
+    }
+  ]
+
 # to test the release:
 # $ MIX_ENV=prod mix release
 # $

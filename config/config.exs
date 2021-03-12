@@ -20,14 +20,14 @@ config :phoenix, :json_library, Jason
 
 # Honeycomb OpenTelemetry exporter config
 
-config :opentelemetry,
-  processors: [
-    otel_batch_processor: %{
-      exporter:
-        {OpenTelemetry.Honeycomb.Exporter,
-         write_key: System.get_env("HONEYCOMB_WRITEKEY"), dataset: "api-telemetry"}
-    }
-  ]
+# config :opentelemetry,
+#   processors: [
+#     otel_batch_processor: %{
+#       exporter:
+#         {OpenTelemetry.Honeycomb.Exporter,
+#          write_key: System.get_env("HONEYCOMB_WRITEKEY"), dataset: "api-telemetry"}
+#     }
+#   ]
 
 # stdout exporter for local testing
 
