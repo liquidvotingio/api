@@ -18,33 +18,6 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
-# Honeycomb OpenTelemetry exporter config
-
-config :opentelemetry,
-  processors: [
-    otel_batch_processor: %{
-      exporter:
-        {OpenTelemetry.Honeycomb.Exporter,
-         write_key: System.get_env("HONEYCOMB_WRITEKEY"), dataset: "api-telemetry"}
-    }
-  ]
-
-# stdout exporter for local testing
-
-# config :opentelemetry, :processors,
-#   otel_batch_processor: %{
-#     exporter: {:otel_exporter_stdout, []}
-#   }
-
-# You can also supply opentelemetry resources using environment variables, eg.:
-# OTEL_RESOURCE_ATTRIBUTES=service.name=name,service.namespace=namespace
-
-# config :opentelemetry, :resource,
-#   service: [
-#     name: "service-name",
-#     namespace: "service-namespace"
-# ]
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
