@@ -43,8 +43,8 @@ config :opentelemetry,
 # You can also supply opentelemetry resources using environment variables, eg.:
 # OTEL_RESOURCE_ATTRIBUTES=service.name=name,service.namespace=namespace
 
-# config :opentelemetry, :resource,
-#   service: [
-#     name: "service-name",
-#     namespace: "service-namespace"
-# ]
+config :opentelemetry, :resource,
+  service: [
+    name: "service-name",
+    namespace: "service-namespace"
+]
