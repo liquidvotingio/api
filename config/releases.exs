@@ -21,7 +21,6 @@ config :liquid_voting, LiquidVotingWeb.Endpoint,
   secret_key_base: secret_key_base
 
 # Honeycomb OpenTelemetry exporter config
-
 config :opentelemetry,
   processors: [
     otel_batch_processor: %{
