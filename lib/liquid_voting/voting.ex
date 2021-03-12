@@ -23,8 +23,6 @@ defmodule LiquidVoting.Voting do
 
   """
   def create_vote(attrs \\ %{}) do
-    OtelGettingStarted.hello()
-
     Repo.transaction(fn ->
       # TODO: refactor case statements into small functions.
 

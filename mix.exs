@@ -10,13 +10,7 @@ defmodule LiquidVoting.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
-      releases: [
-        otel_getting_started: [
-          version: "0.0.1",
-          applications: [otel_getting_started: :permanent]
-        ]
-      ]
+      deps: deps()
     ]
   end
 
