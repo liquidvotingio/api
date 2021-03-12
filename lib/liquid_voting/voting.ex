@@ -2,6 +2,7 @@ defmodule LiquidVoting.Voting do
   @moduledoc """
   The Voting context.
   """
+  require OpenTelemetry.Tracer, as: Tracer
 
   import Ecto.Query, warn: false
 
@@ -23,6 +24,10 @@ defmodule LiquidVoting.Voting do
 
   """
   def create_vote(attrs \\ %{}) do
+    Tracer.with_span "operation" do
+      Tracer.add_event("Nice operation!", [{"bogons", 100}])
+    end
+
     Repo.transaction(fn ->
       # TODO: refactor case statements into small functions.
 
