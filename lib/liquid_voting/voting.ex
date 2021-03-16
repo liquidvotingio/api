@@ -24,10 +24,6 @@ defmodule LiquidVoting.Voting do
 
   """
   def create_vote(attrs \\ %{}) do
-    Tracer.with_span "operation" do
-      Tracer.set_attributes([{:a_key, "a_value"}])
-    end
-
     Repo.transaction(fn ->
       # TODO: refactor case statements into small functions.
 
@@ -65,6 +61,10 @@ defmodule LiquidVoting.Voting do
 
   """
   def list_votes(organization_id) do
+    Tracer.with_span "operation" do
+      Tracer.set_attributes([{:a_key, "a_value"}])
+    end
+
     Vote
     |> where(organization_id: ^organization_id)
     |> Repo.all()
