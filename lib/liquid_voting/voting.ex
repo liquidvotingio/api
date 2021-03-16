@@ -64,17 +64,10 @@ defmodule LiquidVoting.Voting do
     Tracer.with_span "LV/voting" do
       Tracer.set_attributes([{:action, "list_votes"}, {:organization_id, organization_id}])
 
-    # This just adds a second to process and outputs elapsed time
-    # start = :os.system_time(:seconds)
-    # Process.sleep(1000)
-    # endt = :os.system_time(:seconds)
-    # IO.puts("slept for: #{endt - start} seconds")
-
-    Vote
-    |> where(organization_id: ^organization_id)
-    |> Repo.all()
-    |> Repo.preload([:participant])
-
+      Vote
+      |> where(organization_id: ^organization_id)
+      |> Repo.all()
+      |> Repo.preload([:participant])
     end
   end
 
