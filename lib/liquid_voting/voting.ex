@@ -25,7 +25,7 @@ defmodule LiquidVoting.Voting do
   """
   def create_vote(attrs \\ %{}) do
     Tracer.with_span "operation" do
-      Tracer.add_event("Nice operation!", [{"bogons", 100}])
+      Tracer.set_attributes([{:a_key, "a_value"}])
     end
 
     Repo.transaction(fn ->
