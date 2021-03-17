@@ -6,8 +6,8 @@ defmodule LiquidVoting.Voting do
 
   import Ecto.Query, warn: false
 
-  alias __MODULE__.{Vote, Participant}
-  alias LiquidVoting.{Repo, Delegations}
+  alias __MODULE__.{Participant, Vote}
+  alias LiquidVoting.{Delegations, Repo, Tracers}
   alias LiquidVoting.Delegations.Delegation
 
   @doc """
@@ -61,18 +61,10 @@ defmodule LiquidVoting.Voting do
 
   """
   def list_votes(organization_id) do
-    Tracer.with_span "LV/voting" do
-      Tracer.set_attributes([
-        {:action, "list_votes"},
-        {:request_id, Logger.metadata()[:request_id]},
-        {:organization_id, organization_id}
-      ])
-
-      Vote
-      |> where(organization_id: ^organization_id)
-      |> Repo.all()
-      |> Repo.preload([:participant])
-    end
+    Vote
+    |> where(organization_id: ^organization_id)
+    |> Repo.all()
+    |> Repo.preload([:participant])
   end
 
   @doc """

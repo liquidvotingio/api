@@ -1,7 +1,7 @@
 defmodule LiquidVotingWeb.Resolvers.Voting do
   require OpenTelemetry.Tracer, as: Tracer
 
-  alias LiquidVoting.{Voting, VotingResults}
+  alias LiquidVoting.{Tracers, Voting, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def participants(_, _, %{context: %{organization_id: organization_id}}),
@@ -29,11 +29,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
   def votes(_, _, %{context: %{organization_id: organization_id}}) do
     Tracer.with_span "resolvers/voting" do
-      Tracer.set_attributes([
-        {:action, "votes"},
-        {:request_id, Logger.metadata()[:request_id]},
-        {:organization_id, organization_id}
-      ])
+      Tracers.set_attributes(__ENV__, binding())
 
       {:ok, Voting.list_votes(organization_id)}
     end
@@ -45,17 +41,21 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{
         context: %{organization_id: organization_id}
       }) do
-    case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
-      {:error, changeset} ->
-        {:error,
-         message: "Could not create vote with given email",
-         details: ChangesetErrors.error_details(changeset)}
+    Tracer.with_span "resolvers/voting" do
+      Tracers.set_attributes(__ENV__, binding())
 
-      {:ok, participant} ->
-        args
-        |> Map.put(:organization_id, organization_id)
-        |> Map.put(:participant_id, participant.id)
-        |> create_vote_with_valid_arguments()
+      case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
+        {:error, changeset} ->
+          {:error,
+          message: "Could not create vote with given email",
+          details: ChangesetErrors.error_details(changeset)}
+
+        {:ok, participant} ->
+          args
+          |> Map.put(:organization_id, organization_id)
+          |> Map.put(:participant_id, participant.id)
+          |> create_vote_with_valid_arguments()
+      end
     end
   end
 
