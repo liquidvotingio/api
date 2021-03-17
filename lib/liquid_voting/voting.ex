@@ -62,7 +62,11 @@ defmodule LiquidVoting.Voting do
   """
   def list_votes(organization_id) do
     Tracer.with_span "LV/voting" do
-      Tracer.set_attributes([{:action, "list_votes"}, {:organization_id, organization_id}])
+      Tracer.set_attributes([
+        {:action, "list_votes"},
+        {:request_id, Logger.metadata()[:request_id]},
+        {:organization_id, organization_id}
+      ])
 
       Vote
       |> where(organization_id: ^organization_id)
