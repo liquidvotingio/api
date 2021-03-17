@@ -47,8 +47,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
         {:error, changeset} ->
           {:error,
-          message: "Could not create vote with given email",
-          details: ChangesetErrors.error_details(changeset)}
+           message: "Could not create vote with given email",
+           details: ChangesetErrors.error_details(changeset)}
 
         {:ok, participant} ->
           args

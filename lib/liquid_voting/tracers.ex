@@ -11,5 +11,4 @@ defmodule LiquidVoting.Tracers do
       {:vars, vars}
     ])
   end
-
 end
