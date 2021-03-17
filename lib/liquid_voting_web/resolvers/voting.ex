@@ -29,7 +29,11 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
   def votes(_, _, %{context: %{organization_id: organization_id}}) do
     Tracer.with_span "resolvers/voting" do
-      Tracer.set_attributes([{:action, "votes"}, {:organization_id, organization_id}])
+      Tracer.set_attributes([
+        {:action, "votes"},
+        {:request_id, Logger.metadata()[:request_id]},
+        {:organization_id, organization_id}
+      ])
 
       {:ok, Voting.list_votes(organization_id)}
     end
