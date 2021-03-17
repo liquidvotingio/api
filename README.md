@@ -12,7 +12,7 @@ There's [a dockerized version](https://github.com/liquidvotingio/api/packages/81
 
 You can follow the [project backlog here](https://github.com/orgs/liquidvotingio/projects/1).
 
-The live API is getting ready to be used in production platforms. If you're interested, [let me know](mailto:oli.azevedo.barnes@gmail.com) so I can learn more about your project, and I'll provide you with an access key.
+The live API is getting ready to be used in production platforms. If you're interested, [let us know](mailto:info@liquidvoting.io) so we can learn more about your project, and we'll provide you with an access key right away.
 
 ## Concepts and modeling
 
