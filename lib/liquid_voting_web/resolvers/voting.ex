@@ -116,7 +116,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
           ])
 
           {:error,
-          message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+           message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
 
         {:ok, vote} ->
           Tracer.set_attributes([{:result, ":ok, Voting.create_vote"}])
