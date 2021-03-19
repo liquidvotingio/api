@@ -3,7 +3,7 @@ defmodule LiquidVoting.Voting do
   The Voting context.
   """
 
-  # require OpenTelemetry.Tracer, as: Tracer
+  require OpenTelemetry.Tracer, as: Tracer
 
   import Ecto.Query, warn: false
 
@@ -25,31 +25,44 @@ defmodule LiquidVoting.Voting do
 
   """
   def create_vote(attrs \\ %{}) do
-    Repo.transaction(fn ->
-      # TODO: refactor case statements into small functions.
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:vars,
+         [
+           {:organization_id, attrs[:organization_id]},
+           {:participant_email, attrs[:participant_email]},
+           {:proposal_url, attrs[:proposal_url]},
+           {:yes, attrs[:yes]}
+         ]}
+      ])
 
-      %Vote{}
-      |> Vote.changeset(attrs)
-      |> Repo.insert()
-      |> case do
-        {:ok, vote} ->
-          if delegation =
-               Repo.get_by(Delegation,
-                 delegator_id: attrs[:participant_id],
-                 organization_id: attrs[:organization_id]
-               ) do
-            case Delegations.delete_delegation(delegation) do
-              {:ok, _delegation} -> vote
-              {:error, changeset} -> Repo.rollback(changeset)
+      Repo.transaction(fn ->
+        # TODO: refactor case statements into small functions.
+
+        %Vote{}
+        |> Vote.changeset(attrs)
+        |> Repo.insert()
+        |> case do
+          {:ok, vote} ->
+            if delegation =
+                 Repo.get_by(Delegation,
+                   delegator_id: attrs[:participant_id],
+                   organization_id: attrs[:organization_id]
+                 ) do
+              case Delegations.delete_delegation(delegation) do
+                {:ok, _delegation} -> vote
+                {:error, changeset} -> Repo.rollback(changeset)
+              end
+            else
+              vote
             end
-          else
-            vote
-          end
 
-        {:error, changeset} ->
-          Repo.rollback(changeset)
-      end
-    end)
+          {:error, changeset} ->
+            Repo.rollback(changeset)
+        end
+      end)
+    end
   end
 
   @doc """
@@ -62,10 +75,17 @@ defmodule LiquidVoting.Voting do
 
   """
   def list_votes(organization_id) do
-    Vote
-    |> where(organization_id: ^organization_id)
-    |> Repo.all()
-    |> Repo.preload([:participant])
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:vars, [{:organization_id, organization_id}]}
+      ])
+
+      Vote
+      |> where(organization_id: ^organization_id)
+      |> Repo.all()
+      |> Repo.preload([:participant])
+    end
   end
 
   @doc """
