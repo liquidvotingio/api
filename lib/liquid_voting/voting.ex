@@ -28,7 +28,7 @@ defmodule LiquidVoting.Voting do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
-        {:vars,
+        {:params,
          [
            {:organization_id, attrs[:organization_id]},
            {:participant_email, attrs[:participant_email]},
@@ -78,7 +78,7 @@ defmodule LiquidVoting.Voting do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
-        {:vars, [{:organization_id, organization_id}]}
+        {:params, [{:organization_id, organization_id}]}
       ])
 
       Vote
