@@ -38,8 +38,6 @@ defmodule LiquidVoting.Voting do
       ])
 
       Repo.transaction(fn ->
-        # TODO: refactor case statements into small functions.
-
         %Vote{}
         |> Vote.changeset(attrs)
         |> Repo.insert()
