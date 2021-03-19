@@ -28,11 +28,10 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     do: {:ok, Voting.list_votes_by_proposal(proposal_url, organization_id)}
 
   def votes(_, _, %{context: %{organization_id: organization_id}}) do
-    Tracer.with_span "resolvers/voting" do
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
-        {:action, "votes"},
         {:request_id, Logger.metadata()[:request_id]},
-        {:organization_id, organization_id}
+        {:params, [{:organization_id, organization_id}]}
       ])
 
       {:ok, Voting.list_votes(organization_id)}
@@ -45,17 +44,28 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{
         context: %{organization_id: organization_id}
       }) do
-    case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
-      {:error, changeset} ->
-        {:error,
-         message: "Could not create vote with given email",
-         details: ChangesetErrors.error_details(changeset)}
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:params,
+         [
+           {:organization_id, organization_id},
+           {:email, email}
+         ]}
+      ])
 
-      {:ok, participant} ->
-        args
-        |> Map.put(:organization_id, organization_id)
-        |> Map.put(:participant_id, participant.id)
-        |> create_vote_with_valid_arguments()
+      case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
+        {:error, changeset} ->
+          {:error,
+           message: "Could not create vote with given email",
+           details: ChangesetErrors.error_details(changeset)}
+
+        {:ok, participant} ->
+          args
+          |> Map.put(:organization_id, organization_id)
+          |> Map.put(:participant_id, participant.id)
+          |> create_vote_with_valid_arguments()
+      end
     end
   end
 
