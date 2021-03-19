@@ -2,12 +2,12 @@ defmodule LiquidVoting.Voting do
   @moduledoc """
   The Voting context.
   """
-  require OpenTelemetry.Tracer, as: Tracer
+  #require OpenTelemetry.Tracer, as: Tracer
 
   import Ecto.Query, warn: false
 
   alias __MODULE__.{Participant, Vote}
-  alias LiquidVoting.{Delegations, Repo, Tracers}
+  alias LiquidVoting.{Delegations, Repo}
   alias LiquidVoting.Delegations.Delegation
 
   @doc """

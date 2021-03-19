@@ -18,6 +18,15 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
+config :opentelemetry,
+  processors: [
+    otel_batch_processor: %{
+      exporter:
+        {OpenTelemetry.Honeycomb.Exporter,
+         write_key: "520527fcecf7c6b38bd1775da111ead3", dataset: "api-telemetry"}
+    }
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
