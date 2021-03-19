@@ -2,7 +2,8 @@ defmodule LiquidVoting.Voting do
   @moduledoc """
   The Voting context.
   """
-  #require OpenTelemetry.Tracer, as: Tracer
+
+  # require OpenTelemetry.Tracer, as: Tracer
 
   import Ecto.Query, warn: false
 
