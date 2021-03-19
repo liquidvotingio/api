@@ -28,9 +28,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     do: {:ok, Voting.list_votes_by_proposal(proposal_url, organization_id)}
 
   def votes(_, _, %{context: %{organization_id: organization_id}}) do
-    Tracer.with_span "resolvers/voting" do
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
-        {:action, __ENV__.function},
         {:request_id, Logger.metadata()[:request_id]},
         {:vars, binding()}
       ])
@@ -45,9 +44,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{
         context: %{organization_id: organization_id}
       }) do
-    Tracer.with_span "resolvers/voting" do
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
-        {:action, __ENV__.function},
         {:request_id, Logger.metadata()[:request_id]},
         {:vars, binding()}
       ])
