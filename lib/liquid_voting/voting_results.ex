@@ -3,6 +3,8 @@ defmodule LiquidVoting.VotingResults do
   The VotingResults context.
   """
 
+  require OpenTelemetry.Tracer, as: Tracer
+
   import Ecto.Query, warn: false
 
   alias __MODULE__.Result
@@ -19,33 +21,44 @@ defmodule LiquidVoting.VotingResults do
 
   """
   def calculate_result!(proposal_url, organization_id) do
-    votes = Voting.list_votes_by_proposal(proposal_url, organization_id)
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:params,
+         [
+           {:organization_id, organization_id},
+           {:proposal_url, proposal_url}
+         ]}
+      ])
 
-    attrs = %{
-      in_favor: 0,
-      against: 0,
-      proposal_url: proposal_url,
-      organization_id: organization_id
-    }
+      votes = Voting.list_votes_by_proposal(proposal_url, organization_id)
 
-    attrs =
-      Enum.reduce(votes, attrs, fn vote, attrs ->
-        {:ok, vote} = VotingWeight.update_vote_weight(vote)
+      attrs = %{
+        in_favor: 0,
+        against: 0,
+        proposal_url: proposal_url,
+        organization_id: organization_id
+      }
 
-        if vote.yes do
-          Map.update!(attrs, :in_favor, &(&1 + vote.weight))
-        else
-          Map.update!(attrs, :against, &(&1 + vote.weight))
-        end
-      end)
+      attrs =
+        Enum.reduce(votes, attrs, fn vote, attrs ->
+          {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
-    %Result{}
-    |> Result.changeset(attrs)
-    |> Repo.insert!(
-      on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_id, :proposal_url],
-      returning: true
-    )
+          if vote.yes do
+            Map.update!(attrs, :in_favor, &(&1 + vote.weight))
+          else
+            Map.update!(attrs, :against, &(&1 + vote.weight))
+          end
+        end)
+
+      %Result{}
+      |> Result.changeset(attrs)
+      |> Repo.insert!(
+        on_conflict: {:replace_all_except, [:id]},
+        conflict_target: [:organization_id, :proposal_url],
+        returning: true
+      )
+    end
   end
 
   @doc """
@@ -58,13 +71,24 @@ defmodule LiquidVoting.VotingResults do
 
   """
   def publish_voting_result_change(proposal_url, organization_id) do
-    result = calculate_result!(proposal_url, organization_id)
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:params,
+         [
+           {:organization_id, organization_id},
+           {:proposal_url, proposal_url}
+         ]}
+      ])
 
-    Absinthe.Subscription.publish(
-      LiquidVotingWeb.Endpoint,
-      result,
-      voting_result_change: proposal_url
-    )
+      result = calculate_result!(proposal_url, organization_id)
+
+      Absinthe.Subscription.publish(
+        LiquidVotingWeb.Endpoint,
+        result,
+        voting_result_change: proposal_url
+      )
+    end
   end
 
   @doc """
