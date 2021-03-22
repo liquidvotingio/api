@@ -15,7 +15,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     container:
-      image: elixir:1.11.3-slim
+      image: elixir:1.11.3
     services:
       postgres:
         image: postgres:10.4
@@ -45,7 +45,7 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     container:
-      image: elixir:1.11.3-slim
+      image: elixir:1.11.3
     steps:
     - uses: actions/checkout@v1
     - name: Install Dependencies
@@ -129,4 +129,3 @@ jobs:
         --container api-container \
         -- /opt/app/bin/liquid_voting \
         eval "LiquidVoting.Release.smoke_test_teardown"
-      
