@@ -8,6 +8,9 @@ defmodule LiquidVoting.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    OpenTelemetry.register_application_tracer(:liquid_voting)
+    OpentelemetryPhoenix.setup()
+
     # List all child processes to be supervised
     children = [
       LiquidVoting.Repo,
