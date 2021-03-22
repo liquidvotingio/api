@@ -13,6 +13,7 @@ defmodule LiquidVoting.Application do
 
     # List all child processes to be supervised
     children = [
+      Geometrics.OpenTelemetry.Handler,
       LiquidVoting.Repo,
       {Phoenix.PubSub, name: LiquidVoting.PubSub},
       LiquidVotingWeb.Endpoint,

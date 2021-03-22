@@ -30,6 +30,9 @@ config :opentelemetry,
     }
   ]
 
+# Geometrics ecto config: enables ecto telemetry we use for Honeycomb traces
+config :geometrics, :ecto_prefix, [:liquid_voting, :repo]
+
 # to test the release:
 # $ MIX_ENV=prod mix release
 # $

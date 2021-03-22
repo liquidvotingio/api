@@ -4,6 +4,7 @@ defmodule LiquidVotingWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
     plug LiquidVotingWeb.Plugs.Context
+    plug Geometrics.Plug.OpenTelemetry
   end
 
   scope "/" do
