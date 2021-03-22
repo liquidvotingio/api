@@ -96,10 +96,17 @@ defmodule LiquidVoting.Voting do
 
   """
   def list_votes_by_proposal(proposal_url, organization_id) do
-    Vote
-    |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
-    |> Repo.all()
-    |> Repo.preload([:participant])
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:params, [{:organization_id, organization_id}, {:proposal_url, proposal_url}]}
+      ])
+
+      Vote
+      |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
+      |> Repo.all()
+      |> Repo.preload([:participant])
+    end
   end
 
   @doc """
@@ -363,13 +370,25 @@ defmodule LiquidVoting.Voting do
       {:error, %Ecto.Changeset{}}
   """
   def upsert_participant(attrs \\ %{}) do
-    %Participant{}
-    |> Participant.changeset(attrs)
-    |> Repo.insert(
-      on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_id, :email],
-      returning: true
-    )
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:params,
+         [
+           {:organization_id, attrs[:organization_id]},
+           {:email, attrs[:email]},
+           {:name, attrs[:name]}
+         ]}
+      ])
+
+      %Participant{}
+      |> Participant.changeset(attrs)
+      |> Repo.insert(
+        on_conflict: {:replace_all_except, [:id]},
+        conflict_target: [:organization_id, :email],
+        returning: true
+      )
+    end
   end
 
   @doc """

@@ -56,11 +56,20 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
       case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
         {:error, changeset} ->
+          Tracer.set_attributes([
+            {:result,
+             ":error, Voting.upsert_participant\nmessage: Could not create vote with given email', details: '#{
+               inspect(ChangesetErrors.error_details(changeset))
+             }'"}
+          ])
+
           {:error,
            message: "Could not create vote with given email",
            details: ChangesetErrors.error_details(changeset)}
 
         {:ok, participant} ->
+          Tracer.set_attributes([{:result, ":ok, Voting.upsert_participant"}])
+
           args
           |> Map.put(:organization_id, organization_id)
           |> Map.put(:participant_id, participant.id)
@@ -84,14 +93,37 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
        details: "No participant identifier (id or email) submitted"}
 
   defp create_vote_with_valid_arguments(args) do
-    case Voting.create_vote(args) do
-      {:error, changeset} ->
-        {:error,
-         message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+    Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
+      Tracer.set_attributes([
+        {:request_id, Logger.metadata()[:request_id]},
+        {:params,
+         [
+           {:organization_id, args[:organization_id]},
+           {:participant_email, args[:participant_email]},
+           {:participant_id, args[:participant_id]},
+           {:proposal_url, args[:proposal_url]},
+           {:yes, args[:yes]}
+         ]}
+      ])
 
-      {:ok, vote} ->
-        VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_id)
-        {:ok, vote}
+      case Voting.create_vote(args) do
+        {:error, changeset} ->
+          Tracer.set_attributes([
+            {:result,
+             ":error, Voting.upsert_participant\nmessage: Could not create vote', details: '#{
+               inspect(ChangesetErrors.error_details(changeset))
+             }'"}
+          ])
+
+          {:error,
+           message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+
+        {:ok, vote} ->
+          Tracer.set_attributes([{:result, ":ok, Voting.create_vote"}])
+
+          VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_id)
+          {:ok, vote}
+      end
     end
   end
 
