@@ -51,6 +51,7 @@ defmodule LiquidVoting.MixProject do
       {:opentelemetry, "~> 0.5.0"},
       {:opentelemetry_api, "~> 0.5.0"},
       {:opentelemetry_honeycomb, "~> 0.5.0-rc.1"},
+      {:opentelemetry_phoenix, "~> 0.2.0"},
       {:hackney, ">= 1.11.0"},
       {:poison, ">= 1.5.0"},
       {:ex_machina, "~> 2.3", only: :test},
