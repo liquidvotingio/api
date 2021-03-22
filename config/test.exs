@@ -15,3 +15,5 @@ config :liquid_voting, LiquidVotingWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :geometrics, :ecto_prefix, [:liquid_voting, :repo]
