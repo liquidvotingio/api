@@ -49,7 +49,7 @@ defmodule LiquidVoting.MixProject do
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:telemetry, "~> 0.4.0"},
       {:opentelemetry, "~> 0.6.0", override: true},
-      {:opentelemetry_api, "~> 0.5.0", override: true},
+      {:opentelemetry_api, "~> 0.6.0", override: true},
       {:opentelemetry_honeycomb, "~> 0.5.0-rc.1"},
       {:opentelemetry_phoenix, "~> 0.2.0", override: true},
       {:geometrics, github: "geometerio/geometrics", branch: "main"},
