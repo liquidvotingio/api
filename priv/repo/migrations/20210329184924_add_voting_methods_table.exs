@@ -3,7 +3,7 @@ defmodule LiquidVoting.Repo.Migrations.AddVotingMethodsTable do
 
   def change do
     create table(:voting_methods) do
-      add :voting_method, :text, default: nil, null: false
+      add :voting_method, :string, default: nil, null: false
       add :organization_id, :uuid, null: false
 
       timestamps()
