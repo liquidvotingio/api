@@ -2,7 +2,7 @@ defmodule LiquidVoting.VotingResults.Result do
   use Ecto.Schema
   import Ecto.Changeset
 
-  #alias LiquidVoting.VotingMethods.VotingMethod
+  alias LiquidVoting.VotingMethods.VotingMethod
 
   @primary_key {:id, :binary_id, autogenerate: true}
 
@@ -12,7 +12,7 @@ defmodule LiquidVoting.VotingResults.Result do
     field :proposal_url, :string
     field :organization_id, Ecto.UUID
 
-    #belongs_to :voting_method, VotingMethod
+    belongs_to :voting_method, VotingMethod
 
     timestamps()
   end

@@ -3,7 +3,7 @@ defmodule LiquidVoting.Voting.Vote do
   import Ecto.Changeset
 
   alias LiquidVoting.Voting.Participant
-  #alias LiquidVoting.VotingMethods.VotingMethod
+  alias LiquidVoting.VotingMethods.VotingMethod
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -15,7 +15,7 @@ defmodule LiquidVoting.Voting.Vote do
     field :organization_id, Ecto.UUID
 
     belongs_to :participant, Participant
-    #belongs_to :voting_method, VotingMethod
+    belongs_to :voting_method, VotingMethod
 
     timestamps()
   end

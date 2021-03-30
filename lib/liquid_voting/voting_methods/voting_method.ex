@@ -2,8 +2,8 @@ defmodule LiquidVoting.VotingMethods.VotingMethod do
   use Ecto.Schema
   import Ecto.Changeset
 
-  #alias LiquidVoting.Voting.Vote
-  #alias LiquidVoting.VotingResults.Result
+  alias LiquidVoting.Voting.Vote
+  alias LiquidVoting.VotingResults.Result
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -12,8 +12,8 @@ defmodule LiquidVoting.VotingMethods.VotingMethod do
     field :method, :string
     field :organization_id, Ecto.UUID
 
-    #has_many :votes, Vote
-    #has_many :results, Result
+    has_many :votes, Vote
+    has_many :results, Result
 
     timestamps()
   end
