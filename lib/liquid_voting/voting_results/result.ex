@@ -2,6 +2,8 @@ defmodule LiquidVoting.VotingResults.Result do
   use Ecto.Schema
   import Ecto.Changeset
 
+  #alias LiquidVoting.VotingMethods.VotingMethod
+
   @primary_key {:id, :binary_id, autogenerate: true}
 
   schema "results" do
@@ -9,6 +11,8 @@ defmodule LiquidVoting.VotingResults.Result do
     field :against, :integer, default: 0
     field :proposal_url, :string
     field :organization_id, Ecto.UUID
+
+    #belongs_to :voting_method, VotingMethod
 
     timestamps()
   end

@@ -9,6 +9,8 @@ defmodule LiquidVoting.Repo.Migrations.AddVotingMethodsTable do
       timestamps()
     end
 
-    create index(:voting_methods, [:organization_id, :voting_method])
+    create unique_index(:voting_methods, [:organization_id, :voting_method],
+             name: :uniq_index_org_voting_method
+           )
   end
 end
