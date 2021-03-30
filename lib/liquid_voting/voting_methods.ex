@@ -8,6 +8,17 @@ defmodule LiquidVoting.VotingMethods do
   alias __MODULE__.VotingMethod
   alias LiquidVoting.{Repo}
 
+  @doc """
+  Upserts a voting_method (updates or inserts).
+
+  ## Examples
+
+      iex> upsert_voting_method(%{field: value})
+      {:ok, %VotingMethod{}}
+
+      iex> upsert_voting_method(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
   def upsert_voting_method(attrs \\ %{}) do
     attrs =
       if Map.get(attrs, :voting_method) == nil,
