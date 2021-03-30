@@ -4,6 +4,7 @@ defmodule LiquidVoting.Factory do
   alias LiquidVoting.Voting.{Vote, Participant}
   alias LiquidVoting.Delegations.Delegation
   alias LiquidVoting.VotingResults.Result
+  alias LiquidVoting.VotingMethods.VotingMethod
 
   def participant_factory(attrs) do
     organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
@@ -66,5 +67,16 @@ defmodule LiquidVoting.Factory do
     }
 
     merge_attributes(voting_result, attrs)
+  end
+
+  def voting_method_factory(attrs) do
+    organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
+
+    voting_method = %VotingMethod{
+      voting_method: sequence(:voting_method, &"voting-method-#{&1}"),
+      organization_id: organization_id
+    }
+
+    merge_attributes(voting_method, attrs)
   end
 end
