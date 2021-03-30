@@ -20,13 +20,6 @@ defmodule LiquidVoting.VotingMethods do
       {:error, %Ecto.Changeset{}}
   """
   def upsert_voting_method(attrs \\ %{}) do
-    attrs =
-      if Map.get(attrs, :voting_method) == nil,
-        # Workaround: Prevent creation of new record for matching records
-        # where voting_method: nil, by providing default string value.
-        do: Map.put(attrs, :voting_method, "** no method specified **"),
-        else: attrs
-
     %VotingMethod{}
     |> VotingMethod.changeset(attrs)
     |> Repo.insert_or_update(
