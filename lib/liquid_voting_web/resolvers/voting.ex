@@ -93,7 +93,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
        details: "No participant identifier (id or email) submitted"}
 
   defp create_vote_with_valid_arguments(args) do
-    IO.inspect (args)
+    IO.inspect(args)
 
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
