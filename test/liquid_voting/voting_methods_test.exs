@@ -1,4 +1,4 @@
-defmodule LiquidVoting.VotingmethodsTest do
+defmodule LiquidVoting.VotingMethodsTest do
   use LiquidVoting.DataCase
   import LiquidVoting.Factory
 

@@ -5,7 +5,7 @@ defmodule LiquidVoting.Repo.Migrations.CreateVotesUniqIndexOrgParticipantProposa
     create unique_index(
              :votes,
              [:organization_id, :participant_id, :proposal_url, :voting_method_id],
-             name: :uniq_index_org_vote_participant_proposal_voting_method
+             name: :uniq_index_org_participant_proposal_voting_method
            )
   end
 end
