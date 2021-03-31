@@ -60,7 +60,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
       case VotingMethods.upsert_voting_method(%{
              organization_id: organization_id,
-             voting_method: voting_method
+             name: voting_method
            }) do
         {:error, changeset} ->
           {:error,

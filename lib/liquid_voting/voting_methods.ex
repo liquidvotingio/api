@@ -39,7 +39,7 @@ defmodule LiquidVoting.VotingMethods do
     |> VotingMethod.changeset(attrs)
     |> Repo.insert_or_update(
       on_conflict: {:replace_all_except, [:id]},
-      conflict_target: [:organization_id, :voting_method],
+      conflict_target: [:organization_id, :name],
       returning: true
     )
   end

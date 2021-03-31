@@ -9,7 +9,7 @@ defmodule LiquidVoting.VotingMethods.VotingMethod do
   @foreign_key_type :binary_id
 
   schema "voting_methods" do
-    field :voting_method, :string
+    field :name, :string
     field :organization_id, Ecto.UUID
 
     has_many :votes, Vote
@@ -21,13 +21,13 @@ defmodule LiquidVoting.VotingMethods.VotingMethod do
   @doc false
   def changeset(voting_method, attrs) do
     required_fields = [:organization_id]
-    all_fields = [:voting_method | required_fields]
+    all_fields = [:name | required_fields]
 
     voting_method
     |> cast(attrs, all_fields)
     |> validate_required(required_fields)
-    |> unique_constraint(:org_method,
-      name: :uniq_index_org_voting_method
+    |> unique_constraint(:org_method_name,
+      name: :uniq_index_org_name
     )
   end
 end
