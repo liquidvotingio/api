@@ -93,6 +93,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
        details: "No participant identifier (id or email) submitted"}
 
   defp create_vote_with_valid_arguments(args) do
+    IO.inspect (args)
+
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
@@ -102,7 +104,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
            {:participant_email, args[:participant_email]},
            {:participant_id, args[:participant_id]},
            {:proposal_url, args[:proposal_url]},
-           {:yes, args[:yes]}
+           {:yes, args[:yes]},
+           {:voting_method, args[:voting_method]}
          ]}
       ])
 
@@ -110,7 +113,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         {:error, changeset} ->
           Tracer.set_attributes([
             {:result,
-             ":error, Voting.upsert_participant\nmessage: Could not create vote', details: '#{
+             ":error, Voting.create_vote\nmessage: Could not create vote', details: '#{
                inspect(ChangesetErrors.error_details(changeset))
              }'"}
           ])
