@@ -1,8 +1,9 @@
 defmodule LiquidVotingWeb.Resolvers.Voting do
   require OpenTelemetry.Tracer, as: Tracer
 
-  alias LiquidVoting.{Voting, VotingMethods, VotingResults}
+  alias LiquidVoting.{Repo, Voting, VotingMethods, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
+  alias Ecto.Multi
 
   def participants(_, _, %{context: %{organization_id: organization_id}}),
     do: {:ok, Voting.list_participants(organization_id)}
@@ -54,42 +55,44 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         {:params,
          [
            {:organization_id, organization_id},
-           {:email, email}
+           {:email, email},
+           {:voting_method, voting_method}
          ]}
       ])
 
-      case VotingMethods.upsert_voting_method(%{
-             organization_id: organization_id,
-             name: voting_method
-           }) do
-        {:error, changeset} ->
-          {:error,
-           message: "Could not create voting_method with given method",
-           details: ChangesetErrors.error_details(changeset)}
-
-        {:ok, voting_method} ->
-          case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
-            {:error, changeset} ->
-              Tracer.set_attributes([
-                {:result,
-                 ":error, Voting.upsert_participant\nmessage: Could not create vote with given email', details: '#{
-                   inspect(ChangesetErrors.error_details(changeset))
-                 }'"}
-              ])
-
-              {:error,
-               message: "Could not create vote with given email",
-               details: ChangesetErrors.error_details(changeset)}
-
-            {:ok, participant} ->
-              Tracer.set_attributes([{:result, ":ok, Voting.upsert_participant"}])
-
-              args
+      Multi.new()
+      |> Multi.run(:upsert_voting_method, fn _repo, _changes ->
+        VotingMethods.upsert_voting_method(%{
+          organization_id: organization_id,
+          name: voting_method
+        })
+      end)
+      |> Multi.run(:upsert_participant, fn _repo, _changes ->
+        Voting.upsert_participant(%{email: email, organization_id: organization_id})
+      end)
+      |> Multi.run(:create_vote_with_valid_arguments, fn _repo, changes ->
+        args
               |> Map.put(:organization_id, organization_id)
-              |> Map.put(:participant_id, participant.id)
-              |> Map.put(:voting_method_id, voting_method.id)
+              |> Map.put(:voting_method_id, changes.upsert_voting_method.id)
+              |> Map.put(:participant_id, changes.upsert_participant.id)
               |> create_vote_with_valid_arguments()
-          end
+      end)
+      |> Repo.transaction()
+      |> case do
+        {:ok, resources} ->
+          IO.inspect(resources)
+          {:ok, resources.create_vote_with_valid_arguments}
+
+        {:error, :upsert_voting_method, changeset, _} ->
+          {:error, message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+
+        {:error, :upsert_participant, changeset, _} ->
+        {:error, message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+
+        {:error, :create_vote_with_valid_arguments, value, _} ->
+          {:error, value}
+
+        error -> error
       end
     end
   end
@@ -102,15 +105,19 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     |> create_vote_with_valid_arguments()
   end
 
-  def create_vote(_, %{proposal_url: _, yes: _}, _),
+  def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
+    do:
+      {:error,
+       message: "Could not create vote",
+       details: "No voting method specified"}
+
+  def create_vote(_, %{proposal_url: _, yes: _, voting_method: voting_method}, _),
     do:
       {:error,
        message: "Could not create vote",
        details: "No participant identifier (id or email) submitted"}
 
   defp create_vote_with_valid_arguments(args) do
-    IO.inspect(args)
-
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},

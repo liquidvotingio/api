@@ -22,8 +22,8 @@ defmodule LiquidVoting.Voting.Vote do
 
   @doc false
   def changeset(vote, attrs) do
-    required_fields = [:yes, :weight, :participant_id, :proposal_url, :organization_id]
-    all_fields = [:voting_method_id | required_fields]
+    required_fields = [:yes, :weight, :participant_id, :proposal_url, :voting_method_id, :organization_id]
+    all_fields = required_fields
 
     vote
     |> cast(attrs, all_fields)
