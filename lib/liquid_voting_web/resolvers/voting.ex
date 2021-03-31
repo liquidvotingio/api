@@ -1,7 +1,7 @@
 defmodule LiquidVotingWeb.Resolvers.Voting do
   require OpenTelemetry.Tracer, as: Tracer
 
-  alias LiquidVoting.{Voting, VotingResults}
+  alias LiquidVoting.{Voting, VotingMethods, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def participants(_, _, %{context: %{organization_id: organization_id}}),
@@ -41,9 +41,13 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def vote(_, %{id: id}, %{context: %{organization_id: organization_id}}),
     do: {:ok, Voting.get_vote!(id, organization_id)}
 
-  def create_vote(_, %{participant_email: email, proposal_url: _, yes: _} = args, %{
-        context: %{organization_id: organization_id}
-      }) do
+  def create_vote(
+        _,
+        %{participant_email: email, proposal_url: _, yes: _, voting_method: voting_method} = args,
+        %{
+          context: %{organization_id: organization_id}
+        }
+      ) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
@@ -54,26 +58,38 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
          ]}
       ])
 
-      case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
+      case VotingMethods.upsert_voting_method(%{
+             organization_id: organization_id,
+             voting_method: voting_method
+           }) do
         {:error, changeset} ->
-          Tracer.set_attributes([
-            {:result,
-             ":error, Voting.upsert_participant\nmessage: Could not create vote with given email', details: '#{
-               inspect(ChangesetErrors.error_details(changeset))
-             }'"}
-          ])
-
           {:error,
-           message: "Could not create vote with given email",
+           message: "Could not create voting_method with given method",
            details: ChangesetErrors.error_details(changeset)}
 
-        {:ok, participant} ->
-          Tracer.set_attributes([{:result, ":ok, Voting.upsert_participant"}])
+        {:ok, voting_method} ->
+          case Voting.upsert_participant(%{email: email, organization_id: organization_id}) do
+            {:error, changeset} ->
+              Tracer.set_attributes([
+                {:result,
+                 ":error, Voting.upsert_participant\nmessage: Could not create vote with given email', details: '#{
+                   inspect(ChangesetErrors.error_details(changeset))
+                 }'"}
+              ])
 
-          args
-          |> Map.put(:organization_id, organization_id)
-          |> Map.put(:participant_id, participant.id)
-          |> create_vote_with_valid_arguments()
+              {:error,
+               message: "Could not create vote with given email",
+               details: ChangesetErrors.error_details(changeset)}
+
+            {:ok, participant} ->
+              Tracer.set_attributes([{:result, ":ok, Voting.upsert_participant"}])
+
+              args
+              |> Map.put(:organization_id, organization_id)
+              |> Map.put(:participant_id, participant.id)
+              |> Map.put(:voting_method_id, voting_method.id)
+              |> create_vote_with_valid_arguments()
+          end
       end
     end
   end

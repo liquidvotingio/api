@@ -26,10 +26,10 @@ defmodule LiquidVoting.Voting.Vote do
     all_fields = [:voting_method_id | required_fields]
 
     vote
-    |> cast(attrs, required_fields)
+    |> cast(attrs, all_fields)
     |> assoc_constraint(:participant)
     |> assoc_constraint(:voting_method)
     |> validate_required(required_fields)
-    |> unique_constraint(:participant_id, name: :uniq_index_org_participant_proposal_voting_method)
+    |> unique_constraint(:org_participant_proposal_voting_method, name: :uniq_index_org_participant_proposal_voting_method)
   end
 end
