@@ -9,9 +9,9 @@ defmodule LiquidVoting.VotingMethods do
   alias LiquidVoting.{Repo}
 
   @doc """
-  Gets a single voting_result by id and organization id
+  Gets a single voting method by id and organization id
 
-  Raises `Ecto.NoResultsError` if the Vote does not exist.
+  Raises `Ecto.NoResultsError` if the VotingMethod does not exist.
 
   ## Examples
 
@@ -29,7 +29,7 @@ defmodule LiquidVoting.VotingMethods do
   end
 
   @doc """
-  Returns the list of voting_methods for an organization id.
+  Returns the list of voting methods for an organization id.
 
   ## Examples
 
@@ -44,7 +44,7 @@ defmodule LiquidVoting.VotingMethods do
   end
 
   @doc """
-  Upserts a voting_method (updates or inserts).
+  Upserts a voting method (updates or inserts).
 
   ## Examples
 
