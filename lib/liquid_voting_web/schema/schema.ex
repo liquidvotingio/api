@@ -5,7 +5,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
   alias LiquidVotingWeb.Resolvers
-  alias LiquidVoting.{Voting, VotingResults}
+  alias LiquidVoting.{Voting, VotingMethods, VotingResults}
 
   query do
     @desc "Get a voting result by its proposal url"
@@ -123,6 +123,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :yes, non_null(:boolean)
     field :weight, non_null(:integer)
     field :proposal_url, non_null(:string)
+    field :voting_method, non_null(:voting_method), resolve: dataloader(VotingMethods)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
 
     field :voting_result, :result,
@@ -158,6 +159,11 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :proposal_url, non_null(:string)
   end
 
+  object :voting_method do
+    field :id, non_null(:string)
+    field :name, non_null(:string)
+  end
+
   def context(ctx) do
     source = Dataloader.Ecto.new(LiquidVoting.Repo)
 
@@ -165,6 +171,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       Dataloader.new()
       |> Dataloader.add_source(Voting, source)
       |> Dataloader.add_source(Delegations, source)
+      |> Dataloader.add_source(VotingMethods, source)
 
     Map.put(ctx, :loader, loader)
   end
