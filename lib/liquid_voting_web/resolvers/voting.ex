@@ -72,10 +72,10 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       end)
       |> Multi.run(:create_vote_with_valid_arguments, fn _repo, changes ->
         args
-              |> Map.put(:organization_id, organization_id)
-              |> Map.put(:voting_method_id, changes.upsert_voting_method.id)
-              |> Map.put(:participant_id, changes.upsert_participant.id)
-              |> create_vote_with_valid_arguments()
+        |> Map.put(:organization_id, organization_id)
+        |> Map.put(:voting_method_id, changes.upsert_voting_method.id)
+        |> Map.put(:participant_id, changes.upsert_participant.id)
+        |> create_vote_with_valid_arguments()
       end)
       |> Repo.transaction()
       |> case do
@@ -84,15 +84,18 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
           {:ok, resources.create_vote_with_valid_arguments}
 
         {:error, :upsert_voting_method, changeset, _} ->
-          {:error, message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+          {:error,
+           message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
 
         {:error, :upsert_participant, changeset, _} ->
-        {:error, message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+          {:error,
+           message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
 
         {:error, :create_vote_with_valid_arguments, value, _} ->
           {:error, value}
 
-        error -> error
+        error ->
+          error
       end
     end
   end
@@ -106,10 +109,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   end
 
   def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
-    do:
-      {:error,
-       message: "Could not create vote",
-       details: "No voting method specified"}
+    do: {:error, message: "Could not create vote", details: "No voting method specified"}
 
   def create_vote(_, %{proposal_url: _, yes: _, voting_method: voting_method}, _),
     do:

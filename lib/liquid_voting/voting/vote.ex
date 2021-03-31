@@ -22,7 +22,15 @@ defmodule LiquidVoting.Voting.Vote do
 
   @doc false
   def changeset(vote, attrs) do
-    required_fields = [:yes, :weight, :participant_id, :proposal_url, :voting_method_id, :organization_id]
+    required_fields = [
+      :yes,
+      :weight,
+      :participant_id,
+      :proposal_url,
+      :voting_method_id,
+      :organization_id
+    ]
+
     all_fields = required_fields
 
     vote
