@@ -62,7 +62,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:participant_id, :string)
       arg(:participant_email, :string)
       arg(:yes, non_null(:boolean))
-      arg(:voting_method, :string)
+      arg(:name, :string)
       resolve(&Resolvers.Voting.create_vote/3)
     end
 
