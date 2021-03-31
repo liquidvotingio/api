@@ -31,10 +31,8 @@ defmodule LiquidVoting.Voting.Vote do
       :organization_id
     ]
 
-    all_fields = required_fields
-
     vote
-    |> cast(attrs, all_fields)
+    |> cast(attrs, required_fields)
     |> assoc_constraint(:participant)
     |> assoc_constraint(:voting_method)
     |> validate_required(required_fields)

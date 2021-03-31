@@ -20,11 +20,10 @@ defmodule LiquidVoting.VotingMethods.VotingMethod do
 
   @doc false
   def changeset(voting_method, attrs) do
-    required_fields = [:organization_id]
-    all_fields = [:name | required_fields]
+    required_fields = [:organization_id, :name]
 
     voting_method
-    |> cast(attrs, all_fields)
+    |> cast(attrs, required_fields)
     |> validate_required(required_fields)
     |> unique_constraint(:org_method_name,
       name: :uniq_index_org_name
