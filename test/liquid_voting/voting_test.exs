@@ -97,9 +97,7 @@ defmodule LiquidVoting.VotingTest do
 
     test "get_vote!/2 returns the vote for given id and organization_id" do
       vote = insert(:vote)
-      assert %Vote{} = returned_vote = Voting.get_vote!(vote.id, vote.organization_id)
-      assert returned_vote.id == vote.id
-      assert returned_vote.organization_id == vote.organization_id
+      assert Voting.get_vote!(vote.id, vote.organization_id) == vote
     end
 
     test "get_vote!/3 returns the vote for given email, proposal url and organization_id" do

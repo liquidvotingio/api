@@ -9,6 +9,26 @@ defmodule LiquidVoting.VotingMethods do
   alias LiquidVoting.{Repo}
 
   @doc """
+  Gets a single voting_result by id and organization id
+
+  Raises `Ecto.NoResultsError` if the Vote does not exist.
+
+  ## Examples
+
+      iex> get_voting_method!("61dbd65c-2c1f-4c29-819c-bbd27112a868", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %VotingMethod{}
+
+      iex> get_voting_method!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+
+  def get_voting_method!(id, organization_id) do
+    VotingMethod
+    |> Repo.get_by!(id: id, organization_id: organization_id)
+  end
+
+  @doc """
   Returns the list of voting_methods for an organization id.
 
   ## Examples

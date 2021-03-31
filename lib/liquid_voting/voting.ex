@@ -146,6 +146,7 @@ defmodule LiquidVoting.Voting do
     Vote
     |> Repo.get_by!(id: id, organization_id: organization_id)
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
