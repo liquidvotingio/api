@@ -83,6 +83,7 @@ defmodule LiquidVoting.Voting do
       |> where(organization_id: ^organization_id)
       |> Repo.all()
       |> Repo.preload([:participant])
+      |> Repo.preload([:voting_method])
     end
   end
 
@@ -106,6 +107,7 @@ defmodule LiquidVoting.Voting do
       |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
       |> Repo.all()
       |> Repo.preload([:participant])
+      |> Repo.preload([:voting_method])
     end
   end
 
@@ -123,6 +125,7 @@ defmodule LiquidVoting.Voting do
     |> where(participant_id: ^participant_id, organization_id: ^organization_id)
     |> Repo.all()
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
@@ -168,6 +171,7 @@ defmodule LiquidVoting.Voting do
       organization_id: organization_id
     )
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
@@ -190,6 +194,7 @@ defmodule LiquidVoting.Voting do
     )
     |> Repo.one()
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   # Just for seeding

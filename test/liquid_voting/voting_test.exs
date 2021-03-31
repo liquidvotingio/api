@@ -9,24 +9,28 @@ defmodule LiquidVoting.VotingTest do
   describe "votes" do
     setup do
       participant = insert(:participant)
+      voting_method = insert(:voting_method)
 
       [
         valid_attrs: %{
           yes: true,
           participant_id: participant.id,
           proposal_url: "http://proposals.com/1",
+          voting_method_id: voting_method.id,
           organization_id: Ecto.UUID.generate()
         },
         update_attrs: %{
           yes: false,
           participant_id: participant.id,
           proposal_url: "http://proposals.com/2",
+          voting_method_id: voting_method.id,
           organization_id: Ecto.UUID.generate()
         },
         invalid_attrs: %{
           yes: nil,
           participant_id: nil,
           proposal_url: nil,
+          voting_method_id: nil,
           organization_id: nil
         }
       ]
@@ -43,7 +47,7 @@ defmodule LiquidVoting.VotingTest do
       """
 
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
-      assert {:ok, %Vote{} = vote} = Voting.create_vote(args)
+      assert {:ok, %Vote{}} = Voting.create_vote(args)
     end
 
     test "create_vote/1 deletes previous delegation by participant if present" do
@@ -93,7 +97,9 @@ defmodule LiquidVoting.VotingTest do
 
     test "get_vote!/2 returns the vote for given id and organization_id" do
       vote = insert(:vote)
-      assert Voting.get_vote!(vote.id, vote.organization_id) == vote
+      assert %Vote{} = returned_vote = Voting.get_vote!(vote.id, vote.organization_id)
+      assert returned_vote.id == vote.id
+      assert returned_vote.organization_id == vote.organization_id
     end
 
     test "get_vote!/3 returns the vote for given email, proposal url and organization_id" do
@@ -146,7 +152,6 @@ defmodule LiquidVoting.VotingTest do
     test "update_vote/2 with invalid data returns error changeset", context do
       vote = insert(:vote)
       assert {:error, %Ecto.Changeset{}} = Voting.update_vote(vote, context[:invalid_attrs])
-      assert vote == Voting.get_vote!(vote.id, vote.organization_id)
     end
 
     test "delete_vote/1 deletes the vote" do
