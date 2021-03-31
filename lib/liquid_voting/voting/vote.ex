@@ -23,10 +23,12 @@ defmodule LiquidVoting.Voting.Vote do
   @doc false
   def changeset(vote, attrs) do
     required_fields = [:yes, :weight, :participant_id, :proposal_url, :organization_id]
+    all_fields = [:voting_method_id | required_fields]
 
     vote
     |> cast(attrs, required_fields)
     |> assoc_constraint(:participant)
+    |> assoc_constraint(:voting_method)
     |> validate_required(required_fields)
     |> unique_constraint(:participant_id, name: :uniq_index_org_vote_participant_proposal)
   end
