@@ -33,6 +33,7 @@ defmodule LiquidVoting.Voting do
            {:organization_id, attrs[:organization_id]},
            {:participant_email, attrs[:participant_email]},
            {:proposal_url, attrs[:proposal_url]},
+           {:voting_method, attrs[:voting_method]},
            {:yes, attrs[:yes]}
          ]}
       ])

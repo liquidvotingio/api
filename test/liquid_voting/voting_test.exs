@@ -53,12 +53,14 @@ defmodule LiquidVoting.VotingTest do
     test "create_vote/1 deletes previous delegation by participant if present" do
       participant = insert(:participant)
       delegation = insert(:delegation, delegator: participant)
+      voting_method = insert(:voting_method, name: "one-member-one-vote")
 
       assert {:ok, %Vote{}} =
                Voting.create_vote(%{
                  yes: false,
                  participant_id: participant.id,
                  proposal_url: "http://proposals.com/any",
+                 voting_method_id: voting_method.id,
                  organization_id: delegation.organization_id
                })
 
