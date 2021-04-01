@@ -105,8 +105,7 @@ defmodule LiquidVoting.DelegationsTest do
     end
 
     test "create_delegation/1 with valid data creates a delegation", context do
-      assert {:ok, %Delegation{} = delegation} =
-               Delegations.create_delegation(context[:valid_attrs])
+      assert {:ok, %Delegation{}} = Delegations.create_delegation(context[:valid_attrs])
     end
 
     test "create_delegation/1 with invalid data returns error changeset", context do
@@ -132,7 +131,7 @@ defmodule LiquidVoting.DelegationsTest do
       """
 
       args = Map.merge(context[:valid_attrs], %{proposal_url: proposal_url})
-      assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+      assert {:ok, %Delegation{}} = Delegations.create_delegation(args)
     end
 
     test "create_delegation/1 with duplicate proposal-specific data returns the original delegation",
@@ -170,13 +169,12 @@ defmodule LiquidVoting.DelegationsTest do
 
     test "upsert_delegation/1 with valid proposal_specific delegation data creates a delegation",
          context do
-      assert {:ok, %Delegation{} = delegation} =
+      assert {:ok, %Delegation{}} =
                Delegations.upsert_delegation(context[:valid_proposal_specific_attrs])
     end
 
     test "upsert_delegation/1 with valid global delegation data creates a delegation", context do
-      assert {:ok, %Delegation{} = delegation} =
-               Delegations.upsert_delegation(context[:valid_attrs])
+      assert {:ok, %Delegation{}} = Delegations.upsert_delegation(context[:valid_attrs])
     end
 
     test "upsert_delegation/1 with duplicate delegator and proposal_url updates the respective delegation",
@@ -305,7 +303,7 @@ defmodule LiquidVoting.DelegationsTest do
     test "update_delegation/2 with valid data updates the delegation", context do
       delegation = insert(:delegation)
 
-      assert {:ok, %Delegation{} = delegation} =
+      assert {:ok, %Delegation{}} =
                Delegations.update_delegation(delegation, context[:update_attrs])
     end
 
