@@ -14,6 +14,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         new_participant_email: "noob@email.com",
         proposal_url: "https://github.com/user/repo/pulls/15",
         yes: true,
+        voting_method: "one-member-one-vote",
         organization_id: participant.organization_id
       ]
     end
@@ -23,7 +24,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:new_participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -44,7 +45,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -65,7 +66,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -91,7 +92,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantId: "#{context[:participant_id]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -110,7 +111,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "with no participant identifiers", context do
       query = """
       mutation {
-        createVote(proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+        createVote(proposalUrl:"#{context[:proposal_url]}", votingMethod: "#{
+        context[:voting_method]
+      }", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -137,7 +140,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       # and query the votingResult for the proposal_url of the vote.
       query = """
       mutation {
-        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", yes: true) {
+        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", votingMethod: "a-voting-method", yes: true) {
           proposalUrl
           votingResult {
             inFavor
@@ -168,7 +171,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       # the votingResult for the proposal_url of the vote.
       query = """
       mutation {
-        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", yes: false) {
+        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", votingMethod: "a-voting-method", yes: false) {
           proposalUrl
           votingResult {
             inFavor
@@ -199,7 +202,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     #
     # Third, the delegate of the proposal-specific delegation casts a vote (against).
     #
-    # Fourth, the delegate of the global delegation casts a vote (in favor) for 
+    # Fourth, the delegate of the global delegation casts a vote (in favor) for
     # a separate proposal (proposal_B_url).
     #
     # Lastly, we assert that the voting results returned in a query within the
@@ -222,7 +225,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       # Create a vote for 'proposal A', cast by the proposal-specific delegation's delegate.
       query = """
       mutation {
-        createVote(participantEmail: "#{proposal_delegate.email}", proposalUrl: "#{proposal_A_url}", yes: false) {
+        createVote(participantEmail: "#{proposal_delegate.email}", proposalUrl: "#{proposal_A_url}", votingMethod: "a-voting-method", yes: false) {
           proposalUrl
           votingResult {
             inFavor
@@ -244,7 +247,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{global_delegation.delegate.email}", proposalUrl: "#{
         proposal_B_url
-      }", yes: true) {
+      }", votingMethod: "a-voting-method", yes: true) {
           proposalUrl
           votingResult {
             inFavor
