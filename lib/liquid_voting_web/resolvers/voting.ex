@@ -70,7 +70,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       |> Multi.run(:upsert_participant, fn _repo, _changes ->
         Voting.upsert_participant(%{email: email, organization_id: organization_id})
       end)
-      |> Multi.run(:create_vote_with_valid_arguments, fn _repo, changes ->
+      |> Multi.run(:create_vote, fn _repo, changes ->
         args
         |> Map.put(:organization_id, organization_id)
         |> Map.put(:voting_method_id, changes.upsert_voting_method.id)
@@ -80,19 +80,13 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       |> Repo.transaction()
       |> case do
         {:ok, resources} ->
-          IO.inspect(resources)
-          {:ok, resources.create_vote_with_valid_arguments}
+          {:ok, resources.create_vote}
 
-        {:error, :upsert_voting_method, changeset, _} ->
+        {:error, action, changeset, _} ->
+          changeset = Ecto.Changeset.add_error(changeset, :action, "#{action}")
+
           {:error,
            message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
-
-        {:error, :upsert_participant, changeset, _} ->
-          {:error,
-           message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
-
-        {:error, :create_vote_with_valid_arguments, value, _} ->
-          {:error, value}
 
         error ->
           error
@@ -111,7 +105,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
   def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
     do: {:error, message: "Could not create vote", details: "No voting method specified"}
 
-  def create_vote(_, %{proposal_url: _, yes: _, voting_method: voting_method}, _),
+  def create_vote(_, %{proposal_url: _, yes: _, voting_method: _}, _),
     do:
       {:error,
        message: "Could not create vote",
@@ -134,15 +128,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
       case Voting.create_vote(args) do
         {:error, changeset} ->
-          Tracer.set_attributes([
-            {:result,
-             ":error, Voting.create_vote\nmessage: Could not create vote', details: '#{
-               inspect(ChangesetErrors.error_details(changeset))
-             }'"}
-          ])
-
-          {:error,
-           message: "Could not create vote", details: ChangesetErrors.error_details(changeset)}
+          {:error, changeset}
 
         {:ok, vote} ->
           Tracer.set_attributes([{:result, ":ok, Voting.create_vote"}])
