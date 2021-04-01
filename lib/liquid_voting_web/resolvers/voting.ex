@@ -94,12 +94,30 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def create_vote(_, %{participant_id: _, proposal_url: _, yes: _} = args, %{
-        context: %{organization_id: organization_id}
-      }) do
-    args
-    |> Map.put(:organization_id, organization_id)
-    |> create_vote_with_valid_arguments()
+  def create_vote(
+        _,
+        %{participant_id: _, proposal_url: _, yes: _, voting_method: voting_method} = args,
+        %{
+          context: %{organization_id: organization_id}
+        }
+      ) do
+    case VotingMethods.upsert_voting_method(%{
+           organization_id: organization_id,
+           name: voting_method
+         }) do
+      {:error, changeset} ->
+        changeset = Ecto.Changeset.add_error(changeset, :action, "voting_method")
+
+        {:error,
+         message: "Could not create voting method",
+         details: ChangesetErrors.error_details(changeset)}
+
+      {:ok, voting_method} ->
+        args
+        |> Map.put(:organization_id, organization_id)
+        |> Map.put(:voting_method_id, voting_method.id)
+        |> create_vote_with_valid_arguments()
+    end
   end
 
   def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
