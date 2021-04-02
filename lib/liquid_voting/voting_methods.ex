@@ -22,10 +22,28 @@ defmodule LiquidVoting.VotingMethods do
       ** (Ecto.NoResultsError)
 
   """
-
   def get_voting_method!(id, organization_id) do
     VotingMethod
     |> Repo.get_by!(id: id, organization_id: organization_id)
+  end
+
+  @doc """
+  Gets a single voting method by name and organization id
+
+  Raises `Ecto.NoResultsError` if the VotingMethod does not exist.
+
+  ## Examples
+
+      iex> get_voting_method!("our-voting-method", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      %VotingMethod{}
+
+      iex> get_voting_method!("non-existant-method", 456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_voting_method_by_name!(name, organization_id) do
+    VotingMethod
+    |> Repo.get_by!(name: name, organization_id: organization_id)
   end
 
   @doc """

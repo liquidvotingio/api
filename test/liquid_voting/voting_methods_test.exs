@@ -20,6 +20,16 @@ defmodule LiquidVoting.VotingMethodsTest do
                voting_method
     end
 
+    test "get_voting_method_by_name!/2 returns the voting method for given name and organization_id" do
+      voting_method = insert(:voting_method)
+
+      assert VotingMethods.get_voting_method_by_name!(
+               voting_method.name,
+               voting_method.organization_id
+             ) ==
+               voting_method
+    end
+
     test "list_voting_methods_by_org/1 returns all voting_methods for an organization_id" do
       voting_method = insert(:voting_method)
 
