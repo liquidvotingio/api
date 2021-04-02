@@ -38,7 +38,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     %{},
     %{delegator_email: "alice@somemail.com"},
     %{context: %{organization_id: "b212ef83-d3df-4a7a-8875-36cca613e8d6"}})
-  {:error,                                                   
+  {:error,
     %{
       details: %{delegate_email: ["can't be blank"]},
       message: "Could not create delegation"
@@ -51,6 +51,9 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
          {:ok, delegation} <- Delegations.create_delegation(args) do
       proposal_url = Map.get(args, :proposal_url)
 
+      # TODO: Find all voting_methods associated with proposal_url and use in processes below ->
+        # done for proposal-specific case, not for global case.
+
       case proposal_url do
         # Global delegation: We find all votes of the delegate and update related voting result(s).
         nil ->
@@ -59,9 +62,13 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
             delegation.organization_id
           )
 
-        # Proposal delegation: We update the voting result for the given proposal_url.
+        # Proposal delegation: We update the voting results for the given proposal_url.
         _proposal_url ->
-          VotingResults.publish_voting_result_change(proposal_url, delegation.organization_id)
+          results =
+          VotingResults.list_results_for_proposal_url(proposal_url, delegation.organization_id)
+          |> Enum.each(fn result ->
+            VotingResults.publish_voting_result_change(result.voting_method.id, proposal_url, delegation.organization_id)
+          end)
       end
 
       {:ok, delegation}

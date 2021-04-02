@@ -132,6 +132,22 @@ defmodule LiquidVoting.VotingResults do
   end
 
   @doc """
+  Returns the list of results for a proposal_url, in the scope of a organization_id.
+
+  ## Examples
+
+      iex> list_results("https://our-proposals/proposal1", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      [%Result{}, ...]
+
+  """
+  def list_results_for_proposal_url(proposal_url, organization_id) do
+    Result
+    |> where(organization_id: ^organization_id, proposal_url: ^proposal_url)
+    |> Repo.all()
+    |> Repo.preload([:voting_method])
+  end
+
+  @doc """
   Gets a single result for an organization_id
 
   Raises `Ecto.NoResultsError` if the Result does not exist.
