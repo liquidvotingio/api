@@ -59,7 +59,7 @@ docker run -it --rm \
   -e DB_NAME=liquid_voting_dev \
   -e DB_HOST=host.docker.internal \
   -p 4000:4000 \
-  docker.pkg.github.com/liquidvotingio/api/api:latest
+  ghcr.io/liquidvotingio/api:latest
 ```
 Linux:
 ```
@@ -69,7 +69,7 @@ docker run -it --rm --network=host \
   -e DB_PASSWORD=postgres \
   -e DB_NAME=liquid_voting_dev \
   -e DB_HOST=127.0.0.1 \
-  docker.pkg.github.com/liquidvotingio/api/api:latest
+  ghcr.io/liquidvotingio/api:latest
 ```
 
 (assuming you already have the database up and running)
@@ -79,7 +79,7 @@ You can run migrations by passing an `eval` command to the containerized app, li
 ```
 docker run -it --rm \
   <same options>
-  docker.pkg.github.com/liquidvotingio/api/api:latest eval "LiquidVoting.Release.migrate"
+  ghcr.io/liquidvotingio/api:latest eval "LiquidVoting.Release.migrate"
 ```
 
 ### Once you're up and running

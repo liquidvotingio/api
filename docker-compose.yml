@@ -1,7 +1,7 @@
 version: '3'
 services:
   liquidvoting:
-    image: docker.pkg.github.com/liquidvotingio/api/api:latest
+    image: ghcr.io/liquidvotingio/api:latest
     entrypoint: ["/tmp/hello-world-entrypoint.sh"]
     # The entrypoint override above wipes out the CMD
     # on the Dockerfile, so we need to declare it
