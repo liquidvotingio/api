@@ -5,11 +5,14 @@ defmodule LiquidVoting.VotingResultsTest do
   alias LiquidVoting.VotingResults
   alias LiquidVoting.VotingResults.Result
 
-  describe "calculate_result!/2" do
+  describe "calculate_result!/3" do
     setup do
-      vote = insert(:vote, yes: true)
+      voting_method = insert(:voting_method)
+      vote = insert(:vote, voting_method: voting_method, yes: true)
 
       [
+        voting_method_id: vote.voting_method_id,
+        voting_method: vote.voting_method,
         proposal_url: vote.proposal_url,
         organization_id: vote.organization_id
       ]
@@ -18,6 +21,7 @@ defmodule LiquidVoting.VotingResultsTest do
     test "returns a result with the number of in_favor and no votes", context do
       assert %Result{in_favor: in_favor, against: against} =
                VotingResults.calculate_result!(
+                 context[:voting_method_id],
                  context[:proposal_url],
                  context[:organization_id]
                )
@@ -26,17 +30,27 @@ defmodule LiquidVoting.VotingResultsTest do
       assert against == 0
     end
 
-    test "returns the same result struct for a given proposal_url", context do
+    test "returns the same result struct for a given voting_method_id and proposal_url",
+         context do
       %Result{id: id} =
-        VotingResults.calculate_result!(context[:proposal_url], context[:organization_id])
+        VotingResults.calculate_result!(
+          context[:voting_method_id],
+          context[:proposal_url],
+          context[:organization_id]
+        )
 
       insert(:vote,
+        voting_method: context[:voting_method],
         proposal_url: context[:proposal_url],
         organization_id: context[:organization_id]
       )
 
       %Result{id: new_id} =
-        VotingResults.calculate_result!(context[:proposal_url], context[:organization_id])
+        VotingResults.calculate_result!(
+          context[:voting_method_id],
+          context[:proposal_url],
+          context[:organization_id]
+        )
 
       assert id == new_id
     end

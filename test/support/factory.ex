@@ -21,14 +21,21 @@ defmodule LiquidVoting.Factory do
   def vote_factory(attrs) do
     organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
 
+    voting_method_name =
+      Map.get(attrs, :voting_method_name, sequence(:name, &"voting-method-name#{&1}"))
+
     voting_method =
-      Map.get(attrs, :voting_method, sequence(:voting_method, &"voting-method-#{&1}"))
+      Map.get(
+        attrs,
+        :voting_method,
+        build(:voting_method, organization_id: organization_id, name: voting_method_name)
+      )
 
     vote = %Vote{
       yes: true,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
       participant: build(:participant, organization_id: organization_id),
-      voting_method: build(:voting_method, organization_id: organization_id, name: voting_method),
+      voting_method: voting_method,
       organization_id: organization_id
     }
 
