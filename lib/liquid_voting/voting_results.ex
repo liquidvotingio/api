@@ -20,23 +20,25 @@ defmodule LiquidVoting.VotingResults do
       %Result{}
 
   """
-  def calculate_result!(proposal_url, organization_id) do
+  def calculate_result!(voting_method_id, proposal_url, organization_id) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
         {:params,
          [
            {:organization_id, organization_id},
-           {:proposal_url, proposal_url}
+           {:proposal_url, proposal_url},
+           {:voting_method_id, voting_method_id}
          ]}
       ])
 
-      votes = Voting.list_votes_by_proposal(proposal_url, organization_id)
+      votes = Voting.list_votes_by_proposal(voting_method_id, proposal_url, organization_id)
 
       attrs = %{
         in_favor: 0,
         against: 0,
         proposal_url: proposal_url,
+        voting_method_id: voting_method_id,
         organization_id: organization_id
       }
 
@@ -55,7 +57,7 @@ defmodule LiquidVoting.VotingResults do
       |> Result.changeset(attrs)
       |> Repo.insert!(
         on_conflict: {:replace_all_except, [:id]},
-        conflict_target: [:organization_id, :proposal_url],
+        conflict_target: [:organization_id, :proposal_url, :voting_method_id],
         returning: true
       )
     end
@@ -70,18 +72,19 @@ defmodule LiquidVoting.VotingResults do
       :ok
 
   """
-  def publish_voting_result_change(proposal_url, organization_id) do
+  def publish_voting_result_change(voting_method_id, proposal_url, organization_id) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
         {:params,
          [
            {:organization_id, organization_id},
-           {:proposal_url, proposal_url}
+           {:proposal_url, proposal_url},
+           {:voting_method_id, voting_method_id}
          ]}
       ])
 
-      result = calculate_result!(proposal_url, organization_id)
+      result = calculate_result!(voting_method_id, proposal_url, organization_id)
 
       Absinthe.Subscription.publish(
         LiquidVotingWeb.Endpoint,
@@ -108,7 +111,7 @@ defmodule LiquidVoting.VotingResults do
   def publish_voting_result_changes_for_participant(participant_id, organization_id) do
     Voting.list_votes_by_participant(participant_id, organization_id)
     |> Enum.each(fn vote ->
-      publish_voting_result_change(vote.proposal_url, organization_id)
+      publish_voting_result_change(vote.voting_method_id, vote.proposal_url, organization_id)
     end)
   end
 

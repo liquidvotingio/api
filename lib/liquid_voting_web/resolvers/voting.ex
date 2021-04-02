@@ -139,8 +139,9 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
            {:participant_email, args[:participant_email]},
            {:participant_id, args[:participant_id]},
            {:proposal_url, args[:proposal_url]},
-           {:yes, args[:yes]},
-           {:voting_method, args[:voting_method]}
+           {:voting_method, args[:voting_method]},
+           {:voting_method_id, args[:voting_method_id]},
+           {:yes, args[:yes]}
          ]}
       ])
 
@@ -151,7 +152,12 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         {:ok, vote} ->
           Tracer.set_attributes([{:result, ":ok, Voting.create_vote"}])
 
-          VotingResults.publish_voting_result_change(vote.proposal_url, vote.organization_id)
+          VotingResults.publish_voting_result_change(
+            vote.voting_method_id,
+            vote.proposal_url,
+            vote.organization_id
+          )
+
           {:ok, vote}
       end
     end

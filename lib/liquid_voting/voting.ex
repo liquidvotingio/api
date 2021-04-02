@@ -89,23 +89,32 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Returns the list of votes for a proposal_url and organization id
+  Returns the list of votes for a voting_method, proposal_url and organization id
 
   ## Examples
 
-      iex> list_votes_by_proposal("https://docs.google.com/document/d/someid", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> list_votes_by_proposal("https://docs.google.com/document/d/someid", "our-voting-method" "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Vote{}, ...]
 
   """
-  def list_votes_by_proposal(proposal_url, organization_id) do
+  def list_votes_by_proposal(voting_method_id, proposal_url, organization_id) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
-        {:params, [{:organization_id, organization_id}, {:proposal_url, proposal_url}]}
+        {:params,
+         [
+           {:organization_id, organization_id},
+           {:proposal_url, proposal_url},
+           {:voting_method_id, voting_method_id}
+         ]}
       ])
 
       Vote
-      |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
+      |> where(
+        voting_method_id: ^voting_method_id,
+        proposal_url: ^proposal_url,
+        organization_id: ^organization_id
+      )
       |> Repo.all()
       |> Repo.preload([:participant])
       |> Repo.preload([:voting_method])
