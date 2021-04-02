@@ -71,6 +71,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:proposal_url, non_null(:string))
       arg(:participant_id, :string)
       arg(:participant_email, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Voting.delete_vote/3)
     end
 

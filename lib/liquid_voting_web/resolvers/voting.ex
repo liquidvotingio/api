@@ -163,12 +163,25 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def delete_vote(_, %{participant_email: email, proposal_url: proposal_url}, %{
-        context: %{organization_id: organization_id}
-      }) do
-    deleted_vote = Voting.get_vote!(email, proposal_url, organization_id) |> Voting.delete_vote!()
+  def delete_vote(
+        _,
+        %{
+          participant_email: email,
+          voting_method: voting_method_name,
+          proposal_url: proposal_url
+        },
+        %{
+          context: %{organization_id: organization_id}
+        }
+      ) do
+    voting_method = VotingMethods.get_voting_method_by_name!(voting_method_name, organization_id)
+
+    deleted_vote =
+      Voting.get_vote!(email, voting_method.id, proposal_url, organization_id)
+      |> Voting.delete_vote!()
 
     VotingResults.publish_voting_result_change(
+      voting_method.id,
       deleted_vote.proposal_url,
       deleted_vote.organization_id
     )
