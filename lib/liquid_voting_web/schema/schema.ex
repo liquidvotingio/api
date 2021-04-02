@@ -8,9 +8,10 @@ defmodule LiquidVotingWeb.Schema.Schema do
   alias LiquidVoting.{Voting, VotingMethods, VotingResults}
 
   query do
-    @desc "Get a voting result by its proposal url"
+    @desc "Get a voting result by its voting method and proposal url"
     field :voting_result, :result do
       arg(:proposal_url, non_null(:string))
+      arg(:voting_method, :string)
       resolve(&Resolvers.VotingResults.result/3)
     end
 
@@ -129,7 +130,12 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     field :voting_result, :result,
       resolve: fn vote, _, _ ->
-        {:ok, VotingResults.get_result_by_proposal_url(vote.voting_method.id, vote.proposal_url, vote.organization_id)}
+        {:ok,
+         VotingResults.get_result_by_proposal_url(
+           vote.voting_method.id,
+           vote.proposal_url,
+           vote.organization_id
+         )}
       end
   end
 
@@ -157,6 +163,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :id, non_null(:string)
     field :in_favor, non_null(:integer)
     field :against, non_null(:integer)
+    field :voting_method, non_null(:voting_method), resolve: dataloader(VotingMethods)
     field :proposal_url, non_null(:string)
   end
 

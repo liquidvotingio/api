@@ -10,7 +10,9 @@ defmodule LiquidVotingWeb.Absinthe.Queries.VotingResultTest do
 
       query = """
       query {
-        votingResult(proposalUrl: "#{result.proposal_url}") {
+        votingResult(votingMethod: "#{result.voting_method.name}", proposalUrl: "#{
+        result.proposal_url
+      }") {
           in_favor
           against
           proposalUrl
