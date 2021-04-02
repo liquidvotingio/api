@@ -107,7 +107,11 @@ defmodule LiquidVoting.VotingResultsTest do
     end
 
     test "get_result_by_proposal_url/3 with invalid data returns nil" do
-      assert VotingResults.get_result_by_proposal_url(Ecto.UUID.generate(), "https://invalid.com", Ecto.UUID.generate()) ==
+      assert VotingResults.get_result_by_proposal_url(
+               Ecto.UUID.generate(),
+               "https://invalid.com",
+               Ecto.UUID.generate()
+             ) ==
                nil
     end
 

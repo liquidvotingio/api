@@ -129,7 +129,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
     field :voting_result, :result,
       resolve: fn vote, _, _ ->
-        {:ok, VotingResults.get_result_by_proposal_url(vote.proposal_url, vote.organization_id)}
+        {:ok, VotingResults.get_result_by_proposal_url(vote.voting_method.id, vote.proposal_url, vote.organization_id)}
       end
   end
 

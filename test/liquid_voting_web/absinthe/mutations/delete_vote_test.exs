@@ -61,7 +61,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
 
       query = """
       mutation {
-        deleteVote(participantEmail: "#{another_participant.email}", , votingMethod: "#{
+        deleteVote(participantEmail: "#{another_participant.email}", votingMethod: "#{
         context[:voting_method_name]
       }", proposalUrl: "#{context[:proposal_url]}") {
           participant {
