@@ -128,6 +128,7 @@ defmodule LiquidVoting.VotingResults do
     Result
     |> where(organization_id: ^organization_id)
     |> Repo.all()
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
@@ -144,25 +145,41 @@ defmodule LiquidVoting.VotingResults do
       ** (Ecto.NoResultsError)
 
   """
-  def get_result!(id, organization_id),
-    do: Repo.get_by!(Result, id: id, organization_id: organization_id)
+  def get_result!(id, organization_id) do
+    Repo.get_by!(Result, id: id, organization_id: organization_id)
+    |> Repo.preload([:voting_method])
+  end
 
   @doc """
-  Gets a single result by its proposal url and organization_id
+  Gets a single result by its voting_method_id, proposal url and organization_id
 
   Returns `nil` if the Result does not exist.
 
   ## Examples
 
-      iex> get_result_by_proposal_url("https://www.myproposal.com/", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result_by_proposal_url(
+        "377ead47-05f1-46b5-a676-f13b619623a7",
+        "https://www.myproposal.com/",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Result{}
 
-      iex> get_result_by_proposal_url("https://nonexistentproposal.com/", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result_by_proposal_url(
+        "377ead47-05f1-46b5-a676-f13b619623a7",
+        "https://nonexistentproposal.com/",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       nil
 
   """
-  def get_result_by_proposal_url(proposal_url, organization_id),
-    do: Repo.get_by(Result, proposal_url: proposal_url, organization_id: organization_id)
+  def get_result_by_proposal_url(voting_method_id, proposal_url, organization_id) do
+    Repo.get_by(Result,
+      voting_method_id: voting_method_id,
+      proposal_url: proposal_url,
+      organization_id: organization_id
+    )
+    |> Repo.preload([:voting_method])
+  end
 
   @doc """
   Creates a result.

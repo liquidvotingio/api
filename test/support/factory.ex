@@ -70,9 +70,20 @@ defmodule LiquidVoting.Factory do
   def voting_result_factory(attrs) do
     organization_id = Map.get(attrs, :organization_id, Ecto.UUID.generate())
 
+    voting_method =
+      Map.get(
+        attrs,
+        :voting_method,
+        build(:voting_method,
+          organization_id: organization_id,
+          name: sequence(:name, &"voting-method-name#{&1}")
+        )
+      )
+
     voting_result = %Result{
       in_favor: 0,
       against: 0,
+      voting_method: voting_method,
       proposal_url: sequence(:proposal_url, &"https://proposals.com/#{&1}"),
       organization_id: organization_id
     }
