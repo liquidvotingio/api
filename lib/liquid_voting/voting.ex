@@ -55,6 +55,7 @@ defmodule LiquidVoting.Voting do
               end
             else
               vote
+              |> Repo.preload([:voting_method])
             end
 
           {:error, changeset} ->

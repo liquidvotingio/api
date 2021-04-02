@@ -7,6 +7,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
   describe "create vote" do
     setup do
       participant = insert(:participant)
+      voting_method = insert(:voting_method, organization_id: participant.organization_id)
 
       [
         participant_id: participant.id,
@@ -14,7 +15,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         new_participant_email: "noob@email.com",
         proposal_url: "https://github.com/user/repo/pulls/15",
         yes: true,
-        voting_method: "one-member-one-vote",
+        voting_method_name: voting_method.name,
         organization_id: participant.organization_id
       ]
     end
@@ -24,7 +25,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:new_participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -45,7 +46,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -66,7 +67,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -92,7 +93,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantId: "#{context[:participant_id]}", proposalUrl:"#{
         context[:proposal_url]
-      }", votingMethod: "#{context[:voting_method]}", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
           }
