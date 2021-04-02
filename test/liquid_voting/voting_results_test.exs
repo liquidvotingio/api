@@ -59,23 +59,27 @@ defmodule LiquidVoting.VotingResultsTest do
   describe "create, get and list results" do
     setup do
       organization_id = Ecto.UUID.generate()
+      voting_method = insert(:voting_method)
 
       [
         valid_attrs: %{
           in_favor: 42,
           against: 42,
+          voting_method_id: voting_method.id,
           proposal_url: "https://proposals.com/1",
           organization_id: organization_id
         },
         update_attrs: %{
           in_favor: 43,
           against: 43,
+          voting_method_id: voting_method.id,
           proposal_url: "https://proposals.com/1",
           organization_id: organization_id
         },
         invalid_attrs: %{
           in_favor: 42,
           against: 42,
+          voting_method_id: voting_method.id,
           proposal_url: nil,
           organization_id: organization_id
         }
