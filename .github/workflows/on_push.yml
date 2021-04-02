@@ -61,7 +61,7 @@ jobs:
     needs: [tests]
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: docker.pkg.github.com/${{ github.repository }}/api
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
       TAG: ${{ github.sha }}
     steps:
     - uses: actions/checkout@v1
@@ -69,12 +69,12 @@ jobs:
       run: |
         docker build -t $IMAGE_NAME:$TAG .
         docker tag $IMAGE_NAME:$TAG $IMAGE_NAME:latest
-    - name: Login to Github Registry
-      uses: azure/docker-login@v1
+    - name: Login to Github Container Registry
+      uses: docker/login-action@v1
       with:
-        login-server: docker.pkg.github.com
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - name: Publish Image
       run: |
         docker push $IMAGE_NAME
