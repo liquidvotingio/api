@@ -160,26 +160,36 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Gets a single vote by participant email, proposal_url and organization id
+  Gets a single vote by participant email, voting_method_id, proposal_url and organization id
 
   ## Examples
 
-      iex> get_vote!("alice@email.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!(
+              "alice@email.com",
+              "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+              "https://proposals.net/2",
+              "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+            )
       %Vote{}
 
-      iex> get_vote!("hasno@votes.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!(
+              "hasno@votes.com",
+              "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+              "https://proposals.net/2",
+              "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+            )
       ** (Ecto.NoResultsError)
 
-
   """
-  def get_vote!(email, proposal_url, organization_id) do
+  def get_vote!(email, voting_method_id, proposal_url, organization_id) do
     participant = get_participant_by_email!(email, organization_id)
 
     Vote
     |> Repo.get_by!(
+      organization_id: organization_id,
       participant_id: participant.id,
       proposal_url: proposal_url,
-      organization_id: organization_id
+      voting_method_id: voting_method_id
     )
     |> Repo.preload([:participant])
     |> Repo.preload([:voting_method])
