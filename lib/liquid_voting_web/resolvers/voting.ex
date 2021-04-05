@@ -44,11 +44,15 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
 
   def create_vote(
         _,
-        %{participant_email: email, proposal_url: _, yes: _, voting_method: voting_method} = args,
+        %{participant_email: email, proposal_url: _, yes: _} = args,
         %{
           context: %{organization_id: organization_id}
         }
       ) do
+    voting_method_name = Map.get(args, :voting_method)
+
+    if voting_method_name == nil, do: voting_method_name = "default"
+
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
@@ -56,7 +60,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
          [
            {:organization_id, organization_id},
            {:email, email},
-           {:voting_method, voting_method}
+           {:voting_method, voting_method_name}
          ]}
       ])
 
@@ -64,7 +68,7 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       |> Multi.run(:upsert_voting_method, fn _repo, _changes ->
         VotingMethods.upsert_voting_method(%{
           organization_id: organization_id,
-          name: voting_method
+          name: voting_method_name
         })
       end)
       |> Multi.run(:upsert_participant, fn _repo, _changes ->
@@ -101,6 +105,9 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
           context: %{organization_id: organization_id}
         }
       ) do
+    IO.puts("***************************")
+    IO.inspect(args)
+
     case VotingMethods.upsert_voting_method(%{
            organization_id: organization_id,
            name: voting_method
@@ -120,8 +127,8 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
-    do: {:error, message: "Could not create vote", details: "No voting method specified"}
+  # def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
+  #   do: {:error, message: "Could not create vote", details: "No voting method specified"}
 
   def create_vote(_, %{proposal_url: _, yes: _, voting_method: _}, _),
     do:

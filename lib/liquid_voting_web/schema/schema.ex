@@ -169,7 +169,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
   object :voting_method do
     field :id, non_null(:string)
-    field :name, non_null(:string)
+    field :name, :string
   end
 
   def context(ctx) do

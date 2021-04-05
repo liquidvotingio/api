@@ -93,7 +93,11 @@ defmodule LiquidVoting.VotingResultsTest do
 
     test "list_results_for_proposal_url/2 returns all results for a proposal_url" do
       result = insert(:voting_result)
-      assert VotingResults.list_results_for_proposal_url(result.proposal_url, result.organization_id) == [result]
+
+      assert VotingResults.list_results_for_proposal_url(
+               result.proposal_url,
+               result.organization_id
+             ) == [result]
     end
 
     test "get_result!/2 returns the result with given id" do
