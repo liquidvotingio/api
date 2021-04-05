@@ -51,8 +51,6 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       ) do
     voting_method_name = Map.get(args, :voting_method)
 
-    if voting_method_name == nil, do: voting_method_name = "default"
-
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
@@ -105,8 +103,6 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
           context: %{organization_id: organization_id}
         }
       ) do
-    IO.puts("***************************")
-    IO.inspect(args)
 
     case VotingMethods.upsert_voting_method(%{
            organization_id: organization_id,
@@ -126,9 +122,6 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
         |> create_vote_with_valid_arguments()
     end
   end
-
-  # def create_vote(_, %{participant_email: _, proposal_url: _, yes: _}, _),
-  #   do: {:error, message: "Could not create vote", details: "No voting method specified"}
 
   def create_vote(_, %{proposal_url: _, yes: _, voting_method: _}, _),
     do:
