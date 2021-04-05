@@ -174,12 +174,6 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
       ) do
     voting_method_name = Map.get(args, :voting_method) || "default"
 
-    # voting_method_name =
-    #   case voting_method_name do
-    #     nil -> "default"
-    #     _ -> voting_method_name
-    #   end
-
     voting_method = VotingMethods.get_voting_method_by_name!(voting_method_name, organization_id)
 
     deleted_vote =
