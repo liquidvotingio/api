@@ -8,7 +8,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
   alias LiquidVoting.{Voting, VotingMethods, VotingResults}
 
   query do
-    @desc "Get a voting result by its voting method and proposal url"
+    @desc "Get a voting result by its voting method (optional) and proposal url"
     field :voting_result, :result do
       arg(:proposal_url, non_null(:string))
       arg(:voting_method, :string)
