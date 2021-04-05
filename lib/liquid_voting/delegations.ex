@@ -6,7 +6,7 @@ defmodule LiquidVoting.Delegations do
   import Ecto.Query, warn: false
 
   alias __MODULE__.Delegation
-  alias LiquidVoting.{Repo, Voting}
+  alias LiquidVoting.{Repo, Voting, VotingMethods}
   alias Voting.Vote
   alias Ecto.Multi
 
@@ -47,7 +47,7 @@ defmodule LiquidVoting.Delegations do
   end
 
   @doc """
-  Gets a single delegation by delegator email, delegate email, proposal_url and organization id
+  Gets a single delegation by delegator email, delegate email, voting_method_name, proposal_url and organization id
 
   Raises `Ecto.NoResultsError` if the Delegation does not exist.
 
@@ -60,14 +60,22 @@ defmodule LiquidVoting.Delegations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(delegator_email, delegate_email, proposal_url, organization_id) do
+  def get_delegation!(
+        delegator_email,
+        delegate_email,
+        voting_method_name,
+        proposal_url,
+        organization_id
+      ) do
     delegator = Voting.get_participant_by_email!(delegator_email, organization_id)
     delegate = Voting.get_participant_by_email!(delegate_email, organization_id)
+    voting_method = VotingMethods.get_voting_method_by_name!(voting_method_name, organization_id)
 
     Repo.get_by!(
       Delegation,
       delegator_id: delegator.id,
       delegate_id: delegate.id,
+      voting_method_id: voting_method.id,
       proposal_url: proposal_url,
       organization_id: organization_id
     )
@@ -126,6 +134,11 @@ defmodule LiquidVoting.Delegations do
     delegator_attrs = %{email: args.delegator_email, organization_id: args.organization_id}
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
     delegation_attrs = Map.take(args, [:organization_id, :proposal_url])
+
+    # Also get voting_method (==name) from args and add to delegation attrs (could be nil)
+    # If proposal_url not nil
+    #   Get voting_method_name from args if not already set to nil when no string provided)
+    #   Upsert voting method (and get id from returned struct? - not sure we need this here)
 
     Multi.new()
     |> Multi.run(:upsert_delegator, fn _repo, _changes ->

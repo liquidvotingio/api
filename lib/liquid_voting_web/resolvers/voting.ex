@@ -103,7 +103,6 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
           context: %{organization_id: organization_id}
         }
       ) do
-
     case VotingMethods.upsert_voting_method(%{
            organization_id: organization_id,
            name: voting_method

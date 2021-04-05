@@ -132,7 +132,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
      }}
   end
 
-  # Delete proposal-specific delegations
+  # Delete proposal-specific delegation
   def delete_delegation(
         _,
         %{

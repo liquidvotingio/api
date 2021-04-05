@@ -67,13 +67,14 @@ defmodule LiquidVoting.DelegationsTest do
       assert result.id == delegation.id
     end
 
-    test "get_delegation!/3 returns a proposal-specific delegation with given emails, proposal_url and organization_id" do
+    test "get_delegation!/3 returns a proposal-specific delegation with given emails, voting_method_name, proposal_url and organization_id" do
       delegation = insert(:delegation_for_proposal)
 
       result =
         Delegations.get_delegation!(
           delegation.delegator.email,
           delegation.delegate.email,
+          delegation.voting_method.name,
           delegation.proposal_url,
           delegation.organization_id
         )
@@ -92,12 +93,13 @@ defmodule LiquidVoting.DelegationsTest do
       end
     end
 
-    test "get_delegation!/3 returns returns error if a proposal-specific delegation does not exist",
+    test "get_delegation!/5 returns returns error if a proposal-specific delegation does not exist",
          context do
       assert_raise Ecto.NoResultsError, fn ->
         Delegations.get_delegation!(
           "random@person.com",
           "random2@person.com",
+          "no_such_voting_method",
           "https://proposals.com/random_proposal",
           context[:valid_attrs][:organization_id]
         )
