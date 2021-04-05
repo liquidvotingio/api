@@ -11,10 +11,6 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
       vote =
         insert(:vote, voting_method: voting_method, organization_id: voting_method.organization_id)
 
-      # IO.puts("***************************")
-      # IO.inspect(voting_method.organization_id)
-      # IO.inspect(vote.organization_id)
-
       result =
         insert(:voting_result,
           in_favor: 1,
