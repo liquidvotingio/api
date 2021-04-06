@@ -145,7 +145,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
     field :proposal_url, :string
-    field :voting_method, non_null(:voting_method), resolve: dataloader(VotingMethods)
+    field :voting_method, :voting_method, resolve: dataloader(VotingMethods)
 
     field :voting_result, :result,
       resolve: fn delegation, _, _ ->
@@ -172,7 +172,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
 
   object :voting_method do
     field :id, non_null(:string)
-    field :name, :string
+    field :name, non_null(:string)
   end
 
   def context(ctx) do

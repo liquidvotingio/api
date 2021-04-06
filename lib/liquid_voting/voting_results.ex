@@ -34,6 +34,8 @@ defmodule LiquidVoting.VotingResults do
 
       votes = Voting.list_votes_by_proposal(voting_method_id, proposal_url, organization_id)
 
+      # IO.inspect(votes)
+
       attrs = %{
         in_favor: 0,
         against: 0,

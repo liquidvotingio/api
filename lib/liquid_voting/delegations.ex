@@ -217,6 +217,9 @@ defmodule LiquidVoting.Delegations do
       ) do
     proposal_url = Map.get(attrs, :proposal_url)
 
+    IO.puts("=============== upsert delegation attrs ================")
+    IO.inspect(attrs)
+
     with {:ok} <- check_vote_conflict(delegator_id, proposal_url, organization_id) do
       Delegation
       |> where(delegator_id: ^delegator_id)
