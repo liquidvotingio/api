@@ -60,7 +60,8 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
             delegation.organization_id
           )
 
-          # Proposal delegation: Publish result change for result with same proposal_url && voting_method
+        # Proposal delegation: Publish result change for result with same proposal_url && voting_method
+        _proposal_url ->
           VotingResults.publish_voting_result_change(
             delegation.voting_method.id,
             proposal_url,
