@@ -1,5 +1,5 @@
 defmodule LiquidVotingWeb.Resolvers.Delegations do
-  alias LiquidVoting.{Voting, Delegations, VotingResults}
+  alias LiquidVoting.{Voting, Delegations, VotingMethods, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def delegations(_, _, %{context: %{organization_id: organization_id}}),
@@ -51,6 +51,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
          {:ok, args} <- validate_delegation_type(args),
          {:ok, delegation} <- Delegations.create_delegation(args) do
       proposal_url = Map.get(args, :proposal_url)
+      voting_method_name = Map.get(args, :voting_method)
 
       case proposal_url do
         # Global delegation: We find all votes of the delegate and update related voting result(s).
@@ -60,21 +61,18 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
             delegation.organization_id
           )
 
-        # Proposal delegation: We update the voting result for the given proposal_url.
+        # Proposal delegation: We update the voting result for the given proposal_url (& voting_method).
         _proposal_url ->
           # First, upsert the voting_method
+          attrs = %{name: voting_method_name, organization_id: organization_id}
+          {:ok, voting_method} = VotingMethods.upsert_voting_method(attrs)
 
-          # Then, drop this results query
-          results =
-            VotingResults.list_results_for_proposal_url(proposal_url, delegation.organization_id)
-            # Then, find using voting_method also
-            |> Enum.each(fn result ->
-              VotingResults.publish_voting_result_change(
-                result.voting_method.id,
-                proposal_url,
-                delegation.organization_id
-              )
-            end)
+          # Then, publish result change for result with same proposal_url && voting_method
+          VotingResults.publish_voting_result_change(
+            voting_method.id,
+            proposal_url,
+            delegation.organization_id
+          )
       end
 
       {:ok, delegation}
