@@ -135,10 +135,20 @@ defmodule LiquidVoting.Delegations do
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
     delegation_attrs = Map.take(args, [:organization_id, :proposal_url])
 
-    # Also get voting_method (==name) from args and add to delegation attrs (could be nil)
-    # If proposal_url not nil
-    #   Get voting_method_name from args if not already set to nil when no string provided)
-    #   Upsert voting method (and get id from returned struct? - not sure we need this here)
+    # If a proposal_url is specified, we upsert a voting_method and return the voting_method_id,
+    # If a proposal_url is specified, we simply return voting_method_id == nil.
+    voting_method_id =
+      if Map.get(args, :proposal_url) do
+        {:ok, voting_method} =
+          VotingMethods.upsert_voting_method(%{
+            name: Map.get(args, :voting_method),
+            organization_id: args.organization_id
+          })
+
+        voting_method.id
+      else
+        nil
+      end
 
     Multi.new()
     |> Multi.run(:upsert_delegator, fn _repo, _changes ->
@@ -151,12 +161,17 @@ defmodule LiquidVoting.Delegations do
       delegation_attrs
       |> Map.put(:delegator_id, changes.upsert_delegator.id)
       |> Map.put(:delegate_id, changes.upsert_delegate.id)
+      |> Map.put(:voting_method_id, voting_method_id)
       |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
       {:ok, resources} ->
-        {:ok, resources.upsert_delegation}
+        delegation =
+          resources.upsert_delegation
+          |> Repo.preload([:voting_method])
+
+        {:ok, delegation}
 
       {:error, :upsert_delegation, value, _} ->
         {:error, value}

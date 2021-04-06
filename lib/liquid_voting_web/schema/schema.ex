@@ -145,12 +145,14 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
     field :proposal_url, :string
+    field :voting_method, non_null(:voting_method), resolve: dataloader(VotingMethods)
 
     field :voting_result, :result,
       resolve: fn delegation, _, _ ->
         if delegation.proposal_url do
           {:ok,
            VotingResults.get_result_by_proposal_url(
+             delegation.voting_method.id,
              delegation.proposal_url,
              delegation.organization_id
            )}
