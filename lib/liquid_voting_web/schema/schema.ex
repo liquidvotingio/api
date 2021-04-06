@@ -83,6 +83,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:delegator_email, :string)
       arg(:delegate_email, :string)
       arg(:proposal_url, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Delegations.create_delegation/3)
     end
 
