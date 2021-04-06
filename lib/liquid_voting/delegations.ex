@@ -218,9 +218,6 @@ defmodule LiquidVoting.Delegations do
     proposal_url = Map.get(attrs, :proposal_url)
     voting_method_id = Map.get(attrs, :voting_method_id)
 
-    IO.puts("=============== upsert delegation attrs ================")
-    IO.inspect(attrs)
-
     with {:ok} <-
            check_vote_conflict(delegator_id, voting_method_id, proposal_url, organization_id) do
       Delegation
@@ -230,7 +227,11 @@ defmodule LiquidVoting.Delegations do
       |> case do
         {:ok, delegations} ->
           delegations
-          |> find_similar_delegation_or_return_new_struct(proposal_url, organization_id)
+          |> find_similar_delegation_or_return_new_struct(
+            proposal_url,
+            voting_method_id,
+            organization_id
+          )
           |> Delegation.changeset(attrs)
           |> Repo.insert_or_update()
 
@@ -314,13 +315,16 @@ defmodule LiquidVoting.Delegations do
   #  empty Delegation struct.
   #
   # Used by upsert_delegation/1 (above.)
-  defp find_similar_delegation_or_return_new_struct(delegations, proposal_url, organization_id) do
-    IO.puts("=============== find similar delegation attrs ================")
-    IO.puts("proposal_url: #{proposal_url}")
-
+  defp find_similar_delegation_or_return_new_struct(
+         delegations,
+         proposal_url,
+         voting_method_id,
+         organization_id
+       ) do
     delegations
     |> Enum.filter(fn d ->
-      d.proposal_url == proposal_url and d.organization_id == organization_id
+      d.proposal_url == proposal_url and d.voting_method_id == voting_method_id and
+        d.organization_id == organization_id
     end)
     |> case do
       # Delegation (of same type) not found, so we build one
