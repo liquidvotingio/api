@@ -216,11 +216,13 @@ defmodule LiquidVoting.Delegations do
           attrs
       ) do
     proposal_url = Map.get(attrs, :proposal_url)
+    voting_method_id = Map.get(attrs, :voting_method_id)
 
     IO.puts("=============== upsert delegation attrs ================")
     IO.inspect(attrs)
 
-    with {:ok} <- check_vote_conflict(delegator_id, proposal_url, organization_id) do
+    with {:ok} <-
+           check_vote_conflict(delegator_id, voting_method_id, proposal_url, organization_id) do
       Delegation
       |> where(delegator_id: ^delegator_id)
       |> Repo.all()
@@ -244,12 +246,15 @@ defmodule LiquidVoting.Delegations do
   #
   # Or returns {:ok} if delegation creation is for a proposal delegation & no conflicting vote is found.
   # Returns an error, if a conflicting vote is found.
-  defp check_vote_conflict(_delegator_id, _proposal_url = nil, _organization_id) do
-    {:ok}
-  end
+  defp check_vote_conflict(_, _proposal_url = nil, _, _), do: {:ok}
 
-  defp check_vote_conflict(delegator_id, proposal_url, organization_id) do
-    case Voting.get_vote_by_participant_id(delegator_id, proposal_url, organization_id) do
+  defp check_vote_conflict(delegator_id, voting_method_id, proposal_url, organization_id) do
+    case Voting.get_vote_by_participant_id(
+           delegator_id,
+           voting_method_id,
+           proposal_url,
+           organization_id
+         ) do
       %Vote{} ->
         {
           :error,
@@ -310,6 +315,9 @@ defmodule LiquidVoting.Delegations do
   #
   # Used by upsert_delegation/1 (above.)
   defp find_similar_delegation_or_return_new_struct(delegations, proposal_url, organization_id) do
+    IO.puts("=============== find similar delegation attrs ================")
+    IO.puts("proposal_url: #{proposal_url}")
+
     delegations
     |> Enum.filter(fn d ->
       d.proposal_url == proposal_url and d.organization_id == organization_id

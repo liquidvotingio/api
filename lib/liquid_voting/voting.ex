@@ -197,22 +197,32 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Gets a single vote by participant id and proposal_url
-
+  Gets a single vote by participant id, proposal_url and voting_method_id
   ## Examples
 
-      iex> get_vote_by_participant_id("a6158b19-6bf6-4457-9d13-ef8b141611b4", "https://proposals.net/2")
+      iex> get_vote_by_participant_id(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4",
+        "https://proposals.net/2",
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868"
+        )
       => %Vote{}
 
-      iex> get_vote_by_participant_id("a6158b19-6bf6-4457-9d13-ef8b141611b4", "https://proposals.com/non-existant-proposal")
+      iex> get_vote_by_participant_id(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4",
+        "https://proposals.com/non-existant-proposal",
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868"
+        )
       => nil
   """
-  def get_vote_by_participant_id(participant_id, proposal_url, organization_id) do
+  def get_vote_by_participant_id(participant_id, voting_method_id, proposal_url, organization_id) do
     Vote
     |> where(
+      organization_id: ^organization_id,
       participant_id: ^participant_id,
       proposal_url: ^proposal_url,
-      organization_id: ^organization_id
+      voting_method_id: ^voting_method_id
     )
     |> Repo.one()
     |> Repo.preload([:participant])
