@@ -119,9 +119,29 @@ defmodule LiquidVoting.Delegations do
   If created using participant emails, new participant(s) will be created if
   they do not already exist.
 
+  If a proposal delegation (has a proposal_url), a new associated voting_method will be
+  created if it does not already exist.
+
   ## Examples
 
-      iex> create_delegation(%{field: value})
+      global delegation:
+
+      iex> create_delegation(%{
+          delegator_email: "ana@g.com",
+          delegate_email: "bob@g.com",
+          organization_id: "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+          })
+      {:ok, %Delegation{}}
+
+      proposal specific delegation:
+
+      iex> create_delegation(%{
+          delegator_email: "ana@g.com",
+          delegate_email: "bob@g.com",
+          voting_method: "our_voting_method",
+          proposal_url: "https://aproposal.com",
+          organization_id: "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+          })
       {:ok, %Delegation{}}
 
       iex> create_delegation(%{field: bad_value})
@@ -185,7 +205,7 @@ defmodule LiquidVoting.Delegations do
   end
 
   # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id,
-  # If a proposal_url is NOT specified, simply return voting_method_id == nil.
+  # If a proposal_url is NOT specified, simply returns voting_method_id == nil.
   defp upsert_voting_method_and_get_id(attrs) do
     voting_method_id =
       if Map.get(attrs, :proposal_url) do
