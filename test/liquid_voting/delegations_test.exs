@@ -266,6 +266,7 @@ defmodule LiquidVoting.DelegationsTest do
       args = %{
         delegator_id: vote.participant_id,
         delegate_id: delegate.id,
+        voting_method_id: vote.voting_method_id,
         proposal_url: vote.proposal_url,
         organization_id: vote.organization_id
       }

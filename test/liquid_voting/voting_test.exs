@@ -135,6 +135,7 @@ defmodule LiquidVoting.VotingTest do
 
       assert Voting.get_vote_by_participant_id(
                vote.participant_id,
+               vote.voting_method_id,
                vote.proposal_url,
                vote.organization_id
              ) == vote
@@ -145,6 +146,7 @@ defmodule LiquidVoting.VotingTest do
 
       assert Voting.get_vote_by_participant_id(
                vote.participant_id,
+               vote.voting_method_id,
                "https://proposals.com/non-existant-proposal",
                vote.organization_id
              ) == nil

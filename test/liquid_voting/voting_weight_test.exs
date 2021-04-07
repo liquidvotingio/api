@@ -67,8 +67,19 @@ defmodule LiquidVoting.VotingWeightTest do
       assert length(voter.delegations_received) == 0
       assert vote.weight == 1
 
-      insert(:delegation, delegate: voter, proposal_url: vote.proposal_url)
-      insert(:delegation, delegate: voter, proposal_url: "https://anotherproposal.com")
+      insert(:delegation,
+        delegate: voter,
+        proposal_url: vote.proposal_url,
+        voting_method: vote.voting_method
+      )
+
+      another_voting_method = insert(:voting_method, organization_id: vote.organization_id)
+
+      insert(:delegation,
+        delegate: voter,
+        proposal_url: "https://anotherproposal.com",
+        voting_method: another_voting_method
+      )
 
       {:ok, vote} = VotingWeight.update_vote_weight(vote)
 
