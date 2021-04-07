@@ -182,7 +182,27 @@ defmodule LiquidVoting.Delegations do
   end
 
   def create_delegation(%{delegator_id: _, delegate_id: _} = attrs) do
-    upsert_delegation(attrs)
+    # TODO: Refactor common parts of 2 clauses of this function.
+    voting_method_id =
+      if Map.get(attrs, :proposal_url) do
+        {:ok, voting_method} =
+          VotingMethods.upsert_voting_method(%{
+            name: Map.get(attrs, :voting_method),
+            organization_id: attrs.organization_id
+          })
+
+        voting_method.id
+      else
+        nil
+      end
+
+    attrs = Map.put(attrs, :voting_method_id, voting_method_id)
+
+    {:ok, delegation} = upsert_delegation(attrs)
+
+    delegation = Repo.preload(delegation, [:voting_method], force: true)
+
+    {:ok, delegation}
   end
 
   @doc """

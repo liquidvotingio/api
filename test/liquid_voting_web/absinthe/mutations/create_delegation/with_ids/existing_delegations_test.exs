@@ -80,7 +80,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithIds.ExistingDe
       mutation {
         createDelegation(delegatorId: "#{proposal_delegation.delegator.id}", delegateId: "#{
         another_delegate.id
-      }", votingMethod: "#{proposal_voting_method_name}", proposalUrl: "#{proposal_delegation.proposal_url}") {
+      }", votingMethod: "#{proposal_voting_method_name}", proposalUrl: "#{
+        proposal_delegation.proposal_url
+      }") {
           delegator {
             id
           }
