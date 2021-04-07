@@ -135,20 +135,7 @@ defmodule LiquidVoting.Delegations do
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
     delegation_attrs = Map.take(args, [:organization_id, :proposal_url])
 
-    # If a proposal_url is specified, we upsert a voting_method and return the voting_method_id,
-    # If a proposal_url is specified, we simply return voting_method_id == nil.
-    voting_method_id =
-      if Map.get(args, :proposal_url) do
-        {:ok, voting_method} =
-          VotingMethods.upsert_voting_method(%{
-            name: Map.get(args, :voting_method),
-            organization_id: args.organization_id
-          })
-
-        voting_method.id
-      else
-        nil
-      end
+    voting_method_id = upsert_voting_method_and_get_id(args)
 
     Multi.new()
     |> Multi.run(:upsert_delegator, fn _repo, _changes ->
@@ -182,7 +169,24 @@ defmodule LiquidVoting.Delegations do
   end
 
   def create_delegation(%{delegator_id: _, delegate_id: _} = attrs) do
-    # TODO: Refactor common parts of 2 clauses of this function.
+    voting_method_id = upsert_voting_method_and_get_id(attrs)
+    attrs = Map.put(attrs, :voting_method_id, voting_method_id)
+
+    delegation =
+      upsert_delegation(attrs)
+      |> case do
+        {:ok, delegation} ->
+          delegation = Repo.preload(delegation, [:voting_method], force: true)
+          {:ok, delegation}
+
+        {:error, changeset} ->
+          {:error, changeset}
+      end
+  end
+
+  # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id,
+  # If a proposal_url is NOT specified, simply return voting_method_id == nil.
+  defp upsert_voting_method_and_get_id(attrs) do
     voting_method_id =
       if Map.get(attrs, :proposal_url) do
         {:ok, voting_method} =
@@ -195,20 +199,6 @@ defmodule LiquidVoting.Delegations do
       else
         nil
       end
-
-    attrs = Map.put(attrs, :voting_method_id, voting_method_id)
-
-    upserted_delegation = upsert_delegation(attrs)
-
-    case upserted_delegation do
-      {:ok, delegation} ->
-        delegation = Repo.preload(delegation, [:voting_method], force: true)
-
-        {:ok, delegation}
-
-      {:error, changeset} ->
-        {:error, changeset}
-    end
   end
 
   @doc """
