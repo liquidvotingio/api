@@ -18,9 +18,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       # voting result for proposal_url.
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{voter.email}", proposalUrl: "#{
-        proposal_url
-      }") {
+        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{voter.email}", votingMethod: "#{
+        vote.voting_method.name
+      }", proposalUrl: "#{proposal_url}") {
           proposalUrl
           votingResult {
             inFavor
@@ -46,9 +46,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
 
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{delegate.email}", proposalUrl: "#{
-        vote.proposal_url
-      }") {
+        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{delegate.email}", votingMethod: "#{
+        vote.voting_method.name
+      }", proposalUrl: "#{vote.proposal_url}") {
           proposalUrl
           id
          }
@@ -101,7 +101,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       # Get result for proposal_B_url (should be 'against == 2').
       query = """
       query {
-        votingResult(proposalUrl: "#{proposal_url}") {
+        votingResult(votingMethod: "#{vote.voting_method.name}", proposalUrl: "#{proposal_url}") {
           inFavor
           against
           proposalUrl
@@ -137,9 +137,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       # voting result for proposal_A_url.
       query = """
       mutation {
-        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{voter_A.email}", proposalUrl: "#{
-        proposal_A_url
-      }") {
+        createDelegation(delegatorEmail: "#{delegator.email}", delegateEmail: "#{voter_A.email}", votingMethod: "#{
+        vote_A.voting_method.name
+      }", proposalUrl: "#{proposal_A_url}") {
           proposalUrl
           votingResult {
             inFavor
@@ -185,7 +185,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.AfterCreatingRelat
       # Get result for proposal_B_url.
       query = """
       query {
-        votingResult(proposalUrl: "#{proposal_B_url}") {
+        votingResult(votingMethod: "#{vote_B.voting_method.name}", proposalUrl: "#{proposal_B_url}") {
           inFavor
           against
           proposalUrl
