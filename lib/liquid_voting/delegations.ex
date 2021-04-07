@@ -204,7 +204,7 @@ defmodule LiquidVoting.Delegations do
       end
   end
 
-  # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id,
+  # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id.
   # If a proposal_url is NOT specified, simply returns voting_method_id == nil.
   defp upsert_voting_method_and_get_id(attrs) do
     voting_method_id =
