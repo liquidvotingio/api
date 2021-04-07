@@ -198,11 +198,17 @@ defmodule LiquidVoting.Delegations do
 
     attrs = Map.put(attrs, :voting_method_id, voting_method_id)
 
-    {:ok, delegation} = upsert_delegation(attrs)
+    upserted_delegation = upsert_delegation(attrs)
 
-    delegation = Repo.preload(delegation, [:voting_method], force: true)
+    case upserted_delegation do
+      {:ok, delegation} ->
+        delegation = Repo.preload(delegation, [:voting_method], force: true)
 
-    {:ok, delegation}
+        {:ok, delegation}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
