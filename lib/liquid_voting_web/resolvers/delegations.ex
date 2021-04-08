@@ -152,28 +152,38 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
           delegator_email: delegator_email,
           delegate_email: delegate_email,
           proposal_url: proposal_url
-        },
+        } = args,
         %{context: %{organization_id: organization_id}}
       ) do
+    voting_method_name = Map.get(args, :voting_method) || "default"
+
     deleted_delegation =
-      delegator_email
-      |> Delegations.get_delegation!(delegate_email, proposal_url, organization_id)
+      Delegations.get_delegation!(
+        delegator_email,
+        delegate_email,
+        voting_method_name,
+        proposal_url,
+        organization_id
+      )
       |> Delegations.delete_delegation!()
 
-    VotingResults.publish_voting_result_change(proposal_url, organization_id)
+    VotingResults.publish_voting_result_change(
+      deleted_delegation.voting_method.id,
+      proposal_url,
+      organization_id
+    )
 
     {:ok, deleted_delegation}
   rescue
     Ecto.NoResultsError -> {:error, message: "No delegation found to delete"}
   end
 
-  # Delete global delegations
+  # Delete global delegation
   def delete_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email}, %{
         context: %{organization_id: organization_id}
       }) do
     deleted_delegation =
-      delegator_email
-      |> Delegations.get_delegation!(delegate_email, organization_id)
+      Delegations.get_delegation!(delegator_email, delegate_email, organization_id)
       |> Delegations.delete_delegation!()
 
     delegate = Voting.get_participant_by_email(delegate_email, organization_id)

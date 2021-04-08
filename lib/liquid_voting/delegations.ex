@@ -53,10 +53,20 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> get_delegation!("delegator@email.com", "delegate@email.com", "https://aproposal.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "delegator@email.com",
+        "delegate@email.com",
+        "method_A",
+        "https://aproposal.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Delegation{}
 
-      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com", "https://aproposal.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "participant-without-delegation@email.com",
+        "some@body.com",
+        "method_A",
+        "https://aproposal.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
@@ -79,6 +89,7 @@ defmodule LiquidVoting.Delegations do
       proposal_url: proposal_url,
       organization_id: organization_id
     )
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
