@@ -26,8 +26,10 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve(&Resolvers.Voting.participant/3)
     end
 
-    @desc "Get a list of votes"
+    @desc "Get a list of votes, optionally filtered by proposal url and voting method"
     field :votes, list_of(:vote) do
+      arg(:proposal_url, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Voting.votes/3)
     end
 

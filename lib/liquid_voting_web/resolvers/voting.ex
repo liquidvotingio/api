@@ -25,8 +25,20 @@ defmodule LiquidVotingWeb.Resolvers.Voting do
     end
   end
 
-  def votes(_, %{proposal_url: proposal_url}, %{context: %{organization_id: organization_id}}),
-    do: {:ok, Voting.list_votes_by_proposal(proposal_url, organization_id)}
+  def votes(_, %{proposal_url: proposal_url} = args, %{
+        context: %{organization_id: organization_id}
+      }) do
+    voting_method_name = Map.get(args, :voting_method) || "default"
+    voting_method = VotingMethods.get_voting_method_by_name(voting_method_name, organization_id)
+
+    case voting_method do
+      nil -> {:ok, []}
+      _ -> {:ok, Voting.list_votes_by_proposal(voting_method.id, proposal_url, organization_id)}
+    end
+  end
+
+  def votes(_, %{voting_method: _voting_method}, _),
+    do: {:error, message: "A proposal url must also be given when a voting method is specified"}
 
   def votes(_, _, %{context: %{organization_id: organization_id}}) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do

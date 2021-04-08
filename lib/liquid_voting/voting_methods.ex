@@ -49,6 +49,11 @@ defmodule LiquidVoting.VotingMethods do
     |> Repo.get_by!(name: name, organization_id: organization_id)
   end
 
+  def get_voting_method_by_name(name, organization_id) do
+    VotingMethod
+    |> Repo.get_by(name: name, organization_id: organization_id)
+  end
+
   @doc """
   Returns the list of voting methods for an organization id.
 
