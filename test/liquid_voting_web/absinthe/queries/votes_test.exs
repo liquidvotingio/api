@@ -1,21 +1,8 @@
-defmodule LiquidVotingWeb.Absinthe.Queries.VotingResultTest do
+defmodule LiquidVotingWeb.Absinthe.Queries.VotesTest do
   use LiquidVotingWeb.ConnCase
   import LiquidVoting.Factory
 
   alias LiquidVotingWeb.Schema.Schema
-
-  # create some votes, including one for different org
-  # prop1, methodA, org
-  # prop1, methodA, org
-  # prop1, default, org
-  # prop1, methodA, different_org
-
-  # list all for org
-  # list all for method
-  # list all for proposal url only = "default" voting method
-  # list for unknown proposal == empty list
-  # list for unknown voting_method == empty list
-  # list for voting_method only (no proposal url) == error
 
   describe "query votes" do
     setup do
@@ -24,37 +11,33 @@ defmodule LiquidVotingWeb.Absinthe.Queries.VotingResultTest do
       #    Including, 2 votes for the same proposal url and voting method:
       voting_method_A = insert(:voting_method, name: "methodA", organization_id: org_id)
 
-      vote1_methodA =
-        insert(:vote,
-          proposal_url: "https://proposals/p1",
-          voting_method: voting_method_A,
-          organization_id: org_id
-        )
+      insert(:vote,
+        proposal_url: "https://proposals/p1",
+        voting_method: voting_method_A,
+        organization_id: org_id
+      )
 
-      vote2_methodA =
-        insert(:vote,
-          proposal_url: "https://proposals/p1",
-          voting_method: voting_method_A,
-          organization_id: org_id
-        )
+      insert(:vote,
+        proposal_url: "https://proposals/p1",
+        voting_method: voting_method_A,
+        organization_id: org_id
+      )
 
       #    ... and 1 vote for the same proposal url, but "default" voting method:
       voting_method_default = insert(:voting_method, name: "default", organization_id: org_id)
 
-      vote_default_method =
-        insert(:vote,
-          proposal_url: "https://proposals/p1",
-          voting_method: voting_method_default,
-          organization_id: org_id
-        )
+      insert(:vote,
+        proposal_url: "https://proposals/p1",
+        voting_method: voting_method_default,
+        organization_id: org_id
+      )
 
       # We create 1 vote for a different organization:
-      vote_methodA_other_org =
-        insert(:vote,
-          proposal_url: "https://proposals/p1",
-          voting_method: voting_method_A,
-          organization_id: Ecto.UUID.generate()
-        )
+      insert(:vote,
+        proposal_url: "https://proposals/p1",
+        voting_method: voting_method_A,
+        organization_id: Ecto.UUID.generate()
+      )
 
       [
         organization_id: org_id
