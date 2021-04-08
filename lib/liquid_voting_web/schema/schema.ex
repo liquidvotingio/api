@@ -105,6 +105,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     @desc "Subscribe to voting results changes for a proposal"
     field :voting_result_change, :result do
       arg(:proposal_url, non_null(:string))
+      arg(:voting_method, :string)
 
       config(fn args, _res ->
         {:ok, topic: args.proposal_url}
