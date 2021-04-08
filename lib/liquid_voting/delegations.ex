@@ -213,33 +213,31 @@ defmodule LiquidVoting.Delegations do
     voting_method_id = upsert_voting_method_and_get_id(attrs)
     attrs = Map.put(attrs, :voting_method_id, voting_method_id)
 
-    delegation =
-      upsert_delegation(attrs)
-      |> case do
-        {:ok, delegation} ->
-          delegation = Repo.preload(delegation, [:voting_method], force: true)
-          {:ok, delegation}
+    upsert_delegation(attrs)
+    |> case do
+      {:ok, delegation} ->
+        delegation = Repo.preload(delegation, [:voting_method], force: true)
+        {:ok, delegation}
 
-        {:error, changeset} ->
-          {:error, changeset}
-      end
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id.
   # If a proposal_url is NOT specified, simply returns voting_method_id = nil.
   defp upsert_voting_method_and_get_id(attrs) do
-    voting_method_id =
-      if Map.get(attrs, :proposal_url) do
-        {:ok, voting_method} =
-          VotingMethods.upsert_voting_method(%{
-            name: Map.get(attrs, :voting_method),
-            organization_id: attrs.organization_id
-          })
+    if Map.get(attrs, :proposal_url) do
+      {:ok, voting_method} =
+        VotingMethods.upsert_voting_method(%{
+          name: Map.get(attrs, :voting_method),
+          organization_id: attrs.organization_id
+        })
 
-        voting_method.id
-      else
-        nil
-      end
+      voting_method.id
+    else
+      nil
+    end
   end
 
   @doc """
