@@ -11,12 +11,14 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       insert(:vote,
         participant: delegation.delegate,
         proposal_url: delegation.proposal_url,
+        voting_method: delegation.voting_method,
         organization_id: delegation.organization_id
       )
 
       insert(:voting_result,
         in_favor: 2,
         proposal_url: delegation.proposal_url,
+        voting_method: delegation.voting_method,
         organization_id: delegation.organization_id
       )
 
@@ -24,7 +26,8 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
         delegator_email: delegation.delegator.email,
         delegate_email: delegation.delegate.email,
         proposal_url: delegation.proposal_url,
-        organization_id: delegation.organization_id
+        organization_id: delegation.organization_id,
+        voting_method_name: delegation.voting_method.name
       ]
     end
 
@@ -33,7 +36,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       mutation {
         deleteDelegation(delegatorEmail: "#{context[:delegator_email]}", delegateEmail: "#{
         context[:delegate_email]
-      }", proposalUrl: "#{context[:proposal_url]}") {
+      }", votingMethod: "#{context[:voting_method_name]}", proposalUrl: "#{context[:proposal_url]}") {
           proposalUrl
           votingResult {
             in_favor
@@ -76,6 +79,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       insert(:vote,
         yes: true,
         participant: proposal_delegation.delegate,
+        voting_method: proposal_delegation.voting_method,
         proposal_url: proposal_delegation.proposal_url,
         organization_id: proposal_delegation.organization_id
       )
@@ -85,7 +89,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       mutation {
         deleteDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
         proposal_delegation.delegate.email
-      }", proposalUrl: "#{proposal_delegation.proposal_url}") {
+      }", votingMethod: "#{proposal_delegation.voting_method.name}", proposalUrl: "#{
+        proposal_delegation.proposal_url
+      }") {
           votingResult {
             inFavor
             against
@@ -232,7 +238,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteDelegationTest do
       # Query the voting result for the vote proposal.
       query = """
       query {
-        votingResult(proposalUrl: "#{vote.proposal_url}") {
+        votingResult(votingMethod: "#{vote.voting_method.name}", proposalUrl: "#{
+        vote.proposal_url
+      }") {
           inFavor
           against
           proposalUrl
