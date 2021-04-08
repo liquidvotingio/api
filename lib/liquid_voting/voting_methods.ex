@@ -15,7 +15,10 @@ defmodule LiquidVoting.VotingMethods do
 
   ## Examples
 
-      iex> get_voting_method!("61dbd65c-2c1f-4c29-819c-bbd27112a868", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_voting_method!(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %VotingMethod{}
 
       iex> get_voting_method!(456, 123)

@@ -33,7 +33,10 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> get_delegation!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "c9c2fa04-a35b-427b-80b4-894043264d25",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Delegation{}
 
       iex> get_delegation!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
@@ -99,10 +102,17 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> get_delegation!("delegator@email.com", "delegate@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "delegator@email.com",
+        "delegate@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Delegation{}
 
-      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "participant-without-delegation@email.com",
+        "some@body.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """
@@ -216,7 +226,7 @@ defmodule LiquidVoting.Delegations do
   end
 
   # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id.
-  # If a proposal_url is NOT specified, simply returns voting_method_id == nil.
+  # If a proposal_url is NOT specified, simply returns voting_method_id = nil.
   defp upsert_voting_method_and_get_id(attrs) do
     voting_method_id =
       if Map.get(attrs, :proposal_url) do
@@ -328,7 +338,8 @@ defmodule LiquidVoting.Delegations do
   defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil, organization_id) do
     delegations
     |> Stream.filter(fn d ->
-      d.delegate_id == delegate_id and d.proposal_url != nil and
+      d.delegate_id == delegate_id and
+        d.proposal_url != nil and
         d.organization_id == organization_id
     end)
     |> Enum.each(fn d ->
@@ -341,7 +352,8 @@ defmodule LiquidVoting.Delegations do
   defp resolve_conflicts(delegations, delegate_id, _proposal_url, organization_id) do
     delegations
     |> Enum.filter(fn d ->
-      d.proposal_url == nil and d.delegate_id == delegate_id and
+      d.proposal_url == nil and
+        d.delegate_id == delegate_id and
         d.organization_id == organization_id
     end)
     |> case do
@@ -358,8 +370,8 @@ defmodule LiquidVoting.Delegations do
   end
 
   # Looks for a delegator's existing delegation of matching type (global or for
-  # same proposal).Returns a matching delegation type, if found, or returns an
-  #  empty Delegation struct.
+  # same proposal and voting_method). Returns a matching delegation type, if found,
+  # or returns an empty Delegation struct.
   #
   # Used by upsert_delegation/1 (above.)
   defp find_similar_delegation_or_return_new_struct(
@@ -370,7 +382,8 @@ defmodule LiquidVoting.Delegations do
        ) do
     delegations
     |> Enum.filter(fn d ->
-      d.proposal_url == proposal_url and d.voting_method_id == voting_method_id and
+      d.proposal_url == proposal_url and
+        d.voting_method_id == voting_method_id and
         d.organization_id == organization_id
     end)
     |> case do

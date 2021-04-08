@@ -90,11 +90,14 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Returns the list of votes for a voting_method, proposal_url and organization id
+  Returns the list of votes for a voting_method_id, proposal_url and organization id
 
   ## Examples
 
-      iex> list_votes_by_proposal("https://docs.google.com/document/d/someid", "our-voting-method" "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> list_votes_by_proposal(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "https://docs.google.com/document/d/someid",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Vote{}, ...]
 
   """
@@ -127,7 +130,10 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> list_votes_by_participant("cc1e2ea3-317e-4f40-97b4-06db6e48cd05", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> list_votes_by_participant(
+        "cc1e2ea3-317e-4f40-97b4-06db6e48cd05",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       [%Vote{}, ...]
 
   """
@@ -146,7 +152,10 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_vote!("61dbd65c-2c1f-4c29-819c-bbd27112a868", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Vote{}
 
       iex> get_vote!(456)
@@ -197,7 +206,7 @@ defmodule LiquidVoting.Voting do
   end
 
   @doc """
-  Gets a single vote by participant id, proposal_url and voting_method_id
+  Gets a single vote by participant id, voting_method_id and proposal_url
   ## Examples
 
       iex> get_vote_by_participant_id(
@@ -315,10 +324,16 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant!("c508af54-a6dc-44da-ab8d-ef335bfd3cec", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant!(
+        "c508af54-a6dc-44da-ab8d-ef335bfd3cec",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Participant{}
 
-      iex> get_participant!("076a5a58-1bfa-4139-8d12-5e2ae0309866", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant!(
+        "076a5a58-1bfa-4139-8d12-5e2ae0309866",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """
@@ -332,10 +347,16 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant_by_email("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email(
+        "existing@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Participant{}
 
-      iex> get_participant_by_email("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email(
+        "unregistered@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       nil
 
   """
@@ -349,10 +370,16 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant_by_email!("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email!(
+        "existing@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Participant{}
 
-      iex> get_participant_by_email!("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email!(
+        "unregistered@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """

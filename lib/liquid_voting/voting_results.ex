@@ -16,7 +16,10 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> calculate_result!("https://www.medium/user/eloquent_proposal", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> calculate_result!(
+        "https://www.medium/user/eloquent_proposal",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Result{}
 
   """
@@ -68,7 +71,10 @@ defmodule LiquidVoting.VotingResults do
 
   ## Example
 
-      iex> publish_voting_result_change("https://www.medium/user/eloquent_proposal", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> publish_voting_result_change(
+        "https://www.medium/user/eloquent_proposal",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       :ok
 
   """
@@ -104,7 +110,10 @@ defmodule LiquidVoting.VotingResults do
 
   ## Example
 
-      iex> publish_voting_result_changes_for_participant("377ead47-05f1-46b5-a676-f13b619623a7", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> publish_voting_result_changes_for_participant(
+        "377ead47-05f1-46b5-a676-f13b619623a7",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       :ok
 
   """
@@ -154,10 +163,16 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> get_result!("ec15b5d3-bfff-4ca6-a56a-78a460b2d38f", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result!(
+        "ec15b5d3-bfff-4ca6-a56a-78a460b2d38f",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Result{}
 
-      iex> get_result!("1a1d0de6-1706-4a8e-8e34-d6aea3fa9e19", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result!(
+        "1a1d0de6-1706-4a8e-8e34-d6aea3fa9e19",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """
