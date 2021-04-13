@@ -33,6 +33,7 @@ defmodule LiquidVoting.Voting do
            {:organization_id, attrs[:organization_id]},
            {:participant_email, attrs[:participant_email]},
            {:proposal_url, attrs[:proposal_url]},
+           {:voting_method, attrs[:voting_method]},
            {:yes, attrs[:yes]}
          ]}
       ])
@@ -54,6 +55,7 @@ defmodule LiquidVoting.Voting do
               end
             else
               vote
+              |> Repo.preload([:voting_method])
             end
 
           {:error, changeset} ->
@@ -83,29 +85,43 @@ defmodule LiquidVoting.Voting do
       |> where(organization_id: ^organization_id)
       |> Repo.all()
       |> Repo.preload([:participant])
+      |> Repo.preload([:voting_method])
     end
   end
 
   @doc """
-  Returns the list of votes for a proposal_url and organization id
+  Returns the list of votes for a voting_method_id, proposal_url and organization id
 
   ## Examples
 
-      iex> list_votes_by_proposal("https://docs.google.com/document/d/someid", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> list_votes_by_proposal(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "https://docs.google.com/document/d/someid",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       [%Vote{}, ...]
 
   """
-  def list_votes_by_proposal(proposal_url, organization_id) do
+  def list_votes_by_proposal(voting_method_id, proposal_url, organization_id) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
-        {:params, [{:organization_id, organization_id}, {:proposal_url, proposal_url}]}
+        {:params,
+         [
+           {:organization_id, organization_id},
+           {:proposal_url, proposal_url},
+           {:voting_method_id, voting_method_id}
+         ]}
       ])
 
       Vote
-      |> where(proposal_url: ^proposal_url, organization_id: ^organization_id)
+      |> where(
+        voting_method_id: ^voting_method_id,
+        proposal_url: ^proposal_url,
+        organization_id: ^organization_id
+      )
       |> Repo.all()
       |> Repo.preload([:participant])
+      |> Repo.preload([:voting_method])
     end
   end
 
@@ -114,7 +130,10 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> list_votes_by_participant("cc1e2ea3-317e-4f40-97b4-06db6e48cd05", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> list_votes_by_participant(
+        "cc1e2ea3-317e-4f40-97b4-06db6e48cd05",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       [%Vote{}, ...]
 
   """
@@ -123,6 +142,7 @@ defmodule LiquidVoting.Voting do
     |> where(participant_id: ^participant_id, organization_id: ^organization_id)
     |> Repo.all()
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
@@ -132,7 +152,10 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_vote!("61dbd65c-2c1f-4c29-819c-bbd27112a868", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Vote{}
 
       iex> get_vote!(456)
@@ -143,53 +166,76 @@ defmodule LiquidVoting.Voting do
     Vote
     |> Repo.get_by!(id: id, organization_id: organization_id)
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
-  Gets a single vote by participant email, proposal_url and organization id
+  Gets a single vote by participant email, voting_method_id, proposal_url and organization id
 
   ## Examples
 
-      iex> get_vote!("alice@email.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!(
+              "alice@email.com",
+              "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+              "https://proposals.net/2",
+              "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+            )
       %Vote{}
 
-      iex> get_vote!("hasno@votes.com", "https://proposals.net/2", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_vote!(
+              "hasno@votes.com",
+              "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+              "https://proposals.net/2",
+              "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+            )
       ** (Ecto.NoResultsError)
 
-
   """
-  def get_vote!(email, proposal_url, organization_id) do
+  def get_vote!(email, voting_method_id, proposal_url, organization_id) do
     participant = get_participant_by_email!(email, organization_id)
 
     Vote
     |> Repo.get_by!(
+      organization_id: organization_id,
       participant_id: participant.id,
       proposal_url: proposal_url,
-      organization_id: organization_id
+      voting_method_id: voting_method_id
     )
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
-  Gets a single vote by participant id and proposal_url
-
+  Gets a single vote by participant id, voting_method_id and proposal_url
   ## Examples
 
-      iex> get_vote_by_participant_id("a6158b19-6bf6-4457-9d13-ef8b141611b4", "https://proposals.net/2")
+      iex> get_vote_by_participant_id(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4",
+        "https://proposals.net/2",
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868"
+        )
       => %Vote{}
 
-      iex> get_vote_by_participant_id("a6158b19-6bf6-4457-9d13-ef8b141611b4", "https://proposals.com/non-existant-proposal")
+      iex> get_vote_by_participant_id(
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4",
+        "https://proposals.com/non-existant-proposal",
+        "61dbd65c-2c1f-4c29-819c-bbd27112a868"
+        )
       => nil
   """
-  def get_vote_by_participant_id(participant_id, proposal_url, organization_id) do
+  def get_vote_by_participant_id(participant_id, voting_method_id, proposal_url, organization_id) do
     Vote
     |> where(
+      organization_id: ^organization_id,
       participant_id: ^participant_id,
       proposal_url: ^proposal_url,
-      organization_id: ^organization_id
+      voting_method_id: ^voting_method_id
     )
     |> Repo.one()
     |> Repo.preload([:participant])
+    |> Repo.preload([:voting_method])
   end
 
   # Just for seeding
@@ -278,10 +324,16 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant!("c508af54-a6dc-44da-ab8d-ef335bfd3cec", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant!(
+        "c508af54-a6dc-44da-ab8d-ef335bfd3cec",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Participant{}
 
-      iex> get_participant!("076a5a58-1bfa-4139-8d12-5e2ae0309866", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant!(
+        "076a5a58-1bfa-4139-8d12-5e2ae0309866",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """
@@ -295,10 +347,16 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant_by_email("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email(
+        "existing@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Participant{}
 
-      iex> get_participant_by_email("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email(
+        "unregistered@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       nil
 
   """
@@ -312,10 +370,16 @@ defmodule LiquidVoting.Voting do
 
   ## Examples
 
-      iex> get_participant_by_email!("existing@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email!(
+        "existing@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Participant{}
 
-      iex> get_participant_by_email!("unregistered@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_participant_by_email!(
+        "unregistered@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """

@@ -6,7 +6,7 @@ defmodule LiquidVoting.Delegations do
   import Ecto.Query, warn: false
 
   alias __MODULE__.Delegation
-  alias LiquidVoting.{Repo, Voting}
+  alias LiquidVoting.{Repo, Voting, VotingMethods}
   alias Voting.Vote
   alias Ecto.Multi
 
@@ -33,7 +33,10 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> get_delegation!(123, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "c9c2fa04-a35b-427b-80b4-894043264d25",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Delegation{}
 
       iex> get_delegation!(456, "a6158b19-6bf6-4457-9d13-ef8b141611b4")
@@ -47,30 +50,49 @@ defmodule LiquidVoting.Delegations do
   end
 
   @doc """
-  Gets a single delegation by delegator email, delegate email, proposal_url and organization id
+  Gets a single delegation by delegator email, delegate email, voting_method_name, proposal_url and organization id
 
   Raises `Ecto.NoResultsError` if the Delegation does not exist.
 
   ## Examples
 
-      iex> get_delegation!("delegator@email.com", "delegate@email.com", "https://aproposal.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "delegator@email.com",
+        "delegate@email.com",
+        "method_A",
+        "https://aproposal.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Delegation{}
 
-      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com", "https://aproposal.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "participant-without-delegation@email.com",
+        "some@body.com",
+        "method_A",
+        "https://aproposal.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       ** (Ecto.NoResultsError)
 
   """
-  def get_delegation!(delegator_email, delegate_email, proposal_url, organization_id) do
+  def get_delegation!(
+        delegator_email,
+        delegate_email,
+        voting_method_name,
+        proposal_url,
+        organization_id
+      ) do
     delegator = Voting.get_participant_by_email!(delegator_email, organization_id)
     delegate = Voting.get_participant_by_email!(delegate_email, organization_id)
+    voting_method = VotingMethods.get_voting_method_by_name!(voting_method_name, organization_id)
 
     Repo.get_by!(
       Delegation,
       delegator_id: delegator.id,
       delegate_id: delegate.id,
+      voting_method_id: voting_method.id,
       proposal_url: proposal_url,
       organization_id: organization_id
     )
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
@@ -80,10 +102,17 @@ defmodule LiquidVoting.Delegations do
 
   ## Examples
 
-      iex> get_delegation!("delegator@email.com", "delegate@email.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "delegator@email.com",
+        "delegate@email.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4")
       %Delegation{}
 
-      iex> get_delegation!("participant-without-delegation@email.com", "some@body.com", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_delegation!(
+        "participant-without-delegation@email.com",
+        "some@body.com",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """
@@ -111,9 +140,29 @@ defmodule LiquidVoting.Delegations do
   If created using participant emails, new participant(s) will be created if
   they do not already exist.
 
+  If a proposal delegation (has a proposal_url), a new associated voting_method will be
+  created if it does not already exist.
+
   ## Examples
 
-      iex> create_delegation(%{field: value})
+      global delegation:
+
+      iex> create_delegation(%{
+          delegator_email: "ana@g.com",
+          delegate_email: "bob@g.com",
+          organization_id: "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+          })
+      {:ok, %Delegation{}}
+
+      proposal specific delegation:
+
+      iex> create_delegation(%{
+          delegator_email: "ana@g.com",
+          delegate_email: "bob@g.com",
+          voting_method: "our_voting_method",
+          proposal_url: "https://aproposal.com",
+          organization_id: "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+          })
       {:ok, %Delegation{}}
 
       iex> create_delegation(%{field: bad_value})
@@ -127,6 +176,8 @@ defmodule LiquidVoting.Delegations do
     delegate_attrs = %{email: args.delegate_email, organization_id: args.organization_id}
     delegation_attrs = Map.take(args, [:organization_id, :proposal_url])
 
+    voting_method_id = upsert_voting_method_and_get_id(args)
+
     Multi.new()
     |> Multi.run(:upsert_delegator, fn _repo, _changes ->
       Voting.upsert_participant(delegator_attrs)
@@ -138,12 +189,17 @@ defmodule LiquidVoting.Delegations do
       delegation_attrs
       |> Map.put(:delegator_id, changes.upsert_delegator.id)
       |> Map.put(:delegate_id, changes.upsert_delegate.id)
+      |> Map.put(:voting_method_id, voting_method_id)
       |> upsert_delegation()
     end)
     |> Repo.transaction()
     |> case do
       {:ok, resources} ->
-        {:ok, resources.upsert_delegation}
+        delegation =
+          resources.upsert_delegation
+          |> Repo.preload([:voting_method])
+
+        {:ok, delegation}
 
       {:error, :upsert_delegation, value, _} ->
         {:error, value}
@@ -154,7 +210,34 @@ defmodule LiquidVoting.Delegations do
   end
 
   def create_delegation(%{delegator_id: _, delegate_id: _} = attrs) do
+    voting_method_id = upsert_voting_method_and_get_id(attrs)
+    attrs = Map.put(attrs, :voting_method_id, voting_method_id)
+
     upsert_delegation(attrs)
+    |> case do
+      {:ok, delegation} ->
+        delegation = Repo.preload(delegation, [:voting_method], force: true)
+        {:ok, delegation}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  # If a proposal_url is specified, upserts a voting_method and returns the voting_method_id.
+  # If a proposal_url is NOT specified, simply returns voting_method_id = nil.
+  defp upsert_voting_method_and_get_id(attrs) do
+    if Map.get(attrs, :proposal_url) do
+      {:ok, voting_method} =
+        VotingMethods.upsert_voting_method(%{
+          name: Map.get(attrs, :voting_method),
+          organization_id: attrs.organization_id
+        })
+
+      voting_method.id
+    else
+      nil
+    end
   end
 
   @doc """
@@ -188,8 +271,10 @@ defmodule LiquidVoting.Delegations do
           attrs
       ) do
     proposal_url = Map.get(attrs, :proposal_url)
+    voting_method_id = Map.get(attrs, :voting_method_id)
 
-    with {:ok} <- check_vote_conflict(delegator_id, proposal_url, organization_id) do
+    with {:ok} <-
+           check_vote_conflict(delegator_id, voting_method_id, proposal_url, organization_id) do
       Delegation
       |> where(delegator_id: ^delegator_id)
       |> Repo.all()
@@ -197,7 +282,11 @@ defmodule LiquidVoting.Delegations do
       |> case do
         {:ok, delegations} ->
           delegations
-          |> find_similar_delegation_or_return_new_struct(proposal_url, organization_id)
+          |> find_similar_delegation_or_return_new_struct(
+            proposal_url,
+            voting_method_id,
+            organization_id
+          )
           |> Delegation.changeset(attrs)
           |> Repo.insert_or_update()
 
@@ -213,12 +302,15 @@ defmodule LiquidVoting.Delegations do
   #
   # Or returns {:ok} if delegation creation is for a proposal delegation & no conflicting vote is found.
   # Returns an error, if a conflicting vote is found.
-  defp check_vote_conflict(_delegator_id, _proposal_url = nil, _organization_id) do
-    {:ok}
-  end
+  defp check_vote_conflict(_, _proposal_url = nil, _, _), do: {:ok}
 
-  defp check_vote_conflict(delegator_id, proposal_url, organization_id) do
-    case Voting.get_vote_by_participant_id(delegator_id, proposal_url, organization_id) do
+  defp check_vote_conflict(delegator_id, voting_method_id, proposal_url, organization_id) do
+    case Voting.get_vote_by_participant_id(
+           delegator_id,
+           voting_method_id,
+           proposal_url,
+           organization_id
+         ) do
       %Vote{} ->
         {
           :error,
@@ -244,7 +336,8 @@ defmodule LiquidVoting.Delegations do
   defp resolve_conflicts(delegations, delegate_id, _proposal_url = nil, organization_id) do
     delegations
     |> Stream.filter(fn d ->
-      d.delegate_id == delegate_id and d.proposal_url != nil and
+      d.delegate_id == delegate_id and
+        d.proposal_url != nil and
         d.organization_id == organization_id
     end)
     |> Enum.each(fn d ->
@@ -257,7 +350,8 @@ defmodule LiquidVoting.Delegations do
   defp resolve_conflicts(delegations, delegate_id, _proposal_url, organization_id) do
     delegations
     |> Enum.filter(fn d ->
-      d.proposal_url == nil and d.delegate_id == delegate_id and
+      d.proposal_url == nil and
+        d.delegate_id == delegate_id and
         d.organization_id == organization_id
     end)
     |> case do
@@ -274,14 +368,21 @@ defmodule LiquidVoting.Delegations do
   end
 
   # Looks for a delegator's existing delegation of matching type (global or for
-  # same proposal).Returns a matching delegation type, if found, or returns an
-  #  empty Delegation struct.
+  # same proposal and voting_method). Returns a matching delegation type, if found,
+  # or returns an empty Delegation struct.
   #
   # Used by upsert_delegation/1 (above.)
-  defp find_similar_delegation_or_return_new_struct(delegations, proposal_url, organization_id) do
+  defp find_similar_delegation_or_return_new_struct(
+         delegations,
+         proposal_url,
+         voting_method_id,
+         organization_id
+       ) do
     delegations
     |> Enum.filter(fn d ->
-      d.proposal_url == proposal_url and d.organization_id == organization_id
+      d.proposal_url == proposal_url and
+        d.voting_method_id == voting_method_id and
+        d.organization_id == organization_id
     end)
     |> case do
       # Delegation (of same type) not found, so we build one

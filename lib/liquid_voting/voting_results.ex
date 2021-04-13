@@ -16,27 +16,32 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> calculate_result!("https://www.medium/user/eloquent_proposal", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> calculate_result!(
+        "https://www.medium/user/eloquent_proposal",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Result{}
 
   """
-  def calculate_result!(proposal_url, organization_id) do
+  def calculate_result!(voting_method_id, proposal_url, organization_id) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
         {:params,
          [
            {:organization_id, organization_id},
-           {:proposal_url, proposal_url}
+           {:proposal_url, proposal_url},
+           {:voting_method_id, voting_method_id}
          ]}
       ])
 
-      votes = Voting.list_votes_by_proposal(proposal_url, organization_id)
+      votes = Voting.list_votes_by_proposal(voting_method_id, proposal_url, organization_id)
 
       attrs = %{
         in_favor: 0,
         against: 0,
         proposal_url: proposal_url,
+        voting_method_id: voting_method_id,
         organization_id: organization_id
       }
 
@@ -55,7 +60,7 @@ defmodule LiquidVoting.VotingResults do
       |> Result.changeset(attrs)
       |> Repo.insert!(
         on_conflict: {:replace_all_except, [:id]},
-        conflict_target: [:organization_id, :proposal_url],
+        conflict_target: [:organization_id, :proposal_url, :voting_method_id],
         returning: true
       )
     end
@@ -66,22 +71,26 @@ defmodule LiquidVoting.VotingResults do
 
   ## Example
 
-      iex> publish_voting_result_change("https://www.medium/user/eloquent_proposal", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> publish_voting_result_change(
+        "https://www.medium/user/eloquent_proposal",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       :ok
 
   """
-  def publish_voting_result_change(proposal_url, organization_id) do
+  def publish_voting_result_change(voting_method_id, proposal_url, organization_id) do
     Tracer.with_span "#{__MODULE__} #{inspect(__ENV__.function)}" do
       Tracer.set_attributes([
         {:request_id, Logger.metadata()[:request_id]},
         {:params,
          [
            {:organization_id, organization_id},
-           {:proposal_url, proposal_url}
+           {:proposal_url, proposal_url},
+           {:voting_method_id, voting_method_id}
          ]}
       ])
 
-      result = calculate_result!(proposal_url, organization_id)
+      result = calculate_result!(voting_method_id, proposal_url, organization_id)
 
       Absinthe.Subscription.publish(
         LiquidVotingWeb.Endpoint,
@@ -101,14 +110,17 @@ defmodule LiquidVoting.VotingResults do
 
   ## Example
 
-      iex> publish_voting_result_changes_for_participant("377ead47-05f1-46b5-a676-f13b619623a7", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> publish_voting_result_changes_for_participant(
+        "377ead47-05f1-46b5-a676-f13b619623a7",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       :ok
 
   """
   def publish_voting_result_changes_for_participant(participant_id, organization_id) do
     Voting.list_votes_by_participant(participant_id, organization_id)
     |> Enum.each(fn vote ->
-      publish_voting_result_change(vote.proposal_url, organization_id)
+      publish_voting_result_change(vote.voting_method_id, vote.proposal_url, organization_id)
     end)
   end
 
@@ -125,6 +137,23 @@ defmodule LiquidVoting.VotingResults do
     Result
     |> where(organization_id: ^organization_id)
     |> Repo.all()
+    |> Repo.preload([:voting_method])
+  end
+
+  @doc """
+  Returns the list of results for a proposal_url, in the scope of a organization_id.
+
+  ## Examples
+
+      iex> list_results("https://our-proposals/proposal1", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      [%Result{}, ...]
+
+  """
+  def list_results_for_proposal_url(proposal_url, organization_id) do
+    Result
+    |> where(organization_id: ^organization_id, proposal_url: ^proposal_url)
+    |> Repo.all()
+    |> Repo.preload([:voting_method])
   end
 
   @doc """
@@ -134,32 +163,54 @@ defmodule LiquidVoting.VotingResults do
 
   ## Examples
 
-      iex> get_result!("ec15b5d3-bfff-4ca6-a56a-78a460b2d38f", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result!(
+        "ec15b5d3-bfff-4ca6-a56a-78a460b2d38f",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Result{}
 
-      iex> get_result!("1a1d0de6-1706-4a8e-8e34-d6aea3fa9e19", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result!(
+        "1a1d0de6-1706-4a8e-8e34-d6aea3fa9e19",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       ** (Ecto.NoResultsError)
 
   """
-  def get_result!(id, organization_id),
-    do: Repo.get_by!(Result, id: id, organization_id: organization_id)
+  def get_result!(id, organization_id) do
+    Repo.get_by!(Result, id: id, organization_id: organization_id)
+    |> Repo.preload([:voting_method])
+  end
 
   @doc """
-  Gets a single result by its proposal url and organization_id
+  Gets a single result by its voting_method_id, proposal url and organization_id
 
   Returns `nil` if the Result does not exist.
 
   ## Examples
 
-      iex> get_result_by_proposal_url("https://www.myproposal.com/", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result_by_proposal_url(
+        "377ead47-05f1-46b5-a676-f13b619623a7",
+        "https://www.myproposal.com/",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       %Result{}
 
-      iex> get_result_by_proposal_url("https://nonexistentproposal.com/", "a6158b19-6bf6-4457-9d13-ef8b141611b4")
+      iex> get_result_by_proposal_url(
+        "377ead47-05f1-46b5-a676-f13b619623a7",
+        "https://nonexistentproposal.com/",
+        "a6158b19-6bf6-4457-9d13-ef8b141611b4"
+        )
       nil
 
   """
-  def get_result_by_proposal_url(proposal_url, organization_id),
-    do: Repo.get_by(Result, proposal_url: proposal_url, organization_id: organization_id)
+  def get_result_by_proposal_url(voting_method_id, proposal_url, organization_id) do
+    Repo.get_by(Result,
+      voting_method_id: voting_method_id,
+      proposal_url: proposal_url,
+      organization_id: organization_id
+    )
+    |> Repo.preload([:voting_method])
+  end
 
   @doc """
   Creates a result.

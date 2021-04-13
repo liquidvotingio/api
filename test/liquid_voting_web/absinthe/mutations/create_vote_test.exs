@@ -7,6 +7,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
   describe "create vote" do
     setup do
       participant = insert(:participant)
+      voting_method = insert(:voting_method, organization_id: participant.organization_id)
 
       [
         participant_id: participant.id,
@@ -14,11 +15,12 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         new_participant_email: "noob@email.com",
         proposal_url: "https://github.com/user/repo/pulls/15",
         yes: true,
+        voting_method_name: voting_method.name,
         organization_id: participant.organization_id
       ]
     end
 
-    test "with a new participant's email", context do
+    test "with a new participant's email and no voting_method name ", context do
       query = """
       mutation {
         createVote(participantEmail: "#{context[:new_participant_email]}", proposalUrl:"#{
@@ -26,6 +28,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       }", yes: #{context[:yes]}) {
           participant {
             email
+          }
+          votingMethod{
+            name
           }
           yes
         }
@@ -36,17 +41,46 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
       assert vote["participant"]["email"] == context[:new_participant_email]
+      assert vote["votingMethod"]["name"] == "default"
       assert vote["yes"] == context[:yes]
     end
 
-    test "with an existing participant's email", context do
+    test "with a new participant's email and voting_method name", context do
+      query = """
+      mutation {
+        createVote(participantEmail: "#{context[:new_participant_email]}", proposalUrl:"#{
+        context[:proposal_url]
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
+          participant {
+            email
+          }
+          votingMethod{
+            name
+          }
+          yes
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
+
+      assert vote["participant"]["email"] == context[:new_participant_email]
+      assert vote["votingMethod"]["name"] == context[:voting_method_name]
+      assert vote["yes"] == context[:yes]
+    end
+
+    test "with an existing participant's email and voting_method name", context do
       query = """
       mutation {
         createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
+          }
+          votingMethod{
+            name
           }
           yes
         }
@@ -57,6 +91,32 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
 
       assert vote["participant"]["email"] == context[:participant_email]
+      assert vote["votingMethod"]["name"] == context[:voting_method_name]
+      assert vote["yes"] == context[:yes]
+    end
+
+    test "with an existing participant's email and no voting_method name", context do
+      query = """
+      mutation {
+        createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
+        context[:proposal_url]
+      }", yes: #{context[:yes]}) {
+          participant {
+            email
+          }
+          votingMethod{
+            name
+          }
+          yes
+        }
+      }
+      """
+
+      {:ok, %{data: %{"createVote" => vote}}} =
+        Absinthe.run(query, Schema, context: %{organization_id: context[:organization_id]})
+
+      assert vote["participant"]["email"] == context[:participant_email]
+      assert vote["votingMethod"]["name"] == "default"
       assert vote["yes"] == context[:yes]
     end
 
@@ -65,7 +125,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -91,7 +151,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantId: "#{context[:participant_id]}", proposalUrl:"#{
         context[:proposal_url]
-      }", yes: #{context[:yes]}) {
+      }", votingMethod: "#{context[:voting_method_name]}", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -110,7 +170,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     test "with no participant identifiers", context do
       query = """
       mutation {
-        createVote(proposalUrl:"#{context[:proposal_url]}", yes: #{context[:yes]}) {
+        createVote(proposalUrl:"#{context[:proposal_url]}", votingMethod: "#{
+        context[:voting_method]
+      }", yes: #{context[:yes]}) {
           participant {
             email
           }
@@ -130,14 +192,16 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       # Insert a proposal-specific delegation.
       delegation = insert(:delegation_for_proposal)
       delegate = delegation.delegate
-
       proposal_url = delegation.proposal_url
+      voting_method_name = delegation.voting_method.name
 
       # Create a vote, cast by the proposal-specific delegation's delegate,
       # and query the votingResult for the proposal_url of the vote.
       query = """
       mutation {
-        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", yes: true) {
+        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", votingMethod: "#{
+        voting_method_name
+      }", yes: true) {
           proposalUrl
           votingResult {
             inFavor
@@ -168,7 +232,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       # the votingResult for the proposal_url of the vote.
       query = """
       mutation {
-        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", yes: false) {
+        createVote(participantEmail: "#{delegate.email}", proposalUrl: "#{proposal_url}", votingMethod: "a-voting-method", yes: false) {
           proposalUrl
           votingResult {
             inFavor
@@ -199,7 +263,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
     #
     # Third, the delegate of the proposal-specific delegation casts a vote (against).
     #
-    # Fourth, the delegate of the global delegation casts a vote (in favor) for 
+    # Fourth, the delegate of the global delegation casts a vote (in favor) for
     # a separate proposal (proposal_B_url).
     #
     # Lastly, we assert that the voting results returned in a query within the
@@ -216,14 +280,21 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
 
       proposal_delegate = proposal_delegation.delegate
       proposal_A_url = proposal_delegation.proposal_url
+      proposal_A_voting_method_name = proposal_delegation.voting_method.name
 
       proposal_B_url = "https://proposals/b"
+      proposal_B_voting_method_name = "proposal-B-voting-method"
 
       # Create a vote for 'proposal A', cast by the proposal-specific delegation's delegate.
       query = """
       mutation {
-        createVote(participantEmail: "#{proposal_delegate.email}", proposalUrl: "#{proposal_A_url}", yes: false) {
+        createVote(participantEmail: "#{proposal_delegate.email}", proposalUrl: "#{proposal_A_url}", votingMethod: "#{
+        proposal_A_voting_method_name
+      }", yes: false) {
           proposalUrl
+          votingMethod{
+            name
+          }
           votingResult {
             inFavor
             against
@@ -236,6 +307,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
       assert vote["proposalUrl"] == proposal_A_url
+      assert vote["votingMethod"]["name"] == proposal_A_voting_method_name
       assert vote["votingResult"]["inFavor"] == 0
       assert vote["votingResult"]["against"] == 2
 
@@ -244,8 +316,11 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
       mutation {
         createVote(participantEmail: "#{global_delegation.delegate.email}", proposalUrl: "#{
         proposal_B_url
-      }", yes: true) {
+      }", votingMethod: "#{proposal_B_voting_method_name}", yes: true) {
           proposalUrl
+          votingMethod{
+            name
+          }
           votingResult {
             inFavor
             against
@@ -258,6 +333,7 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateVoteTest do
         Absinthe.run(query, Schema, context: %{organization_id: global_delegation.organization_id})
 
       assert vote["proposalUrl"] == proposal_B_url
+      assert vote["votingMethod"]["name"] == proposal_B_voting_method_name
       assert vote["votingResult"]["inFavor"] == 2
       assert vote["votingResult"]["against"] == 0
     end

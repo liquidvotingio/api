@@ -3,6 +3,7 @@ defmodule LiquidVoting.Delegations.Delegation do
   import Ecto.Changeset
 
   alias LiquidVoting.Voting.Participant
+  alias LiquidVoting.VotingMethods.VotingMethod
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -13,6 +14,7 @@ defmodule LiquidVoting.Delegations.Delegation do
 
     belongs_to :delegator, Participant
     belongs_to :delegate, Participant
+    belongs_to :voting_method, VotingMethod
 
     timestamps()
   end
@@ -20,7 +22,7 @@ defmodule LiquidVoting.Delegations.Delegation do
   @doc false
   def changeset(delegation, attrs) do
     required_fields = [:delegator_id, :delegate_id, :organization_id]
-    all_fields = [:proposal_url | required_fields]
+    all_fields = [:proposal_url, :voting_method_id | required_fields]
 
     delegation
     |> cast(attrs, all_fields)
@@ -28,8 +30,8 @@ defmodule LiquidVoting.Delegations.Delegation do
     |> assoc_constraint(:delegate)
     |> validate_required(required_fields)
     |> validate_participants_different
-    |> unique_constraint(:org_delegator_delegate_proposal,
-      name: :uniq_index_org_delegator_delegate_proposal
+    |> unique_constraint(:org_delegator_delegate_proposal_method,
+      name: :uniq_index_org_delegator_delegate_proposal_voting_method
     )
   end
 

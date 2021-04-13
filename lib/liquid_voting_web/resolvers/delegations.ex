@@ -1,5 +1,5 @@
 defmodule LiquidVotingWeb.Resolvers.Delegations do
-  alias LiquidVoting.{Voting, Delegations, VotingResults}
+  alias LiquidVoting.{Voting, Delegations, VotingMethods, VotingResults}
   alias LiquidVotingWeb.Schema.ChangesetErrors
 
   def delegations(_, _, %{context: %{organization_id: organization_id}}),
@@ -38,7 +38,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     %{},
     %{delegator_email: "alice@somemail.com"},
     %{context: %{organization_id: "b212ef83-d3df-4a7a-8875-36cca613e8d6"}})
-  {:error,                                                   
+  {:error,
     %{
       details: %{delegate_email: ["can't be blank"]},
       message: "Could not create delegation"
@@ -48,6 +48,7 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
     args = Map.put(args, :organization_id, organization_id)
 
     with {:ok, args} <- validate_participant_args(args),
+         {:ok, args} <- validate_delegation_type(args),
          {:ok, delegation} <- Delegations.create_delegation(args) do
       proposal_url = Map.get(args, :proposal_url)
 
@@ -59,9 +60,13 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
             delegation.organization_id
           )
 
-        # Proposal delegation: We update the voting result for the given proposal_url.
+        # Proposal delegation: Publish result change for result with same proposal_url && voting_method
         _proposal_url ->
-          VotingResults.publish_voting_result_change(proposal_url, delegation.organization_id)
+          VotingResults.publish_voting_result_change(
+            delegation.voting_method.id,
+            proposal_url,
+            delegation.organization_id
+          )
       end
 
       {:ok, delegation}
@@ -90,25 +95,45 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
       %{delegator_id: _, delegate_id: _} ->
         {:ok, args}
 
-      # delegator_email field provided, but no delegate_email field provided
+      # delegator_email field provided, but no delegate_email field provided.
       %{delegator_email: _} ->
         field_not_found_error(%{delegate_email: ["can't be blank"]})
 
-      # delegate_email field provided, but no delegator_email field provided
+      # delegate_email field provided, but no delegator_email field provided.
       %{delegate_email: _} ->
         field_not_found_error(%{delegator_email: ["can't be blank"]})
 
-      # delegator_id field provided, but no delegate_id field provided
+      # delegator_id field provided, but no delegate_id field provided.
       %{delegator_id: _} ->
         field_not_found_error(%{delegate_id: ["can't be blank"]})
 
-      # delegate_id field provided, but no delegator_id field provided
+      # delegate_id field provided, but no delegator_id field provided.
       %{delegate_id: _} ->
         field_not_found_error(%{delegator_id: ["can't be blank"]})
 
-      # no id or email fields provided for delegator and delegate
+      # No id or email fields provided for delegator and delegate.
       _ ->
         field_not_found_error("emails or ids identifying delegator and delegate can't be blank")
+    end
+  end
+
+  defp validate_delegation_type(args) do
+    case args do
+      # In combination, these fields specify a delegation for a proposal_url and related voting_method.
+      %{voting_method: _, proposal_url: _} ->
+        {:ok, args}
+
+      # A voting_method value of "default" will be used when no voting_method is specified.
+      %{proposal_url: _} ->
+        {:ok, args}
+
+      # voting_method field provided, but no proposal_url field provided.
+      %{voting_method: _} ->
+        field_not_found_error(%{proposal_url: ["can't be blank, if voting_method specified"]})
+
+      # Global delegations use neither a proposal_url nor a voting_method.
+      _ ->
+        {:ok, args}
     end
   end
 
@@ -120,35 +145,45 @@ defmodule LiquidVotingWeb.Resolvers.Delegations do
      }}
   end
 
-  # Delete proposal-specific delegations
+  # Delete proposal-specific delegation
   def delete_delegation(
         _,
         %{
           delegator_email: delegator_email,
           delegate_email: delegate_email,
           proposal_url: proposal_url
-        },
+        } = args,
         %{context: %{organization_id: organization_id}}
       ) do
+    voting_method_name = Map.get(args, :voting_method) || "default"
+
     deleted_delegation =
-      delegator_email
-      |> Delegations.get_delegation!(delegate_email, proposal_url, organization_id)
+      Delegations.get_delegation!(
+        delegator_email,
+        delegate_email,
+        voting_method_name,
+        proposal_url,
+        organization_id
+      )
       |> Delegations.delete_delegation!()
 
-    VotingResults.publish_voting_result_change(proposal_url, organization_id)
+    VotingResults.publish_voting_result_change(
+      deleted_delegation.voting_method.id,
+      proposal_url,
+      organization_id
+    )
 
     {:ok, deleted_delegation}
   rescue
     Ecto.NoResultsError -> {:error, message: "No delegation found to delete"}
   end
 
-  # Delete global delegations
+  # Delete global delegation
   def delete_delegation(_, %{delegator_email: delegator_email, delegate_email: delegate_email}, %{
         context: %{organization_id: organization_id}
       }) do
     deleted_delegation =
-      delegator_email
-      |> Delegations.get_delegation!(delegate_email, organization_id)
+      Delegations.get_delegation!(delegator_email, delegate_email, organization_id)
       |> Delegations.delete_delegation!()
 
     delegate = Voting.get_participant_by_email(delegate_email, organization_id)

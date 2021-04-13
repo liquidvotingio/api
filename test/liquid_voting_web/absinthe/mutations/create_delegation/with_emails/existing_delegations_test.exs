@@ -76,7 +76,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.CreateDelegation.WithEmails.Existin
       mutation {
         createDelegation(delegatorEmail: "#{proposal_delegation.delegator.email}", delegateEmail: "#{
         another_delegate.email
-      }", proposalUrl: "#{proposal_delegation.proposal_url}") {
+      }", votingMethod: "#{proposal_delegation.voting_method.name}", proposalUrl: "#{
+        proposal_delegation.proposal_url
+      }") {
           delegator {
             email
           }

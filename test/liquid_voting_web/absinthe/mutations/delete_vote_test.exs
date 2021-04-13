@@ -6,11 +6,21 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
 
   describe "delete vote" do
     setup do
-      vote = insert(:vote)
-      result = insert(:voting_result, in_favor: 1, proposal_url: vote.proposal_url)
+      voting_method = insert(:voting_method)
+
+      vote =
+        insert(:vote, voting_method: voting_method, organization_id: voting_method.organization_id)
+
+      result =
+        insert(:voting_result,
+          in_favor: 1,
+          voting_method: voting_method,
+          proposal_url: vote.proposal_url
+        )
 
       [
         participant_email: vote.participant.email,
+        voting_method_name: voting_method.name,
         proposal_url: vote.proposal_url,
         organization_id: vote.organization_id,
         result: result
@@ -20,9 +30,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
     test "with a participant's email and proposal_url", context do
       query = """
       mutation {
-        deleteVote(participantEmail: "#{context[:participant_email]}", proposalUrl:"#{
-        context[:proposal_url]
-      }") {
+        deleteVote(participantEmail: "#{context[:participant_email]}", votingMethod: "#{
+        context[:voting_method_name]
+      }", proposalUrl: "#{context[:proposal_url]}") {
           participant {
             email
           }
@@ -47,9 +57,9 @@ defmodule LiquidVotingWeb.Absinthe.Mutations.DeleteVoteTest do
 
       query = """
       mutation {
-        deleteVote(participantEmail: "#{another_participant.email}", proposalUrl:"#{
-        context[:proposal_url]
-      }") {
+        deleteVote(participantEmail: "#{another_participant.email}", votingMethod: "#{
+        context[:voting_method_name]
+      }", proposalUrl: "#{context[:proposal_url]}") {
           participant {
             email
           }

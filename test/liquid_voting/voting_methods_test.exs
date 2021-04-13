@@ -1,4 +1,4 @@
-defmodule LiquidVoting.ParticipantsTest do
+defmodule LiquidVoting.VotingMethodsTest do
   use LiquidVoting.DataCase
   import LiquidVoting.Factory
 
@@ -7,11 +7,28 @@ defmodule LiquidVoting.ParticipantsTest do
 
   describe "voting_methods" do
     @valid_attrs %{
-      voting_method: "a_cool_voting_method",
+      name: "a_cool_voting_method",
       organization_id: Ecto.UUID.generate()
     }
 
-    @invalid_attrs %{voting_method: 42, organization_id: nil}
+    @invalid_attrs %{name: 42, organization_id: nil}
+
+    test "get_voting_method!/2 returns the voting method for given id and organization_id" do
+      voting_method = insert(:voting_method)
+
+      assert VotingMethods.get_voting_method!(voting_method.id, voting_method.organization_id) ==
+               voting_method
+    end
+
+    test "get_voting_method_by_name!/2 returns the voting method for given name and organization_id" do
+      voting_method = insert(:voting_method)
+
+      assert VotingMethods.get_voting_method_by_name!(
+               voting_method.name,
+               voting_method.organization_id
+             ) ==
+               voting_method
+    end
 
     test "list_voting_methods_by_org/1 returns all voting_methods for an organization_id" do
       voting_method = insert(:voting_method)
@@ -25,7 +42,7 @@ defmodule LiquidVoting.ParticipantsTest do
       assert {:ok, %VotingMethod{} = voting_method} =
                VotingMethods.upsert_voting_method(@valid_attrs)
 
-      assert voting_method.voting_method == @valid_attrs[:voting_method]
+      assert voting_method.name == @valid_attrs[:name]
       assert voting_method.organization_id == @valid_attrs[:organization_id]
     end
 
@@ -35,21 +52,21 @@ defmodule LiquidVoting.ParticipantsTest do
 
     test "upsert_voting_method/1 with existing valid data fetches matching voting_method record" do
       insert(:voting_method,
-        voting_method: @valid_attrs[:voting_method],
+        name: @valid_attrs[:name],
         organization_id: @valid_attrs[:organization_id]
       )
 
       assert {:ok, %VotingMethod{} = voting_method} =
                VotingMethods.upsert_voting_method(@valid_attrs)
 
-      assert voting_method.voting_method == @valid_attrs[:voting_method]
+      assert voting_method.name == @valid_attrs[:name]
       assert voting_method.organization_id == @valid_attrs[:organization_id]
     end
 
     test "upsert_voting_method/1 with existing valid does not add a duplicate record" do
       voting_method =
         insert(:voting_method,
-          voting_method: @valid_attrs[:voting_method],
+          name: @valid_attrs[:name],
           organization_id: @valid_attrs[:organization_id]
         )
 

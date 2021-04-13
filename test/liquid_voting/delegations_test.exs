@@ -67,13 +67,14 @@ defmodule LiquidVoting.DelegationsTest do
       assert result.id == delegation.id
     end
 
-    test "get_delegation!/3 returns a proposal-specific delegation with given emails, proposal_url and organization_id" do
+    test "get_delegation!/3 returns a proposal-specific delegation with given emails, voting_method_name, proposal_url and organization_id" do
       delegation = insert(:delegation_for_proposal)
 
       result =
         Delegations.get_delegation!(
           delegation.delegator.email,
           delegation.delegate.email,
+          delegation.voting_method.name,
           delegation.proposal_url,
           delegation.organization_id
         )
@@ -92,12 +93,13 @@ defmodule LiquidVoting.DelegationsTest do
       end
     end
 
-    test "get_delegation!/3 returns returns error if a proposal-specific delegation does not exist",
+    test "get_delegation!/5 returns returns error if a proposal-specific delegation does not exist",
          context do
       assert_raise Ecto.NoResultsError, fn ->
         Delegations.get_delegation!(
           "random@person.com",
           "random2@person.com",
+          "no_such_voting_method",
           "https://proposals.com/random_proposal",
           context[:valid_attrs][:organization_id]
         )
@@ -134,22 +136,24 @@ defmodule LiquidVoting.DelegationsTest do
       assert {:ok, %Delegation{}} = Delegations.create_delegation(args)
     end
 
-    test "create_delegation/1 with duplicate proposal-specific data returns the original delegation",
-         context do
-      original_delegation = insert(:delegation, proposal_url: context[:proposal_url])
+    test "create_delegation/1 with duplicate proposal-specific data returns the original delegation" do
+      original_delegation = insert(:delegation_for_proposal)
 
       args = %{
         delegator_id: original_delegation.delegator_id,
         delegate_id: original_delegation.delegate_id,
         organization_id: original_delegation.organization_id,
+        voting_method: original_delegation.voting_method.name,
         proposal_url: original_delegation.proposal_url
       }
 
       assert {:ok, %Delegation{} = delegation} = Delegations.create_delegation(args)
+
       assert original_delegation.id == delegation.id
       assert original_delegation.organization_id == delegation.organization_id
       assert original_delegation.delegate_id == delegation.delegate_id
       assert original_delegation.delegator_id == delegation.delegator_id
+      assert original_delegation.voting_method_id == delegation.voting_method_id
       assert original_delegation.proposal_url == delegation.proposal_url
     end
 
@@ -264,6 +268,7 @@ defmodule LiquidVoting.DelegationsTest do
       args = %{
         delegator_id: vote.participant_id,
         delegate_id: delegate.id,
+        voting_method_id: vote.voting_method_id,
         proposal_url: vote.proposal_url,
         organization_id: vote.organization_id
       }

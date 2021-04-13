@@ -5,12 +5,13 @@ defmodule LiquidVotingWeb.Schema.Schema do
   import Absinthe.Resolution.Helpers, only: [dataloader: 1, dataloader: 3]
 
   alias LiquidVotingWeb.Resolvers
-  alias LiquidVoting.{Voting, VotingResults}
+  alias LiquidVoting.{Voting, VotingMethods, VotingResults}
 
   query do
-    @desc "Get a voting result by its proposal url"
+    @desc "Get a voting result by its voting method (optional) and proposal url"
     field :voting_result, :result do
       arg(:proposal_url, non_null(:string))
+      arg(:voting_method, :string)
       resolve(&Resolvers.VotingResults.result/3)
     end
 
@@ -25,8 +26,10 @@ defmodule LiquidVotingWeb.Schema.Schema do
       resolve(&Resolvers.Voting.participant/3)
     end
 
-    @desc "Get a list of votes"
+    @desc "Get a list of votes, optionally filtered by proposal url and voting method"
     field :votes, list_of(:vote) do
+      arg(:proposal_url, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Voting.votes/3)
     end
 
@@ -62,6 +65,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:participant_id, :string)
       arg(:participant_email, :string)
       arg(:yes, non_null(:boolean))
+      arg(:voting_method, :string)
       resolve(&Resolvers.Voting.create_vote/3)
     end
 
@@ -70,6 +74,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:proposal_url, non_null(:string))
       arg(:participant_id, :string)
       arg(:participant_email, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Voting.delete_vote/3)
     end
 
@@ -80,6 +85,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:delegator_email, :string)
       arg(:delegate_email, :string)
       arg(:proposal_url, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Delegations.create_delegation/3)
     end
 
@@ -90,6 +96,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       arg(:delegator_email, :string)
       arg(:delegate_email, :string)
       arg(:proposal_url, :string)
+      arg(:voting_method, :string)
       resolve(&Resolvers.Delegations.delete_delegation/3)
     end
   end
@@ -98,6 +105,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
     @desc "Subscribe to voting results changes for a proposal"
     field :voting_result_change, :result do
       arg(:proposal_url, non_null(:string))
+      arg(:voting_method, :string)
 
       config(fn args, _res ->
         {:ok, topic: args.proposal_url}
@@ -122,11 +130,17 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :yes, non_null(:boolean)
     field :weight, non_null(:integer)
     field :proposal_url, non_null(:string)
+    field :voting_method, non_null(:voting_method), resolve: dataloader(VotingMethods)
     field :participant, non_null(:participant), resolve: dataloader(Voting)
 
     field :voting_result, :result,
       resolve: fn vote, _, _ ->
-        {:ok, VotingResults.get_result_by_proposal_url(vote.proposal_url, vote.organization_id)}
+        {:ok,
+         VotingResults.get_result_by_proposal_url(
+           vote.voting_method.id,
+           vote.proposal_url,
+           vote.organization_id
+         )}
       end
   end
 
@@ -135,12 +149,14 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :delegator, non_null(:participant), resolve: dataloader(Voting)
     field :delegate, non_null(:participant), resolve: dataloader(Voting)
     field :proposal_url, :string
+    field :voting_method, :voting_method, resolve: dataloader(VotingMethods)
 
     field :voting_result, :result,
       resolve: fn delegation, _, _ ->
         if delegation.proposal_url do
           {:ok,
            VotingResults.get_result_by_proposal_url(
+             delegation.voting_method.id,
              delegation.proposal_url,
              delegation.organization_id
            )}
@@ -154,7 +170,13 @@ defmodule LiquidVotingWeb.Schema.Schema do
     field :id, non_null(:string)
     field :in_favor, non_null(:integer)
     field :against, non_null(:integer)
+    field :voting_method, non_null(:voting_method), resolve: dataloader(VotingMethods)
     field :proposal_url, non_null(:string)
+  end
+
+  object :voting_method do
+    field :id, non_null(:string)
+    field :name, non_null(:string)
   end
 
   def context(ctx) do
@@ -164,6 +186,7 @@ defmodule LiquidVotingWeb.Schema.Schema do
       Dataloader.new()
       |> Dataloader.add_source(Voting, source)
       |> Dataloader.add_source(Delegations, source)
+      |> Dataloader.add_source(VotingMethods, source)
 
     Map.put(ctx, :loader, loader)
   end
