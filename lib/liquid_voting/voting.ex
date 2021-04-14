@@ -50,8 +50,12 @@ defmodule LiquidVoting.Voting do
                    organization_id: attrs[:organization_id]
                  ) do
               case Delegations.delete_delegation(delegation) do
-                {:ok, _delegation} -> vote
-                {:error, changeset} -> Repo.rollback(changeset)
+                {:ok, _delegation} ->
+                  vote
+                  |> Repo.preload([:voting_method])
+
+                {:error, changeset} ->
+                  Repo.rollback(changeset)
               end
             else
               vote
